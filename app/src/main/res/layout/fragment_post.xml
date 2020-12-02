@@ -5,10 +5,10 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:padding="24dp"
-    tools:context=".PostFragment">
+    tools:context=".fragments.post.PostFragment">
 
     <ImageView
-        android:id="@+id/imageView"
+        android:id="@+id/postImage"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="24dp"
@@ -17,20 +17,24 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <EditText
-        android:id="@+id/editTextTextMultiLine"
+        android:id="@+id/postMessage_et"
         android:layout_width="0dp"
         android:layout_height="500dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="16dp"
         android:ems="10"
         android:gravity="start|top"
         android:hint="post your sad story...."
         android:inputType="textMultiLine"
-        app:layout_constraintBottom_toBottomOf="parent"
+        android:maxLength="300"
+        android:minLines="10"
+        app:layout_constraintBottom_toTopOf="@+id/addPhoto_btn"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/imageView" />
+        app:layout_constraintTop_toBottomOf="@+id/postImage" />
 
     <ImageView
-        android:id="@+id/imageView2"
+        android:id="@+id/addPhoto_btn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="8dp"

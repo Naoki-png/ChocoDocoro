@@ -6,7 +6,7 @@
     app:startDestination="@id/listFragment">
     <fragment
         android:id="@+id/listFragment"
-        android:name="com.example.pien.ListFragment"
+        android:name="com.example.pien.fragments.list.ListFragment"
         android:label="fragment_list"
         tools:layout="@layout/fragment_list" >
         <action
@@ -33,7 +33,7 @@
     </fragment>
     <fragment
         android:id="@+id/loginFragment"
-        android:name="com.example.pien.LoginFragment"
+        android:name="com.example.pien.fragments.login.LoginFragment"
         android:label="fragment_login"
         tools:layout="@layout/fragment_login" >
         <action
@@ -51,7 +51,7 @@
     </fragment>
     <fragment
         android:id="@+id/createUserFragment"
-        android:name="com.example.pien.CreateUserFragment"
+        android:name="com.example.pien.fragments.createUser.CreateUserFragment"
         android:label="fragment_create_user"
         tools:layout="@layout/fragment_create_user" >
         <action
@@ -62,7 +62,7 @@
     </fragment>
     <fragment
         android:id="@+id/postFragment"
-        android:name="com.example.pien.PostFragment"
+        android:name="com.example.pien.fragments.post.PostFragment"
         android:label="fragment_post"
         tools:layout="@layout/fragment_post" >
         <action
@@ -73,7 +73,7 @@
     </fragment>
     <fragment
         android:id="@+id/myPageFragment"
-        android:name="com.example.pien.MyPageFragment"
+        android:name="com.example.pien.fragments.myPage.MyPageFragment"
         android:label="fragment_my_page"
         tools:layout="@layout/fragment_my_page" >
         <action
@@ -98,7 +98,7 @@
     </fragment>
     <fragment
         android:id="@+id/editAccountFragment"
-        android:name="com.example.pien.EditAccountFragment"
+        android:name="com.example.pien.fragments.editAccount.EditAccountFragment"
         android:label="fragment_edit_account"
         tools:layout="@layout/fragment_edit_account" >
         <action
@@ -109,7 +109,7 @@
     </fragment>
     <fragment
         android:id="@+id/editPostFragment"
-        android:name="com.example.pien.EditPostFragment"
+        android:name="com.example.pien.fragments.editPost.EditPostFragment"
         android:label="fragment_edit_post"
         tools:layout="@layout/fragment_edit_post" >
         <action
