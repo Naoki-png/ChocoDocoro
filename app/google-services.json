@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "970767651372",
+    "project_id": "pien-e74c4",
+    "storage_bucket": "pien-e74c4.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:970767651372:android:537d6458b7dcd8d39a3789",
+        "android_client_info": {
+          "package_name": "com.example.pien"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "970767651372-925bv9ann4fssiakv3ff39kub7am7t2c.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDWk7LQJmO1L2XjKNHyElW0wQ6ZZgrNWbk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "970767651372-925bv9ann4fssiakv3ff39kub7am7t2c.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
