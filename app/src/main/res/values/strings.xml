@@ -14,4 +14,5 @@
     <string name="register">register</string>
     <string name="edit">edit</string>
     <string name="save">save</string>
+    <string name="checkPassword">passwords check failed!</string>
 </resources>
