@@ -8,15 +8,17 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.navigation.fragment.findNavController
 import com.example.pien.R
-import com.example.pien.util.makeToast
+import com.example.pien.util.*
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.FirebaseUser
+import com.google.firebase.auth.UserProfileChangeRequest
+import com.google.firebase.firestore.FieldValue
+import com.google.firebase.firestore.FirebaseFirestore
+import kotlinx.android.synthetic.main.fragment_create_user.*
 import kotlinx.android.synthetic.main.fragment_create_user.view.*
 
 class CreateUserFragment : Fragment() {
 
     lateinit var auth: FirebaseAuth
-    lateinit var currentUser: FirebaseUser
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -31,14 +33,9 @@ class CreateUserFragment : Fragment() {
         // Inflate the layout for this fragment
         val view = inflater.inflate(R.layout.fragment_create_user, container, false)
 
-        val userName = view.userName_et.text.toString()
-        val userEmail = view.email_et.text.toString()
-        val userPassword = view.password_et.text.toString()
-        val passwordAgain = view.checkPassword_et.text.toString()
-
         view.register_btn.setOnClickListener {
-            if (userPassword.equals(passwordAgain)) {
-                registerNewUser(userName, userEmail, userPassword)
+            if (password_et.text.toString() == checkPassword_et.text.toString()) {
+                registerNewUser()
             } else {
                 makeToast(requireContext(), getString(R.string.checkPassword))
             }
@@ -52,31 +49,36 @@ class CreateUserFragment : Fragment() {
      * @param userEmail email
      * @param userPassword パスワード
      */
-    private fun registerNewUser(userName: String, userEmail: String, userPassword: String) {
+    private fun registerNewUser() {
+        val userName = userName_et.text.toString()
+        val userEmail = email_et.text.toString()
+        val userPassword = password_et.text.toString()
+
         auth.createUserWithEmailAndPassword(userEmail, userPassword)
-            .addOnCompleteListener { task ->
-                if (task.isSuccessful) {
-                    Log.d("CREATE USER", "createUserWithEmailAndPassword: succeed")
-                    currentUser = auth.currentUser!!
+            .addOnSuccessListener { result ->
+                val changeRequest = UserProfileChangeRequest.Builder()
+                    .setDisplayName(userName)
+                    .build()
+                result.user?.updateProfile(changeRequest)
+                    ?.addOnFailureListener { exception ->
+                        Log.e("CREATE USER", "updating user profile failed: ${exception.localizedMessage}")
+                    }
 
-                    //move to login
-                    findNavController().navigate(R.id.action_createUserFragment_to_loginFragment)
+                val data = HashMap<String, Any>()
+                data.put(USERNAME, userName)
+                data.put(DATE_CREATED, FieldValue.serverTimestamp())
 
-                } else {
-                    Log.w("CREATE USER", "createUserWithEmailAndPassword: failed", task.exception)
-                    makeToast(requireContext(), "create user failed.")
-                    clearTextFields()
-                }
+                FirebaseFirestore.getInstance().collection(USERS_REF).document(result.user!!.uid)
+                    .set(data)
+                    .addOnSuccessListener {
+                        findNavController().navigate(R.id.action_createUserFragment_to_loginFragment)
+                    }
+                    .addOnFailureListener { exception ->
+                        Log.e("CREATE USER", "putting userData into users_database failed: ${exception.localizedMessage}")
+                    }
             }
-    }
-
-    /**
-     * アカウント作成失敗時に、EditTextをクリア
-     */
-    private fun clearTextFields() {
-        requireView().userName_et.setText("")
-        requireView().email_et.setText("")
-        requireView().userName_et.setText("")
-        requireView().userName_et.setText("")
+            .addOnFailureListener { exception ->
+                Log.e("CREATE USER", "creating user failed: ${exception.localizedMessage}")
+            }
     }
 }

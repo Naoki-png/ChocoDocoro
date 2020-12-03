@@ -1,10 +1,8 @@
 package com.example.pien.fragments.list
 
 import android.os.Bundle
+import android.view.*
 import androidx.fragment.app.Fragment
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
 import androidx.navigation.fragment.findNavController
 import com.example.pien.R
 import kotlinx.android.synthetic.main.fragment_list.view.*
@@ -20,6 +18,20 @@ class ListFragment : Fragment() {
         view.fab.setOnClickListener {
             findNavController().navigate(R.id.action_listFragment_to_postFragment)
         }
+
+        setHasOptionsMenu(true)
         return view
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        inflater.inflate(R.menu.list_fragment_menu, menu)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when(item.itemId) {
+            R.id.logout -> findNavController().navigate(R.id.action_listFragment_to_loginFragment)
+            R.id.myPage -> findNavController().navigate(R.id.action_listFragment_to_myPageFragment)
+        }
+        return super.onOptionsItemSelected(item)
     }
 }

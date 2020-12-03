@@ -15,4 +15,8 @@
     <string name="edit">edit</string>
     <string name="save">save</string>
     <string name="checkPassword">passwords check failed!</string>
+    <string name="search">search</string>
+    <string name="logout">logout</string>
+    <string name="my_page">My Page</string>
+    <string name="create_user">create user</string>
 </resources>
