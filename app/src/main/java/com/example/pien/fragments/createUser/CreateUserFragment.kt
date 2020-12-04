@@ -45,9 +45,6 @@ class CreateUserFragment : Fragment() {
 
     /**
      * アカウント作成メソッド
-     * @param userName 名前
-     * @param userEmail email
-     * @param userPassword パスワード
      */
     private fun registerNewUser() {
         val userName = userName_et.text.toString()
@@ -61,7 +58,7 @@ class CreateUserFragment : Fragment() {
                     .build()
                 result.user?.updateProfile(changeRequest)
                     ?.addOnFailureListener { exception ->
-                        Log.e("CREATE USER", "updating user profile failed: ${exception.localizedMessage}")
+                        Log.e("CreateUserFragment", "updating user profile failed: ${exception.localizedMessage}")
                     }
 
                 val data = HashMap<String, Any>()
@@ -74,11 +71,11 @@ class CreateUserFragment : Fragment() {
                         findNavController().navigate(R.id.action_createUserFragment_to_loginFragment)
                     }
                     .addOnFailureListener { exception ->
-                        Log.e("CREATE USER", "putting userData into users_database failed: ${exception.localizedMessage}")
+                        Log.e("CreateUserFragment", "putting userData into users_database failed: ${exception.localizedMessage}")
                     }
             }
             .addOnFailureListener { exception ->
-                Log.e("CREATE USER", "creating user failed: ${exception.localizedMessage}")
+                Log.e("CreateUserFragment", "creating user failed: ${exception.localizedMessage}")
             }
     }
 }

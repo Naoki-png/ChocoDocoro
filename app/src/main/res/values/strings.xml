@@ -19,4 +19,5 @@
     <string name="logout">logout</string>
     <string name="my_page">My Page</string>
     <string name="create_user">create user</string>
+    <string name="login">login</string>
 </resources>
