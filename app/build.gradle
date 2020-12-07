@@ -52,8 +52,11 @@ dependencies {
     //circle image
     implementation 'de.hdodenhof:circleimageview:3.1.0'
 
-    //google signin
+    //google login
     implementation 'com.google.android.gms:play-services-auth:19.0.0'
+
+    //facebook login
+    implementation 'com.facebook.android:facebook-android-sdk:[4,5)'
 
     implementation 'androidx.legacy:legacy-support-v4:1.0.0'
     implementation 'com.google.firebase:firebase-auth:20.0.1'
