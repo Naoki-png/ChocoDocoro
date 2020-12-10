@@ -12,3 +12,6 @@ const val DATE_CREATED = "date_created"
 
 //request code
 val REQUEST_SIGN_IN = 0
+
+//prefs key
+const val SIGNIN_METHOD = "SignInMethod"
