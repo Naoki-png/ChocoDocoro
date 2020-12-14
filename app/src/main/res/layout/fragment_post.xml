@@ -19,16 +19,16 @@
     <EditText
         android:id="@+id/postMessage_et"
         android:layout_width="0dp"
-        android:layout_height="500dp"
+        android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
-        android:layout_marginBottom="16dp"
+        android:background="@drawable/custom_input"
         android:ems="10"
         android:gravity="start|top"
         android:hint="post your sad story...."
         android:inputType="textMultiLine"
         android:maxLength="300"
         android:minLines="10"
-        app:layout_constraintBottom_toTopOf="@+id/addPhoto_btn"
+        android:padding="5dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/postImage" />
@@ -37,11 +37,9 @@
         android:id="@+id/addPhoto_btn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="8dp"
-        android:layout_marginBottom="8dp"
         android:src="@drawable/ic_baseline_add_photo_alternate_24"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
+        app:layout_constraintEnd_toEndOf="@+id/postMessage_et"
+        app:layout_constraintTop_toBottomOf="@+id/postMessage_et" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -13,8 +13,4 @@
         android:id="@+id/logout"
         android:title="@string/logout"
         app:showAsAction="never"/>
-    <item
-        android:id="@+id/myPage"
-        android:title="@string/my_page"
-        app:showAsAction="never"/>
 </menu>

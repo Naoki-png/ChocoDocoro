@@ -93,7 +93,6 @@ class LoginFragment : Fragment() {
             override fun failure(exception: TwitterException?) {
                 Log.e("Twitter Login", "twitter:onError")
             }
-
         }
 
         view.login_btn.setOnClickListener {

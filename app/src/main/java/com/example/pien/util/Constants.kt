@@ -15,3 +15,6 @@ val REQUEST_SIGN_IN = 0
 
 //prefs key
 const val SIGNIN_METHOD = "SignInMethod"
+
+//request code
+const val REQUEST_GET_IMAGE = 0

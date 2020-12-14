@@ -51,9 +51,6 @@ class ListFragment : Fragment() {
     ): View? {
 
         val view = inflater.inflate(R.layout.fragment_list, container, false)
-        view.fab.setOnClickListener {
-            findNavController().navigate(R.id.action_listFragment_to_postFragment)
-        }
         setHasOptionsMenu(true)
         return view
     }
@@ -74,10 +71,6 @@ class ListFragment : Fragment() {
                     SignInMethod.TWITTER -> twitterSignOut()
                     SignInMethod.EMAIL -> emailSignOut()
                 }
-            }
-
-            R.id.myPage -> {
-                findNavController().navigate(R.id.action_listFragment_to_myPageFragment)
             }
         }
         return super.onOptionsItemSelected(item)

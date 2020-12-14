@@ -5,7 +5,9 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.navigation.fragment.findNavController
 import com.example.pien.R
+import kotlinx.android.synthetic.main.fragment_my_page.view.*
 
 class MyPageFragment : Fragment() {
 
@@ -13,7 +15,12 @@ class MyPageFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_my_page, container, false)
+
+        val view = inflater.inflate(R.layout.fragment_my_page, container, false)
+
+        view.edit_prof_btn.setOnClickListener {
+            findNavController().navigate(R.id.action_myPageFragment_to_editAccountFragment)
+        }
+        return view
     }
 }
