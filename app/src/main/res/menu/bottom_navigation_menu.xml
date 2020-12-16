@@ -3,12 +3,12 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
         android:id="@+id/listFragment"
-        android:title="home"
+        android:title="@string/home"
         android:icon="@drawable/ic_baseline_home_24" />
 
     <item
         android:id="@+id/postFragment"
-        android:title="new post"
+        android:title="@string/new_post"
         android:icon="@drawable/ic_baseline_post_add_24" />
 
     <item

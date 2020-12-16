@@ -1,10 +1,9 @@
 package com.example.pien.fragments.editAccount
 
 import android.os.Bundle
+import android.view.*
 import androidx.fragment.app.Fragment
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import androidx.navigation.fragment.findNavController
 import com.example.pien.R
 
 class EditAccountFragment : Fragment() {
@@ -13,8 +12,19 @@ class EditAccountFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        // Inflate the layout for this fragment
+        setHasOptionsMenu(true)
         return inflater.inflate(R.layout.fragment_edit_account, container, false)
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        inflater.inflate(R.menu.edit_account_fragment, menu)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        if (item.itemId == R.id.save) {
+            findNavController().navigate(R.id.action_editAccountFragment_to_myPageFragment)
+        }
+        return super.onOptionsItemSelected(item)
     }
 
 }

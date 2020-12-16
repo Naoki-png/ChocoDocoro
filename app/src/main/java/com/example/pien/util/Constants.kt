@@ -4,11 +4,12 @@ package com.example.pien.util
 const val USERS_REF = "users_collection"
 const val POST_REF = "posts_collection"
 
-//user db
-const val USERNAME = "userName"
+//db keys
 const val DATE_CREATED = "date_created"
-
-//post db
+const val USERNAME = "userName"
+const val USERIMAGE = "userImage"
+const val POSTIMAGE = "postImage"
+const val POSTMESSAGE = "postMessage"
 
 //request code
 val REQUEST_SIGN_IN = 0
