@@ -35,9 +35,20 @@
         android:id="@+id/addPhoto_btn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:background="@drawable/custom_touch_feedback"
         android:src="@drawable/ic_baseline_add_photo_alternate_24"
         app:layout_constraintEnd_toEndOf="@+id/postMessage_et"
         app:layout_constraintTop_toBottomOf="@+id/postMessage_et" />
+
+    <ImageView
+        android:id="@+id/deletePhoto_btn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@drawable/custom_touch_feedback"
+        android:src="@drawable/ic_baseline_highlight_off_24"
+        android:visibility="invisible"
+        app:layout_constraintStart_toEndOf="@+id/postImage"
+        app:layout_constraintTop_toTopOf="@+id/postImage" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

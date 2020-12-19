@@ -14,8 +14,13 @@ const val POSTMESSAGE = "postMessage"
 //request code
 val REQUEST_SIGN_IN = 0
 
-//prefs key
+//preference tag
+const val POST_PREFERENCE = "post_pref"
+
+//preference key
 const val SIGNIN_METHOD = "SignInMethod"
+const val POST_MSG_PREF_KEY = "post_msg"
+const val POST_IMAGE_PREF_KEY = "post_image"
 
 //request code
 const val REQUEST_GET_IMAGE = 0
