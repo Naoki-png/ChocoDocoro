@@ -27,11 +27,23 @@ class MainViewModel : ViewModel() {
      */
     var userPhotoUri = MutableLiveData<String>()
 
+    /**
+     * post用レポジトリ
+     */
     private val postRepository = PostRepository()
 
+    /**
+     * 投稿画像のUriをゲットする
+     */
     fun getPostImageUri(requestCode: Int, resultCode: Int, data: Intent?) : String? {
         postRepository.getPostImageUri(requestCode, resultCode, data)
         return postRepository.postImageUriFromDevice
     }
 
+    /**
+     * 投稿する
+     */
+    fun post(message: String, currentDisplayPhotoUri: String) {
+        postRepository.post(message, currentDisplayPhotoUri)
+    }
 }

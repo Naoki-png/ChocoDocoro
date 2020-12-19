@@ -3,7 +3,9 @@ package com.example.pien.fragments.post
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
+import android.opengl.Visibility
 import android.os.Bundle
+import android.text.TextUtils
 import android.util.Log
 import android.view.*
 import androidx.fragment.app.Fragment
@@ -23,14 +25,12 @@ import kotlinx.android.synthetic.main.fragment_post.view.*
 
 class PostFragment : Fragment() {
     private lateinit var logTag: String
-
+    private var currentDisplayPhotoUri: String = ""
     private val mainViewModel: MainViewModel by activityViewModels()
-    lateinit var currentUser: FirebaseUser
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         logTag = javaClass.name
-        currentUser = FirebaseAuth.getInstance().currentUser!!
     }
 
     override fun onCreateView(
@@ -46,15 +46,25 @@ class PostFragment : Fragment() {
             }
             startActivityForResult(intent, REQUEST_GET_IMAGE)
         }
+
+        view.deletePhoto_btn.setOnClickListener {
+            currentDisplayPhotoUri = ""
+            postImage.visibility = View.GONE
+            it.visibility = View.GONE
+        }
         setHasOptionsMenu(true)
         return view
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-        val postImageUri = mainViewModel.getPostImageUri(requestCode, resultCode, data)
-        Glide.with(this).load(postImageUri).centerCrop().into(postImage)
+        val uri = mainViewModel.getPostImageUri(requestCode, resultCode, data)
+        Glide.with(this).load(currentDisplayPhotoUri).centerCrop().into(postImage)
+        postImage.visibility = View.VISIBLE
         deletePhoto_btn.visibility = View.VISIBLE
+        uri?.let { uri ->
+            currentDisplayPhotoUri = uri
+        }
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
@@ -63,62 +73,15 @@ class PostFragment : Fragment() {
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         if (item.itemId == R.id.post) {
-            sendPost()
-            findNavController().navigate(R.id.listFragment)
-        }
 
+            if (!TextUtils.isEmpty(postMessage_et.text.toString())) {
+                val message = postMessage_et.text.toString()
+                mainViewModel.post(message, currentDisplayPhotoUri)
+                findNavController().navigate(R.id.listFragment)
+            } else {
+                makeToast(requireContext(), "message space must not be empty")
+            }
+        }
         return super.onOptionsItemSelected(item)
     }
-
-    private fun sendPost() {
-        val view = requireView()
-        val userName = currentUser.displayName.toString()
-        val userPhotoUri = currentUser.photoUrl.toString()
-        val message = view.postMessage_et.text.toString()
-        val newPost = HashMap<String, Any>()
-        newPost.put(USERNAME, userName)
-        newPost.put(USERIMAGE, userPhotoUri)
-        newPost.put(POSTIMAGE, "")
-        newPost.put(POSTMESSAGE, message)
-        val document = FirebaseFirestore.getInstance().collection(POST_REF).document()
-        document.set(newPost)
-            .addOnSuccessListener {
-                Log.d("New Post", "new post succeeded")
-            }
-            .addOnFailureListener { exception ->
-                Log.e("New Post", "new post failed: ${exception.localizedMessage}")
-            }
-        storeImage(document.id)
-    }
-
-    private fun storeImage(id: String) {
-        val pref = requireContext().getSharedPreferences("post_pref", Context.MODE_PRIVATE)
-        val imageUri = pref.getString("postImage", "")
-        val storageRef = FirebaseStorage.getInstance().getReference(currentUser!!.uid)
-            .child(id).child(imageUri!!)
-        putImageStorage(storageRef, imageUri, id)
-    }
-
-    private fun putImageStorage(storageRef: StorageReference, imageUri: String, id: String) {
-        storageRef.putFile(Uri.parse(imageUri)).continueWithTask { task ->
-            if (!task.isSuccessful) {
-                Log.e("firebaseStorage", "Couldn't store file into storage 1")
-            }
-            return@continueWithTask storageRef.downloadUrl
-        }.addOnCompleteListener { task ->
-            if (!task.isSuccessful) {
-                Log.e("firebaseStorage", "Couldn't store file into storage 2")
-                return@addOnCompleteListener
-            }
-            FirebaseFirestore.getInstance().collection(POST_REF).document(id).update(POSTIMAGE, task.result.toString())
-                .addOnSuccessListener {
-                    makeToast(requireContext(), "posted!")
-                }
-                .addOnFailureListener { excception ->
-                    makeToast(requireContext(), "error!")
-                }
-        }
-    }
-
-
 }
