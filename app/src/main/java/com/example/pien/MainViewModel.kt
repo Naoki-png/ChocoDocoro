@@ -57,5 +57,12 @@ class MainViewModel(val context: Application) : AndroidViewModel(context) {
         postRepository.homeListData.observeForever { postList ->
             posts.value = postList
         }
+        postRepository.mypageListData.observeForever { postList ->
+            myPosts.value = postList
+        }
+    }
+
+    fun setMypageData() {
+        postRepository.setMypageData()
     }
 }

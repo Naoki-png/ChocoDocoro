@@ -11,6 +11,7 @@ import com.example.pien.data.model.Post
 import com.example.pien.util.*
 import com.google.firebase.Timestamp
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.firestore.*
 import com.google.firebase.storage.FirebaseStorage
 import kotlinx.android.synthetic.main.fragment_post.view.*
@@ -20,7 +21,7 @@ import kotlin.collections.HashMap
 class PostRepository {
     private val logTag = javaClass.name
     private val appContext = MyApplication.appContext
-    private val currentUser = FirebaseAuth.getInstance().currentUser
+    private lateinit var currentUser: FirebaseUser
     private val postDatabaseRef = FirebaseFirestore.getInstance().collection(POST_REF)
     private val userDatabaseRef = FirebaseFirestore.getInstance().collection(USERS_REF)
     var postImageUriFromDevice: String? = null
@@ -47,6 +48,7 @@ class PostRepository {
      * DBに投稿を保存する
      */
     fun post(message: String, currentDisplayPhotoUri: String) {
+        currentUser = FirebaseAuth.getInstance().currentUser!!
         val userName = currentUser?.displayName.toString()
         val userPhotoUri = currentUser?.photoUrl.toString()
         val newPost = HashMap<String, Any>()
@@ -135,5 +137,22 @@ class PostRepository {
             }
         }
         return listData
+    }
+
+    /**
+     * mypage画面表示用のデータリストを取ってくる
+     */
+    fun setMypageData() {
+        currentUser = FirebaseAuth.getInstance().currentUser!!
+        postDatabaseRef
+            .whereEqualTo(USERNAME, currentUser!!.displayName)
+            .orderBy(TIMESTAMP, Query.Direction.DESCENDING)
+            .addSnapshotListener { snapshot, exception ->
+                if (exception != null) {
+                    Log.e(logTag, "Couldn't get posts data: ${exception.localizedMessage}")
+                }
+                val postDocuments: List<DocumentSnapshot>? = snapshot?.documents
+                mypageListData.value = parseDataToPost(postDocuments)
+            }
     }
 }
