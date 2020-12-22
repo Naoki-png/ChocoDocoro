@@ -10,6 +10,7 @@ const val USERNAME = "userName"
 const val USERIMAGE = "userImage"
 const val POSTIMAGE = "postImage"
 const val POSTMESSAGE = "postMessage"
+const val TIMESTAMP = "timeStamp"
 
 //request code
 val REQUEST_SIGN_IN = 0

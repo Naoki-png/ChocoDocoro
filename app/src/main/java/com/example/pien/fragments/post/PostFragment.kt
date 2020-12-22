@@ -77,6 +77,7 @@ class PostFragment : Fragment() {
             if (!TextUtils.isEmpty(postMessage_et.text.toString())) {
                 val message = postMessage_et.text.toString()
                 mainViewModel.post(message, currentDisplayPhotoUri)
+                hideKeyboard(requireActivity())
                 findNavController().navigate(R.id.listFragment)
             } else {
                 makeToast(requireContext(), "message space must not be empty")

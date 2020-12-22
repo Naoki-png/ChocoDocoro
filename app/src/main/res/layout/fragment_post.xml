@@ -37,7 +37,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:background="@drawable/touch_feedback_addphoto"
-        android:src="@drawable/ic_baseline_add_photo_alternate_24"
+        app:srcCompat="@drawable/ic_baseline_add_photo_alternate_24"
         app:layout_constraintEnd_toEndOf="@+id/postMessage_et"
         app:layout_constraintTop_toBottomOf="@+id/postMessage_et" />
 
@@ -46,7 +46,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:background="@drawable/touch_feedback_highlightoff"
-        android:src="@drawable/ic_baseline_highlight_off_24"
+        app:srcCompat="@drawable/ic_baseline_highlight_off_24"
         android:visibility="gone"
         app:layout_constraintStart_toEndOf="@+id/postImage"
         app:layout_constraintTop_toTopOf="@+id/postImage" />

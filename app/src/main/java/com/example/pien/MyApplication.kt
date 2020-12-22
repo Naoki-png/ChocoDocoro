@@ -2,6 +2,7 @@ package com.example.pien
 
 import android.content.Context
 import androidx.multidex.MultiDexApplication
+import com.google.firebase.firestore.DocumentSnapshot
 
 class MyApplication: MultiDexApplication() {
 

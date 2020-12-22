@@ -1,12 +1,14 @@
 package com.example.pien
 
+import android.app.Application
 import android.content.Intent
+import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.example.pien.data.model.Post
 import com.example.pien.data.repository.PostRepository
 
-class MainViewModel : ViewModel() {
+class MainViewModel(val context: Application) : AndroidViewModel(context) {
     /**
      * ListFragment表示用のPost一覧
      */
@@ -45,5 +47,15 @@ class MainViewModel : ViewModel() {
      */
     fun post(message: String, currentDisplayPhotoUri: String) {
         postRepository.post(message, currentDisplayPhotoUri)
+    }
+
+    fun setHomeData() {
+        postRepository.setHomeData()
+    }
+
+    fun observeFields() {
+        postRepository.homeListData.observeForever { postList ->
+            posts.value = postList
+        }
     }
 }

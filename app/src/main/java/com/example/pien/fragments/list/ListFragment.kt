@@ -5,7 +5,12 @@ import android.os.Bundle
 import android.util.Log
 import android.view.*
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import com.example.pien.MainViewModel
 import com.example.pien.R
 import com.example.pien.data.model.SignInMethod
 import com.example.pien.util.SIGNIN_METHOD
@@ -22,15 +27,21 @@ import kotlinx.android.synthetic.main.fragment_list.view.*
 import kotlin.math.sign
 
 class ListFragment : Fragment() {
-    lateinit var auth: FirebaseAuth
+    private lateinit var logTag: String
+
+    private val homeListAdapter: HomeListAdapter by lazy { HomeListAdapter() }
+    private val mainViewModel: MainViewModel by activityViewModels()
+
+    private lateinit var auth: FirebaseAuth
     private var firebaseUser: FirebaseUser? = null
+
     lateinit var mGoogleSignInClient: GoogleSignInClient
     lateinit var mLoginManager: LoginManager
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        logTag = javaClass.name
         auth = FirebaseAuth.getInstance()
-        //ログインユーザーの取得
         firebaseUser = auth.currentUser
 
         //googleAPIクライアントの取得
@@ -49,9 +60,16 @@ class ListFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-
         val view = inflater.inflate(R.layout.fragment_list, container, false)
         setHasOptionsMenu(true)
+        val list = view.findViewById<RecyclerView>(R.id.home_list)
+        list.adapter = homeListAdapter
+        list.layoutManager = LinearLayoutManager(requireContext())
+        mainViewModel.observeFields()
+        mainViewModel.setHomeData()
+        mainViewModel.posts.observe(requireActivity(), Observer { posts ->
+            homeListAdapter.setHomeData(posts)
+        })
         return view
     }
 
