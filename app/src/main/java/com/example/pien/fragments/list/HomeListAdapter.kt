@@ -1,5 +1,7 @@
 package com.example.pien.fragments.list
 
+import android.text.TextUtils
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -10,6 +12,7 @@ import com.bumptech.glide.Glide
 import com.example.pien.MyApplication
 import com.example.pien.R
 import com.example.pien.data.model.Post
+import com.google.firebase.auth.FirebaseAuth
 
 class HomeListAdapter: RecyclerView.Adapter<HomeListAdapter.HomeListViewHolder>() {
     private val appContext = MyApplication.appContext
@@ -33,7 +36,11 @@ class HomeListAdapter: RecyclerView.Adapter<HomeListAdapter.HomeListViewHolder>(
 
     override fun onBindViewHolder(holder: HomeListViewHolder, position: Int) {
         holder.userName.text = homeListData[position].userName
-        Glide.with(appContext).load(homeListData[position].userPhotoUri).into(holder.userImage)
+        if ("null" == homeListData[position].userPhotoUri) {
+            holder.userImage.setImageResource(R.drawable.ic_baseline_account_circle_24)
+        } else {
+            Glide.with(appContext).load(homeListData[position].userPhotoUri).into(holder.userImage)
+        }
         Glide.with(appContext).load(homeListData[position].postPhotoUri).into(holder.postImage)
         holder.postMsg.text = homeListData[position].postMessage
     }

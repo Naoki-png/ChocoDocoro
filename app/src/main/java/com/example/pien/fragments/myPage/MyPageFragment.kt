@@ -1,6 +1,7 @@
 package com.example.pien.fragments.myPage
 
 import android.os.Bundle
+import android.text.TextUtils
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -38,7 +39,11 @@ class MyPageFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         val view = inflater.inflate(R.layout.fragment_my_page, container, false)
-        Glide.with(this).load(firebaseUser!!.photoUrl).into(view.profile_Image)
+        if ("null" == firebaseUser!!.photoUrl.toString()) {
+            view.profile_Image.setImageResource(R.drawable.ic_baseline_account_circle_24)
+        } else {
+            Glide.with(this).load(firebaseUser!!.photoUrl).into(view.profile_Image)
+        }
         view.profile_name.text = firebaseUser!!.displayName
         val list = view.mypage_list
         list.adapter = listAdapter
