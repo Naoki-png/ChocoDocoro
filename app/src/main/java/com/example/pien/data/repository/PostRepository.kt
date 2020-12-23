@@ -3,15 +3,16 @@ package com.example.pien.data.repository
 import android.app.Activity
 import android.content.Intent
 import android.net.Uri
-import android.text.TextUtils
 import android.util.Log
 import androidx.lifecycle.MutableLiveData
+import com.example.pien.MainViewModel
 import com.example.pien.MyApplication
 import com.example.pien.data.model.Post
 import com.example.pien.util.*
 import com.google.firebase.Timestamp
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
+import com.google.firebase.auth.UserProfileChangeRequest
 import com.google.firebase.firestore.*
 import com.google.firebase.storage.FirebaseStorage
 import kotlinx.android.synthetic.main.fragment_post.view.*
@@ -23,7 +24,6 @@ class PostRepository {
     private val appContext = MyApplication.appContext
     private lateinit var currentUser: FirebaseUser
     private val postDatabaseRef = FirebaseFirestore.getInstance().collection(POST_REF)
-    private val userDatabaseRef = FirebaseFirestore.getInstance().collection(USERS_REF)
     var postImageUriFromDevice: String? = null
     var userImageUriFromDevice: String? = null
 
@@ -100,6 +100,23 @@ class PostRepository {
     }
 
     /**
+     * mypage画面表示用のデータリストを取ってくる
+     */
+    fun setMypageData() {
+        currentUser = FirebaseAuth.getInstance().currentUser!!
+        postDatabaseRef
+            .whereEqualTo(USERID, currentUser.uid)
+            .orderBy(TIMESTAMP, Query.Direction.DESCENDING)
+            .addSnapshotListener { snapshot, exception ->
+                if (exception != null) {
+                    Log.e(logTag, "Couldn't get posts data: ${exception.localizedMessage}")
+                }
+                val postDocuments: List<DocumentSnapshot>? = snapshot?.documents
+                mypageListData.value = parseDataToPost(postDocuments)
+            }
+    }
+
+    /**
      * データからPostインスタンスのリストにする
      */
     private fun parseDataToPost(postDocuments: List<DocumentSnapshot>?) : List<Post> {
@@ -136,24 +153,48 @@ class PostRepository {
     }
 
     /**
-     * mypage画面表示用のデータリストを取ってくる
+     * ユーザープロフィール変更
      */
-    fun setMypageData() {
+    fun editUserInfo(userName: String, userImage: String) {
         currentUser = FirebaseAuth.getInstance().currentUser!!
-        postDatabaseRef
-            .whereEqualTo(USERID, currentUser!!.uid)
-            .orderBy(TIMESTAMP, Query.Direction.DESCENDING)
+        val changeRequest = UserProfileChangeRequest.Builder()
+            .setDisplayName(userName)
+            .setPhotoUri(Uri.parse(userImage))
+            .build()
+        currentUser.updateProfile(changeRequest)
+            .addOnSuccessListener {
+                Log.d(logTag, "updating profile is completed")
+            }
+            .addOnFailureListener { exception ->
+                Log.e(logTag, "updating profile is failed: ${exception.localizedMessage}")
+            }
+
+        val updatingDocuments = mutableListOf<String>()
+        postDatabaseRef.whereEqualTo(USERID, currentUser.uid)
             .addSnapshotListener { snapshot, exception ->
                 if (exception != null) {
-                    Log.e(logTag, "Couldn't get posts data: ${exception.localizedMessage}")
+                    Log.e(logTag, "Couldn't get data for updating: ${exception.localizedMessage}")
                 }
-                val postDocuments: List<DocumentSnapshot>? = snapshot?.documents
-                mypageListData.value = parseDataToPost(postDocuments)
+                if (snapshot != null) {
+                    for (document in snapshot) {
+                        updatingDocuments.add(document.id)
+                    }
+                }
+                updateProfileInDB(updatingDocuments, userName, userImage)
             }
     }
 
-    fun editUserInfo(userName: String, userImage: String) {
-
+    /**
+     * DB内のプロフィール情報を変更
+     */
+    private fun updateProfileInDB(updatingDocumentIDs: List<String>, userName: String, userImage: String) {
+        for (documentId in updatingDocumentIDs) {
+            postDatabaseRef.document(documentId)
+                .update(USERNAME, userName, USERIMAGE, userImage)
+                .addOnFailureListener { exception ->
+                    Log.e(logTag, "Couldn't update profile data in DB: ${exception.localizedMessage}")
+                }
+        }
     }
 
     fun post(

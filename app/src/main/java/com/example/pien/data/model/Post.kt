@@ -15,11 +15,4 @@ data class Post(
     val chocolateType: String,
     val chocolateDescription: String,
     val timestamp: Date
-) {
-    enum class ChcolateType {
-        MILK,
-        DARK,
-        HIGHCACAO,
-        WHITE
-    }
-}
+)

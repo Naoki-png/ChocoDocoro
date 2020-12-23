@@ -36,8 +36,6 @@ class MainActivity : AppCompatActivity() {
         //setup navcontroller with bottom navigation
         val navController = findNavController(R.id.nav_host_fragment)
         setupWithNavController(bottomNavigationView, navController)
-
-        clearPostPreference()
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -49,12 +47,5 @@ class MainActivity : AppCompatActivity() {
             childFragments.forEach {fragment ->
                 fragment?.onActivityResult(requestCode, resultCode, data)
             }
-    }
-
-
-    private fun clearPostPreference() {
-        val prefEditor = getSharedPreferences("post_pref", Context.MODE_PRIVATE).edit()
-        prefEditor.putString("postImage", "").apply()
-        prefEditor.putString("postMessage", "").apply()
     }
 }

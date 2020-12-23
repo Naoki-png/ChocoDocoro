@@ -60,19 +60,6 @@ class CreateUserFragment : Fragment() {
                     ?.addOnFailureListener { exception ->
                         Log.e("CreateUserFragment", "updating user profile failed: ${exception.localizedMessage}")
                     }
-
-                val data = HashMap<String, Any>()
-                data.put(USERNAME, userName)
-                data.put(DATE_CREATED, FieldValue.serverTimestamp())
-
-                FirebaseFirestore.getInstance().collection(USERS_REF).document(result.user!!.uid)
-                    .set(data)
-                    .addOnSuccessListener {
-                        findNavController().navigate(R.id.action_createUserFragment_to_loginFragment)
-                    }
-                    .addOnFailureListener { exception ->
-                        Log.e("CreateUserFragment", "putting userData into users_database failed: ${exception.localizedMessage}")
-                    }
             }
             .addOnFailureListener { exception ->
                 Log.e("CreateUserFragment", "creating user failed: ${exception.localizedMessage}")

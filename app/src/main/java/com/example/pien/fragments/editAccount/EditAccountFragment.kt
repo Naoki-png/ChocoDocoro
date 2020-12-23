@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.view.*
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import com.bumptech.glide.Glide
 import com.example.pien.MainViewModel
@@ -56,9 +57,11 @@ class EditAccountFragment : Fragment() {
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         val uri = mainViewModel.getImageUriFromDevice(requestCode, resultCode, data)
-        Glide.with(this).load(uri).centerCrop().into(editUserImage)
-        uri?.let { uri ->
-            currentDisplayPhotoUri = uri
+        if (uri != null) {
+            Glide.with(this).load(uri).into(editUserImage)
+            uri?.let { uri ->
+                currentDisplayPhotoUri = uri
+            }
         }
     }
 

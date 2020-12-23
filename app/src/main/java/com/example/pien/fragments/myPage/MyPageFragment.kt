@@ -16,6 +16,7 @@ import com.example.pien.R
 import com.example.pien.fragments.list.HomeListAdapter
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
+import kotlinx.android.synthetic.main.fragment_my_page.*
 import kotlinx.android.synthetic.main.fragment_my_page.view.*
 
 class MyPageFragment : Fragment() {
