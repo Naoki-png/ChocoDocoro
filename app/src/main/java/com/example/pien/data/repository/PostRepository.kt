@@ -25,50 +25,36 @@ class PostRepository {
     private val postDatabaseRef = FirebaseFirestore.getInstance().collection(POST_REF)
     private val userDatabaseRef = FirebaseFirestore.getInstance().collection(USERS_REF)
     var postImageUriFromDevice: String? = null
+    var userImageUriFromDevice: String? = null
 
     var homeListData = MutableLiveData<List<Post>>()
     var mypageListData = MutableLiveData<List<Post>>()
 
     /**
-     * 投稿したい画像のUriをセット
+     * 画像のUriをセット
      */
-    fun getPostImageUri(requestCode: Int, resultCode: Int, data: Intent?) {
-        if (requestCode != REQUEST_GET_IMAGE) {
-            Log.e(logTag, "requestCode is inaccurate")
-        } else if (resultCode != Activity.RESULT_OK) {
+    fun getImageUriFromDevice(requestCode: Int, resultCode: Int, data: Intent?) {
+
+        if (resultCode != Activity.RESULT_OK) {
             Log.e(logTag, "getting image result is not OK")
         } else if (data == null) {
             Log.e(logTag, "image result is null")
         } else {
-            postImageUriFromDevice = data.data.toString()
+            when (requestCode) {
+                REQUEST_GET_POST_IMAGE -> {
+                    postImageUriFromDevice = data.data.toString()
+                }
+                REQUEST_GET_USER_IMAGE -> {
+                    userImageUriFromDevice = data.data.toString()
+                }
+                else -> {
+                    Log.e(logTag, "requestCode is inaccurate")
+                }
+            }
         }
     }
 
-    /**
-     * DBに投稿を保存する
-     */
-    fun post(message: String, currentDisplayPhotoUri: String) {
-        currentUser = FirebaseAuth.getInstance().currentUser!!
-        val userName = currentUser?.displayName.toString()
-        val userPhotoUri = currentUser?.photoUrl.toString()
-        val newPost = HashMap<String, Any>()
-        newPost.put(USERNAME, userName)
-        newPost.put(USERIMAGE, userPhotoUri)
-        newPost.put(POSTIMAGE, currentDisplayPhotoUri)
-        newPost.put(POSTMESSAGE, message)
-        newPost.put(TIMESTAMP, FieldValue.serverTimestamp())
-        val document = postDatabaseRef.document()
-        document.set(newPost)
-            .addOnSuccessListener {
-                Log.d(logTag, "new post succeeded")
-                if (!TextUtils.isEmpty(currentDisplayPhotoUri)) {
-                    storeImage(document.id, Uri.parse(currentDisplayPhotoUri))
-                }
-            }
-            .addOnFailureListener { exception ->
-                Log.e(logTag, "new post failed: ${exception.localizedMessage}")
-            }
-    }
+
 
     /**
      * storageに画像を保存する
@@ -121,16 +107,26 @@ class PostRepository {
         if (postDocuments != null) {
             for (document in postDocuments) {
                 val data = document.getData(DocumentSnapshot.ServerTimestampBehavior.ESTIMATE)
+                val userId = data?.get(USERID) as String
                 val userName = data?.get(USERNAME) as String
                 val userImageUri = data?.get(USERIMAGE) as String
                 val postImageUri = data?.get(POSTIMAGE) as String
+                val chocolateName = data?.get(PRODUCTNAME) as String
+                val chocolateBrand = data?.get(BRANDNAME) as String
+                val chocolatePrice = data?.get(PRODUCTPRICE) as String
+                val chocolateType = data?.get(PRODUCTTYPE) as String
                 val postMsg = data?.get(POSTMESSAGE) as String
                 val timestamp = data?.get(TIMESTAMP) as Timestamp
                 val post = Post(
+                    userId = userId,
                     userName = userName,
                     userPhotoUri = userImageUri,
                     postPhotoUri = postImageUri,
-                    postMessage = postMsg,
+                    chocolateName = chocolateName,
+                    chocolateBrand = chocolateBrand,
+                    chocolatePrice = chocolatePrice,
+                    chocolateType = chocolateType,
+                    chocolateDescription = postMsg,
                     timestamp = timestamp.toDate()
                 )
                 listData.add(post)
@@ -145,7 +141,7 @@ class PostRepository {
     fun setMypageData() {
         currentUser = FirebaseAuth.getInstance().currentUser!!
         postDatabaseRef
-            .whereEqualTo(USERNAME, currentUser!!.displayName)
+            .whereEqualTo(USERID, currentUser!!.uid)
             .orderBy(TIMESTAMP, Query.Direction.DESCENDING)
             .addSnapshotListener { snapshot, exception ->
                 if (exception != null) {
@@ -153,6 +149,44 @@ class PostRepository {
                 }
                 val postDocuments: List<DocumentSnapshot>? = snapshot?.documents
                 mypageListData.value = parseDataToPost(postDocuments)
+            }
+    }
+
+    fun editUserInfo(userName: String, userImage: String) {
+
+    }
+
+    fun post(
+        postImage: String,
+        productName: String,
+        brandName: String,
+        productPrice: String,
+        productType: String,
+        postMsg: String
+    ) {
+        currentUser = FirebaseAuth.getInstance().currentUser!!
+        val userId = currentUser?.uid
+        val userName = currentUser?.displayName.toString()
+        val userPhotoUri = currentUser?.photoUrl.toString()
+        val newPost = HashMap<String, Any>()
+        newPost.put(USERID, userId)
+        newPost.put(USERNAME, userName)
+        newPost.put(USERIMAGE, userPhotoUri)
+        newPost.put(POSTIMAGE, postImage)
+        newPost.put(PRODUCTNAME, productName)
+        newPost.put(BRANDNAME, brandName)
+        newPost.put(PRODUCTPRICE, productPrice)
+        newPost.put(PRODUCTTYPE, productType)
+        newPost.put(POSTMESSAGE, postMsg)
+        newPost.put(TIMESTAMP, FieldValue.serverTimestamp())
+        val document = postDatabaseRef.document()
+        document.set(newPost)
+            .addOnSuccessListener {
+                Log.d(logTag, "new post succeeded")
+                storeImage(document.id, Uri.parse(postImage))
+            }
+            .addOnFailureListener { exception ->
+                Log.e(logTag, "new post failed: ${exception.localizedMessage}")
             }
     }
 }

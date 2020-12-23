@@ -25,8 +25,7 @@ class HomeListAdapter: RecyclerView.Adapter<HomeListAdapter.HomeListViewHolder>(
         val userName = view.findViewById<TextView>(R.id.user_name)
         val userImage = view.findViewById<ImageView>(R.id.user_image)
         val postImage = view.findViewById<ImageView>(R.id.post_image)
-        val postMsg = view.findViewById<TextView>(R.id.post_msg)
-        val likeBtn = view.findViewById<ImageView>(R.id.like_btn)
+        val brandName = view.findViewById<TextView>(R.id.maker_name)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): HomeListViewHolder {
@@ -42,7 +41,7 @@ class HomeListAdapter: RecyclerView.Adapter<HomeListAdapter.HomeListViewHolder>(
             Glide.with(appContext).load(homeListData[position].userPhotoUri).into(holder.userImage)
         }
         Glide.with(appContext).load(homeListData[position].postPhotoUri).into(holder.postImage)
-        holder.postMsg.text = homeListData[position].postMessage
+        holder.brandName.text = homeListData[position].chocolateBrand
     }
 
     override fun getItemCount() = homeListData.size

@@ -7,6 +7,8 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.example.pien.data.model.Post
 import com.example.pien.data.repository.PostRepository
+import com.example.pien.util.REQUEST_GET_POST_IMAGE
+import com.example.pien.util.REQUEST_GET_USER_IMAGE
 
 class MainViewModel(val context: Application) : AndroidViewModel(context) {
     /**
@@ -35,19 +37,17 @@ class MainViewModel(val context: Application) : AndroidViewModel(context) {
     private val postRepository = PostRepository()
 
     /**
-     * 投稿画像のUriをゲットする
+     * 画像のUriをゲットする
      */
-    fun getPostImageUri(requestCode: Int, resultCode: Int, data: Intent?) : String? {
-        postRepository.getPostImageUri(requestCode, resultCode, data)
-        return postRepository.postImageUriFromDevice
+    fun getImageUriFromDevice(requestCode: Int, resultCode: Int, data: Intent?) : String? {
+        postRepository.getImageUriFromDevice(requestCode, resultCode, data)
+        when (requestCode) {
+            REQUEST_GET_POST_IMAGE -> return postRepository.postImageUriFromDevice
+            REQUEST_GET_USER_IMAGE -> return postRepository.userImageUriFromDevice
+            else -> return null
+        }
     }
 
-    /**
-     * 投稿する
-     */
-    fun post(message: String, currentDisplayPhotoUri: String) {
-        postRepository.post(message, currentDisplayPhotoUri)
-    }
 
     fun setHomeData() {
         postRepository.setHomeData()
@@ -64,5 +64,23 @@ class MainViewModel(val context: Application) : AndroidViewModel(context) {
 
     fun setMypageData() {
         postRepository.setMypageData()
+    }
+
+    fun editUserInfo(userName: String, userImage: String) {
+        postRepository.editUserInfo(userName, userImage)
+    }
+
+    /**
+     * 投稿する
+     */
+    fun post(
+        postImage: String,
+        productName: String,
+        brandName: String,
+        productPrice: String,
+        productType: String,
+        postMsg: String
+    ) {
+        postRepository.post(postImage, productName, brandName, productPrice, productType, postMsg)
     }
 }

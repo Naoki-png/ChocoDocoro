@@ -8,11 +8,12 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
-import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import com.example.pien.MainViewModel
 import com.example.pien.R
 import com.example.pien.data.model.SignInMethod
+import com.example.pien.util.METHOD
 import com.example.pien.util.SIGNIN_METHOD
 import com.facebook.login.LoginManager
 import com.google.android.gms.auth.api.signin.GoogleSignIn
@@ -23,8 +24,6 @@ import com.google.firebase.auth.FirebaseUser
 import com.twitter.sdk.android.core.SessionManager
 import com.twitter.sdk.android.core.TwitterCore
 import com.twitter.sdk.android.core.TwitterSession
-import kotlinx.android.synthetic.main.fragment_list.view.*
-import kotlin.math.sign
 
 class ListFragment : Fragment() {
     private lateinit var logTag: String
@@ -64,7 +63,7 @@ class ListFragment : Fragment() {
         setHasOptionsMenu(true)
         val list = view.findViewById<RecyclerView>(R.id.home_list)
         list.adapter = homeListAdapter
-        list.layoutManager = LinearLayoutManager(requireContext())
+        list.layoutManager = StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL)
         mainViewModel.observeFields()
         mainViewModel.setHomeData()
         mainViewModel.posts.observe(requireActivity(), Observer { posts ->
@@ -81,8 +80,8 @@ class ListFragment : Fragment() {
         when(item.itemId) {
             R.id.logout -> {
                 val prefs = requireContext().getSharedPreferences(SIGNIN_METHOD, Context.MODE_PRIVATE)
-                val signInMethod = prefs.getString("method", "logout now")
-                prefs.edit().putString("method", "logout now")
+                val signInMethod = prefs.getString(METHOD, "logout now")
+                prefs.edit().putString(METHOD, "logout now")
                 when (SignInMethod.valueOf(signInMethod!!)) {
                     SignInMethod.GOOGLE -> googleSignOut()
                     SignInMethod.FACEBOOK -> facebookSignOut()
@@ -150,5 +149,6 @@ class ListFragment : Fragment() {
      */
     private fun emailSignOut() {
         auth.signOut()
+        findNavController().navigate(R.id.action_listFragment_to_loginFragment)
     }
 }

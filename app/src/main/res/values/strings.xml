@@ -29,6 +29,18 @@
 
 <!--    post fragment用-->
     <string name="post">post</string>
+    <string name="currency_unit">$</string>
+    <string name="chocolate_description">chocolate description....</string>
+    <string name="product_name">product name:</string>
+    <string name="brand_name">brand name:</string>
+    <string name="product_price">product price:</string>
+    <string name="chocolate_type">chocolate_type:</string>
+    <string-array name="chocolate_type_entries">
+        <item>milk</item>
+        <item>dark</item>
+        <item>high cacao</item>
+        <item>white</item>
+    </string-array>
 
 <!--    edit account fragment用-->
     <string name="save">save</string>

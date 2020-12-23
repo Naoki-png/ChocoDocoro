@@ -11,6 +11,7 @@ import android.view.ViewGroup
 import androidx.navigation.fragment.findNavController
 import com.example.pien.R
 import com.example.pien.data.model.SignInMethod
+import com.example.pien.util.METHOD
 import com.example.pien.util.REQUEST_SIGN_IN
 import com.example.pien.util.SIGNIN_METHOD
 import com.example.pien.util.makeToast
@@ -147,7 +148,7 @@ class LoginFragment : Fragment() {
         auth.signInWithCredential(credential)
             .addOnSuccessListener {
                 val prefs = requireContext().getSharedPreferences(SIGNIN_METHOD, Context.MODE_PRIVATE)
-                prefs.edit().putString("method", SignInMethod.GOOGLE.toString()).apply()
+                prefs.edit().putString(METHOD, SignInMethod.GOOGLE.name).apply()
                 findNavController().navigate(R.id.action_loginFragment_to_listFragment)
             }
             .addOnFailureListener {exception ->
@@ -165,7 +166,7 @@ class LoginFragment : Fragment() {
         auth.signInWithCredential(credential)
             .addOnSuccessListener {
                 val prefs = requireContext().getSharedPreferences(SIGNIN_METHOD, Context.MODE_PRIVATE)
-                prefs.edit().putString("method", SignInMethod.FACEBOOK.toString()).apply()
+                prefs.edit().putString(METHOD, SignInMethod.FACEBOOK.name).apply()
                 findNavController().navigate(R.id.action_loginFragment_to_listFragment)
             }
             .addOnFailureListener {exception ->
@@ -186,7 +187,7 @@ class LoginFragment : Fragment() {
         auth.signInWithCredential(credential)
             .addOnSuccessListener {
                 val prefs = requireContext().getSharedPreferences(SIGNIN_METHOD, Context.MODE_PRIVATE)
-                prefs.edit().putString("method", SignInMethod.TWITTER.toString()).apply()
+                prefs.edit().putString(METHOD, SignInMethod.TWITTER.name).apply()
                 findNavController().navigate(R.id.action_loginFragment_to_listFragment)
             }
             .addOnFailureListener { exception ->
@@ -205,7 +206,7 @@ class LoginFragment : Fragment() {
         auth.signInWithEmailAndPassword(email, password)
             .addOnSuccessListener {
                 val prefs = requireContext().getSharedPreferences(SIGNIN_METHOD, Context.MODE_PRIVATE)
-                prefs.edit().putString("method", SignInMethod.EMAIL.toString()).apply()
+                prefs.edit().putString(METHOD, SignInMethod.EMAIL.name).apply()
                 findNavController().navigate(R.id.action_loginFragment_to_listFragment)
             }
             .addOnFailureListener { exception ->
