@@ -17,6 +17,7 @@ import kotlinx.android.synthetic.main.fragment_edit_account.*
 import kotlinx.android.synthetic.main.fragment_edit_account.view.*
 import kotlinx.android.synthetic.main.fragment_my_page.view.*
 import kotlinx.android.synthetic.main.fragment_post.*
+import kotlinx.coroutines.runBlocking
 
 class EditAccountFragment : Fragment() {
 

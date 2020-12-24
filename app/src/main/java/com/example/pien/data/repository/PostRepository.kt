@@ -16,6 +16,7 @@ import com.google.firebase.auth.UserProfileChangeRequest
 import com.google.firebase.firestore.*
 import com.google.firebase.storage.FirebaseStorage
 import kotlinx.android.synthetic.main.fragment_post.view.*
+import kotlinx.coroutines.runBlocking
 import java.util.*
 import kotlin.collections.HashMap
 
@@ -54,7 +55,42 @@ class PostRepository {
         }
     }
 
-
+    /**
+     * 投稿する
+     */
+    fun post(
+        postImage: String,
+        productName: String,
+        brandName: String,
+        productPrice: String,
+        productType: String,
+        postMsg: String
+    ) {
+        currentUser = FirebaseAuth.getInstance().currentUser!!
+        val userId = currentUser?.uid
+        val userName = currentUser?.displayName.toString()
+        val userPhotoUri = currentUser?.photoUrl.toString()
+        val newPost = HashMap<String, Any>()
+        newPost.put(USERID, userId)
+        newPost.put(USERNAME, userName)
+        newPost.put(USERIMAGE, userPhotoUri)
+        newPost.put(POSTIMAGE, postImage)
+        newPost.put(PRODUCTNAME, productName)
+        newPost.put(BRANDNAME, brandName)
+        newPost.put(PRODUCTPRICE, productPrice)
+        newPost.put(PRODUCTTYPE, productType)
+        newPost.put(POSTMESSAGE, postMsg)
+        newPost.put(TIMESTAMP, FieldValue.serverTimestamp())
+        val document = postDatabaseRef.document()
+        document.set(newPost)
+            .addOnSuccessListener {
+                Log.d(logTag, "new post succeeded")
+                storeImage(document.id, Uri.parse(postImage))
+            }
+            .addOnFailureListener { exception ->
+                Log.e(logTag, "new post failed: ${exception.localizedMessage}")
+            }
+    }
 
     /**
      * storageに画像を保存する
@@ -164,70 +200,33 @@ class PostRepository {
         currentUser.updateProfile(changeRequest)
             .addOnSuccessListener {
                 Log.d(logTag, "updating profile is completed")
+
+                updateProfileInDB(userName, userImage)
             }
             .addOnFailureListener { exception ->
                 Log.e(logTag, "updating profile is failed: ${exception.localizedMessage}")
-            }
-
-        val updatingDocuments = mutableListOf<String>()
-        postDatabaseRef.whereEqualTo(USERID, currentUser.uid)
-            .addSnapshotListener { snapshot, exception ->
-                if (exception != null) {
-                    Log.e(logTag, "Couldn't get data for updating: ${exception.localizedMessage}")
-                }
-                if (snapshot != null) {
-                    for (document in snapshot) {
-                        updatingDocuments.add(document.id)
-                    }
-                }
-                updateProfileInDB(updatingDocuments, userName, userImage)
             }
     }
 
     /**
      * DB内のプロフィール情報を変更
      */
-    private fun updateProfileInDB(updatingDocumentIDs: List<String>, userName: String, userImage: String) {
-        for (documentId in updatingDocumentIDs) {
-            postDatabaseRef.document(documentId)
-                .update(USERNAME, userName, USERIMAGE, userImage)
-                .addOnFailureListener { exception ->
-                    Log.e(logTag, "Couldn't update profile data in DB: ${exception.localizedMessage}")
+    private fun updateProfileInDB(userName: String, userImage: String) {
+        postDatabaseRef.whereEqualTo(USERID, currentUser.uid)
+            .addSnapshotListener { snapshot, exception ->
+                if (exception != null) {
+                    Log.e(logTag, "Couldn't get data for updating: ${exception.localizedMessage}")
                 }
-        }
-    }
 
-    fun post(
-        postImage: String,
-        productName: String,
-        brandName: String,
-        productPrice: String,
-        productType: String,
-        postMsg: String
-    ) {
-        currentUser = FirebaseAuth.getInstance().currentUser!!
-        val userId = currentUser?.uid
-        val userName = currentUser?.displayName.toString()
-        val userPhotoUri = currentUser?.photoUrl.toString()
-        val newPost = HashMap<String, Any>()
-        newPost.put(USERID, userId)
-        newPost.put(USERNAME, userName)
-        newPost.put(USERIMAGE, userPhotoUri)
-        newPost.put(POSTIMAGE, postImage)
-        newPost.put(PRODUCTNAME, productName)
-        newPost.put(BRANDNAME, brandName)
-        newPost.put(PRODUCTPRICE, productPrice)
-        newPost.put(PRODUCTTYPE, productType)
-        newPost.put(POSTMESSAGE, postMsg)
-        newPost.put(TIMESTAMP, FieldValue.serverTimestamp())
-        val document = postDatabaseRef.document()
-        document.set(newPost)
-            .addOnSuccessListener {
-                Log.d(logTag, "new post succeeded")
-                storeImage(document.id, Uri.parse(postImage))
-            }
-            .addOnFailureListener { exception ->
-                Log.e(logTag, "new post failed: ${exception.localizedMessage}")
+                if (snapshot != null) {
+                    for (document in snapshot) {
+                        postDatabaseRef.document(document.id)
+                            .update(USERNAME, userName, USERIMAGE, userImage)
+                            .addOnFailureListener { exception ->
+                                Log.e(logTag, "Couldn't update profile data in DB: ${exception.localizedMessage}")
+                            }
+                    }
+                }
             }
     }
 }

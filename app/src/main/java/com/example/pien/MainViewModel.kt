@@ -10,6 +10,7 @@ import com.example.pien.data.model.Post
 import com.example.pien.data.repository.PostRepository
 import com.example.pien.util.REQUEST_GET_POST_IMAGE
 import com.example.pien.util.REQUEST_GET_USER_IMAGE
+import kotlinx.coroutines.runBlocking
 import java.util.*
 
 class MainViewModel(val context: Application) : AndroidViewModel(context) {
@@ -55,8 +56,6 @@ class MainViewModel(val context: Application) : AndroidViewModel(context) {
             }
         })
     }
-
-
 
     fun setHomeData() {
         postRepository.setHomeData()
