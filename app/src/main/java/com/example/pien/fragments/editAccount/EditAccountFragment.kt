@@ -6,6 +6,7 @@ import android.view.*
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
+import androidx.lifecycle.viewModelScope
 import androidx.navigation.fragment.findNavController
 import com.bumptech.glide.Glide
 import com.example.pien.MainViewModel
@@ -17,6 +18,7 @@ import kotlinx.android.synthetic.main.fragment_edit_account.*
 import kotlinx.android.synthetic.main.fragment_edit_account.view.*
 import kotlinx.android.synthetic.main.fragment_my_page.view.*
 import kotlinx.android.synthetic.main.fragment_post.*
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 
 class EditAccountFragment : Fragment() {

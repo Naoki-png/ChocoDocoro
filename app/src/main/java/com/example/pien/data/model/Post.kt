@@ -5,14 +5,15 @@ import com.google.firebase.firestore.ServerTimestamp
 import java.util.*
 
 data class Post(
-    val userId: String,
-    val userName: String,
-    val userPhotoUri: String,
-    val postPhotoUri: String,
-    val chocolateName: String,
-    val chocolateBrand: String,
-    val chocolatePrice: String,
-    val chocolateType: String,
-    val chocolateDescription: String,
-    val timestamp: Date
+    val userId: String? = null,
+    val userName: String? = null,
+    val userImage: String? = null,
+    val postImage: String? = null,
+    val productName: String? = null,
+    val brandName: String? = null,
+    val productPrice: String? = null,
+    val productType: String? = null,
+    val postMessage: String? = null,
+    @ServerTimestamp
+    val timeStamp: Date? = null
 )

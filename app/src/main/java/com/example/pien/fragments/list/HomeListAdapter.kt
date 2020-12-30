@@ -35,13 +35,13 @@ class HomeListAdapter: RecyclerView.Adapter<HomeListAdapter.HomeListViewHolder>(
 
     override fun onBindViewHolder(holder: HomeListViewHolder, position: Int) {
         holder.userName.text = homeListData[position].userName
-        if ("null" == homeListData[position].userPhotoUri) {
+        if ("null" == homeListData[position].userImage) {
             holder.userImage.setImageResource(R.drawable.ic_baseline_account_circle_24)
         } else {
-            Glide.with(appContext).load(homeListData[position].userPhotoUri).into(holder.userImage)
+            Glide.with(appContext).load(homeListData[position].userImage).into(holder.userImage)
         }
-        Glide.with(appContext).load(homeListData[position].postPhotoUri).into(holder.postImage)
-        holder.brandName.text = homeListData[position].chocolateBrand
+        Glide.with(appContext).load(homeListData[position].postImage).into(holder.postImage)
+        holder.brandName.text = homeListData[position].brandName
     }
 
     override fun getItemCount() = homeListData.size

@@ -10,14 +10,21 @@ import androidx.navigation.fragment.findNavController
 import com.bumptech.glide.Glide
 import com.example.pien.MainViewModel
 import com.example.pien.R
+import com.example.pien.data.model.Post
 import com.example.pien.util.*
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseUser
+import com.google.firebase.firestore.FieldValue
 import kotlinx.android.synthetic.main.fragment_post.*
 import kotlinx.android.synthetic.main.fragment_post.view.*
+import java.util.*
 
 class PostFragment : Fragment() {
     private lateinit var logTag: String
-    private var currentDisplayPhotoUri: String = ""
+    private val currentUser: FirebaseUser by lazy { FirebaseAuth.getInstance().currentUser!! }
     private val mainViewModel: MainViewModel by activityViewModels()
+
+    private var currentDisplayPhotoUri: String = ""
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -70,14 +77,19 @@ class PostFragment : Fragment() {
         if (item.itemId == R.id.post) {
 
             if (validateInput(requireView())) {
-                mainViewModel.post(
-                    currentDisplayPhotoUri,
-                    product_name_et.text.toString(),
-                    brand_name_et.text.toString(),
-                    product_price_et.text.toString(),
-                    chocolate_type_spinner.selectedItem.toString(),
-                    postMessage.text.toString()
-                )
+                mainViewModel.addPost(Post(
+                    userId = currentUser.uid,
+                    userName = currentUser.displayName,
+                    userImage = currentUser.photoUrl.toString(),
+                    postImage = currentDisplayPhotoUri,
+                    productName = product_name_et.text.toString(),
+                    brandName = brand_name_et.text.toString(),
+                    productPrice = product_price_et.text.toString(),
+                    productType = chocolate_type_spinner.selectedItem.toString(),
+                    postMessage = postMessage.text.toString(),
+                    timeStamp = Date()
+                ))
+
                 hideKeyboard(requireActivity())
                 findNavController().navigate(R.id.listFragment)
             } else {
@@ -103,6 +115,4 @@ class PostFragment : Fragment() {
         }
         return true
     }
-
-
 }
