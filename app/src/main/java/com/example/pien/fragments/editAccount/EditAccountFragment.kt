@@ -2,6 +2,7 @@ package com.example.pien.fragments.editAccount
 
 import android.content.Intent
 import android.os.Bundle
+import android.text.TextUtils
 import android.view.*
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
@@ -10,8 +11,10 @@ import androidx.lifecycle.viewModelScope
 import androidx.navigation.fragment.findNavController
 import com.bumptech.glide.Glide
 import com.example.pien.MainViewModel
+import com.example.pien.MyApplication
 import com.example.pien.R
 import com.example.pien.util.REQUEST_GET_USER_IMAGE
+import com.example.pien.util.makeToast
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import kotlinx.android.synthetic.main.fragment_edit_account.*
@@ -42,10 +45,11 @@ class EditAccountFragment : Fragment() {
         setHasOptionsMenu(true)
         val view = inflater.inflate(R.layout.fragment_edit_account, container, false)
         view.editUserName.setText(currentUser.displayName)
-        if ("null" == currentUser.photoUrl.toString()) {
+        if (currentUser.photoUrl == null) {
             view.editUserImage.setImageResource(R.drawable.ic_baseline_account_circle_24)
         } else {
             Glide.with(this).load(currentUser.photoUrl).into(view.editUserImage)
+            currentDisplayPhotoUri = currentUser.photoUrl.toString()
         }
         view.editUserImage.setOnClickListener {
             val intent = Intent(Intent.ACTION_OPEN_DOCUMENT).apply {
@@ -60,11 +64,9 @@ class EditAccountFragment : Fragment() {
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         val uri = mainViewModel.getImageUriFromDevice(requestCode, resultCode, data)
-        if (uri != null) {
+        uri?.let { uri ->
             Glide.with(this).load(uri).into(editUserImage)
-            uri?.let { uri ->
-                currentDisplayPhotoUri = uri
-            }
+            currentDisplayPhotoUri = uri
         }
     }
 
@@ -74,8 +76,12 @@ class EditAccountFragment : Fragment() {
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         if (item.itemId == R.id.save) {
-            mainViewModel.editUserInfo(requireView().editUserName.text.toString(), currentDisplayPhotoUri)
-            findNavController().navigate(R.id.action_editAccountFragment_to_myPageFragment)
+            if (!TextUtils.isEmpty(editUserName.text)) {
+                mainViewModel.editUserInfo(editUserName.text.toString(), currentDisplayPhotoUri)
+                findNavController().navigate(R.id.action_editAccountFragment_to_myPageFragment)
+            } else {
+                makeToast(MyApplication.appContext, "user name can't be empty")
+            }
         }
         return super.onOptionsItemSelected(item)
     }

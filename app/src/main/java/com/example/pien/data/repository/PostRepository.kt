@@ -3,6 +3,7 @@ package com.example.pien.data.repository
 import android.app.Activity
 import android.content.Intent
 import android.net.Uri
+import android.text.TextUtils
 import android.util.Log
 import com.example.pien.data.model.Post
 import com.example.pien.data.model.State
@@ -17,12 +18,14 @@ import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.tasks.await
+import java.util.*
 
 
 class PostRepository {
     private val logTag = javaClass.name
     private val currentUser: FirebaseUser by lazy { FirebaseAuth.getInstance().currentUser!! }
     private val postDatabaseRef = FirebaseFirestore.getInstance().collection(POST_REF)
+    private val storageRef = FirebaseStorage.getInstance().getReference(currentUser.uid)
 
     var postImageUriFromDevice: String? = null
     var userImageUriFromDevice: String? = null
@@ -54,41 +57,45 @@ class PostRepository {
     /**
      * ユーザープロフィール変更
      */
-    fun editUserInfo(userName: String, userImage: String) {
+    fun editUserInfo(userName: String, userImage: String) = flow<State<List<Post>>> {
+        emit(State.loading())
+
+        updateProfileInDB(userName, userImage)
+        val snapshot = postDatabaseRef
+            .whereEqualTo(USERID, currentUser.uid)
+            .orderBy(TIMESTAMP, Query.Direction.DESCENDING)
+            .get()
+            .await()
+        val posts: List<Post> = snapshot.toObjects(Post::class.java)
+
         val changeRequest = UserProfileChangeRequest.Builder()
             .setDisplayName(userName)
-            .setPhotoUri(Uri.parse(userImage))
+            .setPhotoUri(Uri.parse(posts[0].userImage))
             .build()
-        currentUser.updateProfile(changeRequest)
-            .addOnSuccessListener {
-                Log.d(logTag, "updating profile is completed")
-                updateProfileInDB(userName, userImage)
-            }
-            .addOnFailureListener { exception ->
-                Log.e(logTag, "updating profile is failed: ${exception.localizedMessage}")
-            }
-    }
+        currentUser.updateProfile(changeRequest).await()
+
+        emit(State.success(posts))
+
+    }.catch { exception ->
+        emit(State.failed(exception.message.toString()))
+    }.flowOn(Dispatchers.IO)
 
     /**
      * DB内のプロフィール情報を変更
      */
-    private fun updateProfileInDB(userName: String, userImage: String) {
-        postDatabaseRef.whereEqualTo(USERID, currentUser.uid)
-            .addSnapshotListener { snapshot, exception ->
-                if (exception != null) {
-                    Log.e(logTag, "Couldn't get data for updating: ${exception.localizedMessage}")
-                }
+    private suspend fun updateProfileInDB(userName: String, userImage: String) {
+        //new storage file
+        val userImageStorageRef = storageRef.child("userImage").child(Date().toString())
+        userImageStorageRef.putFile(Uri.parse(userImage)).await()
 
-                if (snapshot != null) {
-                    for (document in snapshot) {
-                        postDatabaseRef.document(document.id)
-                            .update(USERNAME, userName, USERIMAGE, userImage)
-                            .addOnFailureListener { exception ->
-                                Log.e(logTag, "Couldn't update profile data in DB: ${exception.localizedMessage}")
-                            }
-                    }
-                }
-            }
+        //更新対象ドキュメントの取得
+        val snapshot = postDatabaseRef.whereEqualTo(USERID, currentUser.uid).get().await()
+
+        //ドキュメントの更新
+        val downloadUrl: Uri = userImageStorageRef.downloadUrl.await()
+        for (document in snapshot) {
+            postDatabaseRef.document(document.id).update(USERNAME, userName, USERIMAGE, downloadUrl.toString()).await()
+        }
     }
 
     /**

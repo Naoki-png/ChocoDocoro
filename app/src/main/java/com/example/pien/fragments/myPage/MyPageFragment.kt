@@ -7,6 +7,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.activityViewModels
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -43,8 +44,15 @@ class MyPageFragment : Fragment() {
             view.profile_Image.setImageResource(R.drawable.ic_baseline_account_circle_24)
         } else {
             Glide.with(this).load(currentUser.photoUrl).into(view.profile_Image)
+            mainViewModel.userProfileImage.observe(requireActivity(), Observer {
+                Glide.with(this).load(currentUser.photoUrl).into(view.profile_Image)
+            })
         }
         view.profile_name.text = currentUser.displayName
+        mainViewModel.userProfileName.observe(requireActivity(), Observer {
+            view.profile_name.text = currentUser.displayName
+        })
+
         val list = view.mypage_list
         list.adapter = listAdapter
         list.layoutManager = LinearLayoutManager(requireContext())
@@ -52,6 +60,7 @@ class MyPageFragment : Fragment() {
         mainViewModel.myPosts.observe(requireActivity(), Observer { posts ->
             listAdapter.setHomeData(posts)
         })
+
         view.edit_prof_btn.setOnClickListener {
             findNavController().navigate(R.id.action_myPageFragment_to_editAccountFragment)
         }

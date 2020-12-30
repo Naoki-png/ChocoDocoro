@@ -12,11 +12,6 @@ const val USERID = "userId"
 const val USERNAME = "userName"
 const val USERIMAGE = "userImage"
 const val POSTIMAGE = "postImage"
-const val PRODUCTNAME = "productName"
-const val BRANDNAME = "brandName"
-const val PRODUCTPRICE = "productPrice"
-const val PRODUCTTYPE = "productType"
-const val POSTMESSAGE = "postMessage"
 const val TIMESTAMP = "timeStamp"
 
 //request code

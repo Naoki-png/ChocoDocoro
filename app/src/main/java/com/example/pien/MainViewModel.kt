@@ -17,6 +17,8 @@ import kotlinx.coroutines.launch
 class MainViewModel(val app: Application) : AndroidViewModel(app) {
     var posts = MutableLiveData<List<Post>>()
     var myPosts = MutableLiveData<List<Post>>()
+    var userProfileName = MutableLiveData<String>()
+    var userProfileImage = MutableLiveData<String>()
     private val postRepository = PostRepository()
 
     /**
@@ -35,7 +37,23 @@ class MainViewModel(val app: Application) : AndroidViewModel(app) {
      * ユーザープロフィール変更
      */
     fun editUserInfo(userName: String, userImage: String) {
-        postRepository.editUserInfo(userName, userImage)
+        viewModelScope.launch {
+            postRepository.editUserInfo(userName, userImage).collect { state ->
+                when (state) {
+                    is State.Loading -> {
+                        // load中に表示用のデータ処理
+                    }
+                    is State.Success -> {
+                        myPosts.value = state.data
+                        userProfileName.value = state.data[0].userName
+                        userProfileImage.value = state.data[0].userImage
+                    }
+                    is State.Failed -> {
+                        // error時に表示用のデータ処理
+                    }
+                }
+            }
+        }
     }
 
     /**
