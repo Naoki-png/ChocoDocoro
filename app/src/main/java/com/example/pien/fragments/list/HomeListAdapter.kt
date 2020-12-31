@@ -1,7 +1,5 @@
 package com.example.pien.fragments.list
 
-import android.text.TextUtils
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -12,36 +10,36 @@ import com.bumptech.glide.Glide
 import com.example.pien.MyApplication
 import com.example.pien.R
 import com.example.pien.data.model.Post
-import com.google.firebase.auth.FirebaseAuth
+import com.example.pien.databinding.PostRowBinding
 
 class HomeListAdapter: RecyclerView.Adapter<HomeListAdapter.HomeListViewHolder>() {
     private val appContext = MyApplication.appContext
-    /**
-     * Home画面に表示するデータリスト
-     */
     private var homeListData = emptyList<Post>()
 
-    class HomeListViewHolder(val view: View) : RecyclerView.ViewHolder(view) {
-        val userName = view.findViewById<TextView>(R.id.user_name)
-        val userImage = view.findViewById<ImageView>(R.id.user_image)
-        val postImage = view.findViewById<ImageView>(R.id.post_image)
-        val brandName = view.findViewById<TextView>(R.id.maker_name)
+    class HomeListViewHolder(private val binding: PostRowBinding) : RecyclerView.ViewHolder(binding.root) {
+        val userImage = binding.rowUserImage
+        val postImage = binding.rowProductImage
+
+        fun bind(post: Post) {
+            binding.post = post
+            binding.executePendingBindings()
+        }
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): HomeListViewHolder {
-        val view = LayoutInflater.from(parent.context).inflate(R.layout.post_card, parent, false)
-        return HomeListViewHolder(view)
+        val layoutInflater = LayoutInflater.from(parent.context)
+        val binding = PostRowBinding.inflate(layoutInflater, parent, false)
+        return HomeListViewHolder(binding)
     }
 
     override fun onBindViewHolder(holder: HomeListViewHolder, position: Int) {
-        holder.userName.text = homeListData[position].userName
+        holder.bind(homeListData[position])
         if ("null" == homeListData[position].userImage) {
             holder.userImage.setImageResource(R.drawable.ic_baseline_account_circle_24)
         } else {
             Glide.with(appContext).load(homeListData[position].userImage).into(holder.userImage)
         }
         Glide.with(appContext).load(homeListData[position].postImage).into(holder.postImage)
-        holder.brandName.text = homeListData[position].brandName
     }
 
     override fun getItemCount() = homeListData.size

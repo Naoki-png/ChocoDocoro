@@ -8,7 +8,7 @@
     tools:context=".fragments.login.LoginFragment">
 
     <com.google.android.gms.common.SignInButton
-        android:id="@+id/google_login_btn"
+        android:id="@+id/login_google_login_btn"
         android:layout_width="200dp"
         android:layout_height="wrap_content"
         app:layout_constraintEnd_toEndOf="parent"
@@ -16,17 +16,17 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <com.facebook.login.widget.LoginButton
-        android:id="@+id/facebook_login_btn"
+        android:id="@+id/login_facebook_login_btn"
         android:layout_width="200dp"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
         android:layout_marginTop="16dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/google_login_btn" />
+        app:layout_constraintTop_toBottomOf="@+id/login_google_login_btn" />
 
     <com.twitter.sdk.android.core.identity.TwitterLoginButton
-        android:id="@+id/twitter_login_btn"
+        android:id="@+id/login_twitter_login_btn"
         android:layout_width="200dp"
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
@@ -34,10 +34,10 @@
         android:layout_marginTop="16dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/facebook_login_btn" />
+        app:layout_constraintTop_toBottomOf="@+id/login_facebook_login_btn" />
 
     <Button
-        android:id="@+id/createUser_btn"
+        android:id="@+id/login_createUser_btn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/create_user"
@@ -71,18 +71,18 @@
         app:layout_constraintStart_toStartOf="parent" />
 
     <TextView
-        android:id="@+id/createUser_tv"
+        android:id="@+id/login_createUser"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="8dp"
         android:text="@string/otherwise_create_a_new_account"
-        app:layout_constraintBottom_toTopOf="@+id/createUser_btn"
+        app:layout_constraintBottom_toTopOf="@+id/login_createUser_btn"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.423"
         app:layout_constraintStart_toStartOf="parent" />
 
     <TextView
-        android:id="@+id/emailLogin_tv"
+        android:id="@+id/login_emailLogin"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="8dp"
@@ -97,7 +97,7 @@
         android:layout_height="wrap_content"
         android:layout_marginBottom="32dp"
         android:text="@string/login"
-        app:layout_constraintBottom_toTopOf="@+id/createUser_tv"
+        app:layout_constraintBottom_toTopOf="@+id/login_createUser"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 

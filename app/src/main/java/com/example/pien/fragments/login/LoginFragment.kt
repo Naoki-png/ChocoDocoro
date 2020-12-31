@@ -62,14 +62,14 @@ class LoginFragment : Fragment() {
     ): View? {
         val view = inflater.inflate(R.layout.fragment_login, container, false)
 
-        view.google_login_btn.setOnClickListener {
+        view.login_google_login_btn.setOnClickListener {
             googleSignIn()
         }
 
-        view.facebook_login_btn.setReadPermissions("email", "public_profile")
+        view.login_facebook_login_btn.setReadPermissions("email", "public_profile")
         //fragment内で使う場合
-        view.facebook_login_btn.fragment = this
-        view.facebook_login_btn.registerCallback(mCallbackManager, object :
+        view.login_facebook_login_btn.fragment = this
+        view.login_facebook_login_btn.registerCallback(mCallbackManager, object :
             FacebookCallback<LoginResult> {
             override fun onSuccess(loginResult: LoginResult) {
                 Log.d("Facebook Login", "facebook:onSuccess:$loginResult")
@@ -83,7 +83,7 @@ class LoginFragment : Fragment() {
             }
         })
 
-        twitterLoginBtn = view.twitter_login_btn
+        twitterLoginBtn = view.login_twitter_login_btn
         twitterLoginBtn.callback = object : Callback<TwitterSession>() {
             override fun success(result: Result<TwitterSession>?) {
                 Log.d("Twitter Login", "twitter:onSuccess")
@@ -100,7 +100,7 @@ class LoginFragment : Fragment() {
             loginWithEmailAndPassword()
         }
 
-        view.createUser_btn.setOnClickListener {
+        view.login_createUser_btn.setOnClickListener {
             findNavController().navigate(R.id.action_loginFragment_to_createUserFragment)
         }
 

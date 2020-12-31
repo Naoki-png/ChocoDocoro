@@ -14,6 +14,9 @@
             app:destination="@id/loginFragment"
             app:enterAnim="@anim/slide_from_left"
             app:exitAnim="@anim/slide_to_right" />
+        <action
+            android:id="@+id/action_listFragment_to_detailFragment"
+            app:destination="@id/detailFragment" />
     </fragment>
     <fragment
         android:id="@+id/loginFragment"
@@ -61,6 +64,9 @@
             app:exitAnim="@anim/slide_to_left"
             app:popEnterAnim="@anim/slide_from_left"
             app:popExitAnim="@anim/slide_to_right" />
+        <action
+            android:id="@+id/action_myPageFragment_to_detailFragment"
+            app:destination="@id/detailFragment" />
     </fragment>
     <fragment
         android:id="@+id/editAccountFragment"
@@ -72,5 +78,14 @@
             app:destination="@id/myPageFragment"
             app:enterAnim="@anim/slide_from_left"
             app:exitAnim="@anim/slide_to_right" />
+    </fragment>
+    <fragment
+        android:id="@+id/detailFragment"
+        android:name="com.example.pien.fragments.detail.DetailFragment"
+        android:label="fragment_detail"
+        tools:layout="@layout/fragment_detail" >
+        <argument
+            android:name="post"
+            app:argType="com.example.pien.data.model.Post" />
     </fragment>
 </navigation>

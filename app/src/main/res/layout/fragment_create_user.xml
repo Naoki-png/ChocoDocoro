@@ -9,63 +9,63 @@
 
 
     <EditText
-        android:id="@+id/userName_et"
+        android:id="@+id/createUser_userName_et"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:background="@drawable/custom_input"
         android:ems="10"
         android:hint="@string/enter_user_name"
         android:inputType="textPersonName"
-        app:layout_constraintBottom_toTopOf="@+id/email_et"
+        app:layout_constraintBottom_toTopOf="@+id/createUser_email_et"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <EditText
-        android:id="@+id/email_et"
+        android:id="@+id/createUser_email_et"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:background="@drawable/custom_input"
         android:ems="10"
         android:hint="@string/enter_email"
         android:inputType="textEmailAddress"
-        app:layout_constraintBottom_toTopOf="@+id/password_et"
+        app:layout_constraintBottom_toTopOf="@+id/createUser_password_et"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/userName_et" />
+        app:layout_constraintTop_toBottomOf="@+id/createUser_userName_et" />
 
     <EditText
-        android:id="@+id/password_et"
+        android:id="@+id/createUser_password_et"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:background="@drawable/custom_input"
         android:ems="10"
         android:hint="@string/enter_password"
         android:inputType="textPassword"
-        app:layout_constraintBottom_toTopOf="@+id/checkPassword_et"
+        app:layout_constraintBottom_toTopOf="@+id/createUser_checkPassword_et"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/email_et" />
+        app:layout_constraintTop_toBottomOf="@+id/createUser_email_et" />
 
     <EditText
-        android:id="@+id/checkPassword_et"
+        android:id="@+id/createUser_checkPassword_et"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:background="@drawable/custom_input"
         android:ems="10"
         android:hint="@string/enter_password_again"
         android:inputType="textPassword"
-        app:layout_constraintBottom_toTopOf="@+id/register_btn"
+        app:layout_constraintBottom_toTopOf="@+id/createUser_register_btn"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/password_et" />
+        app:layout_constraintTop_toBottomOf="@+id/createUser_password_et" />
 
     <Button
-        android:id="@+id/register_btn"
+        android:id="@+id/createUser_register_btn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="16dp"

@@ -33,8 +33,8 @@ class CreateUserFragment : Fragment() {
         // Inflate the layout for this fragment
         val view = inflater.inflate(R.layout.fragment_create_user, container, false)
 
-        view.register_btn.setOnClickListener {
-            if (password_et.text.toString() == checkPassword_et.text.toString()) {
+        view.createUser_register_btn.setOnClickListener {
+            if (createUser_password_et.text.toString() == createUser_checkPassword_et.text.toString()) {
                 registerNewUser()
             } else {
                 makeToast(requireContext(), getString(R.string.checkPassword))
@@ -47,9 +47,9 @@ class CreateUserFragment : Fragment() {
      * アカウント作成メソッド
      */
     private fun registerNewUser() {
-        val userName = userName_et.text.toString()
-        val userEmail = email_et.text.toString()
-        val userPassword = password_et.text.toString()
+        val userName = createUser_userName_et.text.toString()
+        val userEmail = createUser_email_et.text.toString()
+        val userPassword = createUser_password_et.text.toString()
 
         auth.createUserWithEmailAndPassword(userEmail, userPassword)
             .addOnSuccessListener { result ->

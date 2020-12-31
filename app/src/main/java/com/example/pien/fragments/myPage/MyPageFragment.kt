@@ -41,16 +41,16 @@ class MyPageFragment : Fragment() {
     ): View? {
         val view = inflater.inflate(R.layout.fragment_my_page, container, false)
         if ("null" == currentUser.photoUrl.toString()) {
-            view.profile_Image.setImageResource(R.drawable.ic_baseline_account_circle_24)
+            view.mypage_userImage.setImageResource(R.drawable.ic_baseline_account_circle_24)
         } else {
-            Glide.with(this).load(currentUser.photoUrl).into(view.profile_Image)
+            Glide.with(this).load(currentUser.photoUrl).into(view.mypage_userImage)
             mainViewModel.userProfileImage.observe(requireActivity(), Observer {
-                Glide.with(this).load(currentUser.photoUrl).into(view.profile_Image)
+                Glide.with(this).load(currentUser.photoUrl).into(view.mypage_userImage)
             })
         }
-        view.profile_name.text = currentUser.displayName
+        view.mypage_userName.text = currentUser.displayName
         mainViewModel.userProfileName.observe(requireActivity(), Observer {
-            view.profile_name.text = currentUser.displayName
+            view.mypage_userName.text = currentUser.displayName
         })
 
         val list = view.mypage_list
@@ -61,7 +61,7 @@ class MyPageFragment : Fragment() {
             listAdapter.setHomeData(posts)
         })
 
-        view.edit_prof_btn.setOnClickListener {
+        view.mypage_edit_btn.setOnClickListener {
             findNavController().navigate(R.id.action_myPageFragment_to_editAccountFragment)
         }
         return view

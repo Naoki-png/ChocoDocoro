@@ -44,14 +44,14 @@ class EditAccountFragment : Fragment() {
     ): View? {
         setHasOptionsMenu(true)
         val view = inflater.inflate(R.layout.fragment_edit_account, container, false)
-        view.editUserName.setText(currentUser.displayName)
+        view.edit_userName.setText(currentUser.displayName)
         if (currentUser.photoUrl == null) {
-            view.editUserImage.setImageResource(R.drawable.ic_baseline_account_circle_24)
+            view.edit_userImage.setImageResource(R.drawable.ic_baseline_account_circle_24)
         } else {
-            Glide.with(this).load(currentUser.photoUrl).into(view.editUserImage)
+            Glide.with(this).load(currentUser.photoUrl).into(view.edit_userImage)
             currentDisplayPhotoUri = currentUser.photoUrl.toString()
         }
-        view.editUserImage.setOnClickListener {
+        view.edit_userImage.setOnClickListener {
             val intent = Intent(Intent.ACTION_OPEN_DOCUMENT).apply {
                 addCategory(Intent.CATEGORY_OPENABLE)
                 type = "image/*"
@@ -65,7 +65,7 @@ class EditAccountFragment : Fragment() {
         super.onActivityResult(requestCode, resultCode, data)
         val uri = mainViewModel.getImageUriFromDevice(requestCode, resultCode, data)
         uri?.let { uri ->
-            Glide.with(this).load(uri).into(editUserImage)
+            Glide.with(this).load(uri).into(edit_userImage)
             currentDisplayPhotoUri = uri
         }
     }
@@ -76,8 +76,8 @@ class EditAccountFragment : Fragment() {
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         if (item.itemId == R.id.save) {
-            if (!TextUtils.isEmpty(editUserName.text)) {
-                mainViewModel.editUserInfo(editUserName.text.toString(), currentDisplayPhotoUri)
+            if (!TextUtils.isEmpty(edit_userName.text)) {
+                mainViewModel.editUserInfo(edit_userName.text.toString(), currentDisplayPhotoUri)
                 findNavController().navigate(R.id.action_editAccountFragment_to_myPageFragment)
             } else {
                 makeToast(MyApplication.appContext, "user name can't be empty")

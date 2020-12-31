@@ -14,7 +14,7 @@
         tools:context=".fragments.post.PostFragment">
 
         <ImageView
-            android:id="@+id/postImage"
+            android:id="@+id/post_product_image"
             android:layout_width="300dp"
             android:layout_height="200dp"
             android:visibility="gone"
@@ -25,10 +25,10 @@
             tools:srcCompat="@tools:sample/avatars" />
 
         <EditText
-            android:id="@+id/postMessage"
+            android:id="@+id/post_product_description"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
+            android:layout_marginTop="8dp"
             android:background="@drawable/custom_input"
             android:ems="10"
             android:gravity="start|top"
@@ -39,10 +39,10 @@
             android:padding="5dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/chocolate_type" />
+            app:layout_constraintTop_toBottomOf="@+id/post_product_type_spinner" />
 
         <ImageView
-            android:id="@+id/addPhoto_btn"
+            android:id="@+id/post_add_photo_btn"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
@@ -61,12 +61,12 @@
             android:layout_height="wrap_content"
             android:background="@drawable/touch_feedback_highlightoff"
             android:visibility="gone"
-            app:layout_constraintStart_toEndOf="@+id/postImage"
-            app:layout_constraintTop_toTopOf="@+id/postImage"
+            app:layout_constraintStart_toEndOf="@+id/post_product_image"
+            app:layout_constraintTop_toTopOf="@+id/post_product_image"
             app:srcCompat="@drawable/ic_baseline_highlight_off_24" />
 
         <TextView
-            android:id="@+id/product_name"
+            android:id="@+id/post_product_name"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
@@ -76,82 +76,82 @@
             app:layout_constraintTop_toBottomOf="@+id/guideline" />
 
         <TextView
-            android:id="@+id/brand_name"
+            android:id="@+id/post_brand_name"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
             android:text="@string/brand_name"
             android:textSize="14sp"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/product_name" />
+            app:layout_constraintTop_toBottomOf="@+id/post_product_name" />
 
         <TextView
-            android:id="@+id/product_price"
+            android:id="@+id/post_product_price"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
             android:text="@string/product_price"
             android:textSize="14sp"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/brand_name" />
+            app:layout_constraintTop_toBottomOf="@+id/post_brand_name" />
 
         <EditText
-            android:id="@+id/product_name_et"
+            android:id="@+id/post_product_name_et"
             android:layout_width="wrap_content"
             android:layout_height="0dp"
             android:background="@drawable/custom_input"
             android:ems="10"
             android:inputType="textPersonName"
-            app:layout_constraintBaseline_toBaselineOf="@+id/product_name"
+            app:layout_constraintBaseline_toBaselineOf="@+id/post_product_name"
             app:layout_constraintEnd_toEndOf="parent" />
 
         <EditText
-            android:id="@+id/brand_name_et"
+            android:id="@+id/post_brand_name_et"
             android:layout_width="wrap_content"
             android:layout_height="0dp"
             android:background="@drawable/custom_input"
             android:ems="10"
             android:inputType="textPersonName"
-            app:layout_constraintBaseline_toBaselineOf="@+id/brand_name"
+            app:layout_constraintBaseline_toBaselineOf="@+id/post_brand_name"
             app:layout_constraintEnd_toEndOf="parent" />
 
         <EditText
-            android:id="@+id/product_price_et"
+            android:id="@+id/post_product_price_et"
             android:layout_width="wrap_content"
             android:layout_height="0dp"
             android:background="@drawable/custom_input"
             android:ems="10"
             android:inputType="number"
-            app:layout_constraintBaseline_toBaselineOf="@+id/currency_unit"
+            app:layout_constraintBaseline_toBaselineOf="@+id/post_currency_unit"
             app:layout_constraintEnd_toEndOf="parent" />
 
         <TextView
-            android:id="@+id/currency_unit"
+            android:id="@+id/post_currency_unit"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginEnd="8dp"
             android:text="@string/currency_unit"
-            app:layout_constraintBaseline_toBaselineOf="@+id/product_price"
-            app:layout_constraintEnd_toStartOf="@+id/product_price_et" />
+            app:layout_constraintBaseline_toBaselineOf="@+id/post_product_price"
+            app:layout_constraintEnd_toStartOf="@+id/post_product_price_et" />
 
         <Spinner
-            android:id="@+id/chocolate_type_spinner"
+            android:id="@+id/post_product_type_spinner"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:entries="@array/chocolate_type_entries"
-            app:layout_constraintBottom_toBottomOf="@+id/chocolate_type"
+            app:layout_constraintBottom_toBottomOf="@+id/post_product_type"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="@+id/product_price_et"
-            app:layout_constraintTop_toTopOf="@+id/chocolate_type" />
+            app:layout_constraintStart_toStartOf="@+id/post_product_price_et"
+            app:layout_constraintTop_toTopOf="@+id/post_product_type" />
 
         <TextView
-            android:id="@+id/chocolate_type"
+            android:id="@+id/post_product_type"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
             android:text="@string/chocolate_type"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/product_price" />
+            app:layout_constraintTop_toBottomOf="@+id/post_product_price" />
 
         <androidx.constraintlayout.widget.Guideline
             android:id="@+id/guideline"

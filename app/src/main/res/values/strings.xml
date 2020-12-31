@@ -2,12 +2,12 @@
     <string name="app_name">PIEN</string>
     <string name="action_settings">Settings</string>
 
-<!--    main activity用-->
+    <!--    main activity用-->
     <string name="home">home</string>
     <string name="new_post">new post</string>
     <string name="my_page">My Page</string>
 
-<!--    create user fragment用-->
+    <!--    create user fragment用-->
     <string name="enter_user_name">enter user name</string>
     <string name="enter_email">enter email</string>
     <string name="enter_password">enter password</string>
@@ -15,7 +15,7 @@
     <string name="register">register</string>
     <string name="checkPassword">passwords check failed!</string>
 
-<!--    login fragment用-->
+    <!--    login fragment用-->
     <string name="login_by_your_email">login by your email</string>
     <string name="enter_your_email">enter your email</string>
     <string name="enter_your_password">enter your password</string>
@@ -23,11 +23,11 @@
     <string name="otherwise_create_a_new_account">otherwise, create a new account</string>
     <string name="create_user">create user</string>
 
-<!--    list fragment用-->
+    <!--    list fragment用-->
     <string name="search">search</string>
     <string name="logout">logout</string>
 
-<!--    post fragment用-->
+    <!--    post fragment用-->
     <string name="post">post</string>
     <string name="currency_unit">$</string>
     <string name="chocolate_description">chocolate description....</string>
@@ -42,16 +42,16 @@
         <item>white</item>
     </string-array>
 
-<!--    edit account fragment用-->
+    <!--    edit account fragment用-->
     <string name="save">save</string>
 
-<!--    mypage fragment用-->
+    <!--    mypage fragment用-->
 
-<!--    facebook login用-->
+    <!--    facebook login用-->
     <string name="facebook_app_id">396640895088956</string>
     <string name="fb_login_protocol_scheme">fb396640895088956</string>
 
-<!--    twitter login用-->
+    <!--    twitter login用-->
     <string name="twitter_consumer_key" translatable="false">6C5LQNBzyyl3J1f9C9tF54WX6</string>
     <string name="twitter_consumer_secret" translatable="false">cI0lC1ILErTeQUJ2I3bvUjJoBnkrB3y6GSvOI246mRuOFrV3L1</string>
 

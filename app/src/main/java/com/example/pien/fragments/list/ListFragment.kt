@@ -63,7 +63,7 @@ class ListFragment : Fragment() {
     ): View? {
         val view = inflater.inflate(R.layout.fragment_list, container, false)
         setHasOptionsMenu(true)
-        val list = view.findViewById<RecyclerView>(R.id.home_list)
+        val list = view.findViewById<RecyclerView>(R.id.list_list)
         list.adapter = homeListAdapter
         list.layoutManager = StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL)
         mainViewModel.getAllPosts()

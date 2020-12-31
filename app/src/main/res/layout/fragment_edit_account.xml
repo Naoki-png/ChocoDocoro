@@ -7,7 +7,7 @@
     tools:context=".fragments.editAccount.EditAccountFragment">
 
     <de.hdodenhof.circleimageview.CircleImageView
-        android:id="@+id/editUserImage"
+        android:id="@+id/edit_userImage"
         android:layout_width="96dp"
         android:layout_height="96dp"
         android:layout_marginStart="8dp"
@@ -21,7 +21,7 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <EditText
-        android:id="@+id/editUserName"
+        android:id="@+id/edit_userName"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
@@ -30,7 +30,7 @@
         android:textSize="20sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/editUserImage"
+        app:layout_constraintTop_toBottomOf="@+id/edit_userImage"
         tools:text="user name" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

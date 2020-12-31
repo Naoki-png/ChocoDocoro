@@ -37,7 +37,7 @@ class PostFragment : Fragment() {
     ): View? {
 
         val view = inflater.inflate(R.layout.fragment_post, container, false)
-        view.addPhoto_btn.setOnClickListener {
+        view.post_add_photo_btn.setOnClickListener {
             val intent = Intent(Intent.ACTION_OPEN_DOCUMENT).apply {
                 addCategory(Intent.CATEGORY_OPENABLE)
                 type = "image/*"
@@ -47,9 +47,9 @@ class PostFragment : Fragment() {
 
         view.deletePhoto_btn.setOnClickListener {
             currentDisplayPhotoUri = ""
-            postImage.visibility = View.GONE
+            post_product_image.visibility = View.GONE
             it.visibility = View.GONE
-            addPhoto_btn.visibility = View.VISIBLE
+            post_add_photo_btn.visibility = View.VISIBLE
         }
         setHasOptionsMenu(true)
         return view
@@ -59,10 +59,10 @@ class PostFragment : Fragment() {
         super.onActivityResult(requestCode, resultCode, data)
         val uri = mainViewModel.getImageUriFromDevice(requestCode, resultCode, data)
         if (uri != null) {
-            addPhoto_btn.visibility = View.GONE
-            postImage.visibility = View.VISIBLE
+            post_add_photo_btn.visibility = View.GONE
+            post_product_image.visibility = View.VISIBLE
             deletePhoto_btn.visibility = View.VISIBLE
-            Glide.with(this).load(uri).centerCrop().into(postImage)
+            Glide.with(this).load(uri).centerCrop().into(post_product_image)
             uri?.let { uri ->
                 currentDisplayPhotoUri = uri
             }
@@ -82,11 +82,11 @@ class PostFragment : Fragment() {
                     userName = currentUser.displayName,
                     userImage = currentUser.photoUrl.toString(),
                     postImage = currentDisplayPhotoUri,
-                    productName = product_name_et.text.toString(),
-                    brandName = brand_name_et.text.toString(),
-                    productPrice = product_price_et.text.toString(),
-                    productType = chocolate_type_spinner.selectedItem.toString(),
-                    postMessage = postMessage.text.toString(),
+                    productName = post_product_name_et.text.toString(),
+                    brandName = post_brand_name_et.text.toString(),
+                    productPrice = post_product_price_et.text.toString(),
+                    productType = post_product_type_spinner.selectedItem.toString(),
+                    postMessage = post_product_description.text.toString(),
                     timeStamp = Date()
                 ))
 
@@ -105,11 +105,11 @@ class PostFragment : Fragment() {
     private fun validateInput(view: View): Boolean {
         if (
             TextUtils.isEmpty(currentDisplayPhotoUri)
-            || TextUtils.isEmpty(view.product_name_et.text.toString())
-            || TextUtils.isEmpty(view.brand_name_et.text.toString())
-            || TextUtils.isEmpty(view.product_price_et.text.toString())
-            || TextUtils.isEmpty(view.chocolate_type_spinner.selectedItem.toString())
-            || TextUtils.isEmpty(view.postMessage.text.toString())
+            || TextUtils.isEmpty(view.post_product_name_et.text.toString())
+            || TextUtils.isEmpty(view.post_brand_name_et.text.toString())
+            || TextUtils.isEmpty(view.post_product_price_et.text.toString())
+            || TextUtils.isEmpty(view.post_product_type_spinner.selectedItem.toString())
+            || TextUtils.isEmpty(view.post_product_description.text.toString())
         ) {
             return false
         }
