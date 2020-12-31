@@ -3,7 +3,6 @@ package com.example.pien.data.repository
 import android.app.Activity
 import android.content.Intent
 import android.net.Uri
-import android.text.TextUtils
 import android.util.Log
 import com.example.pien.data.model.Post
 import com.example.pien.data.model.State

@@ -13,7 +13,6 @@ import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import com.example.pien.MainViewModel
 import com.example.pien.R
 import com.example.pien.data.model.SignInMethod
-import com.example.pien.data.model.State
 import com.example.pien.util.METHOD
 import com.example.pien.util.SIGNIN_METHOD
 import com.facebook.login.LoginManager
@@ -25,7 +24,6 @@ import com.google.firebase.auth.FirebaseUser
 import com.twitter.sdk.android.core.SessionManager
 import com.twitter.sdk.android.core.TwitterCore
 import com.twitter.sdk.android.core.TwitterSession
-import kotlinx.coroutines.flow.collect
 
 class ListFragment : Fragment() {
     private lateinit var logTag: String
