@@ -34,7 +34,7 @@
     <string name="product_name">product name:</string>
     <string name="brand_name">brand name:</string>
     <string name="product_price">product price:</string>
-    <string name="chocolate_type">chocolate_type:</string>
+    <string name="chocolate_type">chocolate type:</string>
     <string-array name="chocolate_type_entries">
         <item>milk</item>
         <item>dark</item>
