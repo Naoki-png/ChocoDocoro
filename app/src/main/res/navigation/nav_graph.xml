@@ -6,7 +6,7 @@
     app:startDestination="@id/listFragment">
     <fragment
         android:id="@+id/listFragment"
-        android:name="com.example.pien.fragments.list.ListFragment"
+        android:name="com.example.pien.ui.fragments.list.ListFragment"
         android:label="fragment_list"
         tools:layout="@layout/fragment_list" >
         <action
@@ -20,7 +20,7 @@
     </fragment>
     <fragment
         android:id="@+id/loginFragment"
-        android:name="com.example.pien.fragments.login.LoginFragment"
+        android:name="com.example.pien.ui.fragments.login.LoginFragment"
         android:label="fragment_login"
         tools:layout="@layout/fragment_login" >
         <action
@@ -38,7 +38,7 @@
     </fragment>
     <fragment
         android:id="@+id/createUserFragment"
-        android:name="com.example.pien.fragments.createUser.CreateUserFragment"
+        android:name="com.example.pien.ui.fragments.createUser.CreateUserFragment"
         android:label="fragment_create_user"
         tools:layout="@layout/fragment_create_user" >
         <action
@@ -49,12 +49,12 @@
     </fragment>
     <fragment
         android:id="@+id/postFragment"
-        android:name="com.example.pien.fragments.post.PostFragment"
+        android:name="com.example.pien.ui.fragments.post.PostFragment"
         android:label="fragment_post"
         tools:layout="@layout/fragment_post" />
     <fragment
         android:id="@+id/myPageFragment"
-        android:name="com.example.pien.fragments.myPage.MyPageFragment"
+        android:name="com.example.pien.ui.fragments.myPage.MyPageFragment"
         android:label="fragment_my_page"
         tools:layout="@layout/fragment_my_page" >
         <action
@@ -70,7 +70,7 @@
     </fragment>
     <fragment
         android:id="@+id/editAccountFragment"
-        android:name="com.example.pien.fragments.editAccount.EditAccountFragment"
+        android:name="com.example.pien.ui.fragments.editAccount.EditAccountFragment"
         android:label="fragment_edit_account"
         tools:layout="@layout/fragment_edit_account" >
         <action
@@ -81,11 +81,11 @@
     </fragment>
     <fragment
         android:id="@+id/detailFragment"
-        android:name="com.example.pien.fragments.detail.DetailFragment"
+        android:name="com.example.pien.ui.fragments.detail.DetailFragment"
         android:label="fragment_detail"
         tools:layout="@layout/fragment_detail" >
         <argument
             android:name="post"
-            app:argType="com.example.pien.data.model.Post" />
+            app:argType="com.example.pien.models.Post" />
     </fragment>
 </navigation>

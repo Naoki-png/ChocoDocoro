@@ -6,7 +6,7 @@
     <data>
         <variable
             name="post"
-            type="com.example.pien.data.model.Post" />
+            type="com.example.pien.models.Post" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout

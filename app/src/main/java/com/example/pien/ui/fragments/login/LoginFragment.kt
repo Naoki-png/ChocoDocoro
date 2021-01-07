@@ -1,4 +1,4 @@
-package com.example.pien.fragments.login
+package com.example.pien.ui.fragments.login
 
 import android.content.Context
 import android.content.Intent
@@ -10,7 +10,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.navigation.fragment.findNavController
 import com.example.pien.R
-import com.example.pien.data.model.SignInMethod
+import com.example.pien.util.SignInMethod
 import com.example.pien.util.METHOD
 import com.example.pien.util.REQUEST_SIGN_IN
 import com.example.pien.util.SIGNIN_METHOD

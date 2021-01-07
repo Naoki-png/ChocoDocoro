@@ -1,166 +1,179 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<ScrollView
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent" >
+    xmlns:tools="http://schemas.android.com/tools">
 
-    <androidx.constraintlayout.widget.ConstraintLayout
+    <data>
+        <variable
+            name="postViewModel"
+            type="com.example.pien.viewmodels.PostViewModel" />
+    </data>
+
+    <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:padding="24dp"
-        tools:context=".fragments.post.PostFragment">
+        android:layout_height="match_parent">
 
-        <ImageView
-            android:id="@+id/post_product_image"
-            android:layout_width="300dp"
-            android:layout_height="200dp"
-            android:visibility="gone"
-            app:layout_constraintBottom_toTopOf="@+id/guideline"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            tools:srcCompat="@tools:sample/avatars" />
-
-        <EditText
-            android:id="@+id/post_product_description"
-            android:layout_width="0dp"
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:background="@drawable/custom_input"
-            android:ems="10"
-            android:gravity="start|top"
-            android:hint="@string/chocolate_description"
-            android:inputType="textMultiLine"
-            android:maxLength="300"
-            android:minLines="10"
-            android:padding="5dp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/post_product_type_spinner" />
+            android:padding="24dp"
+            tools:context=".ui.fragments.post.PostFragment">
 
-        <ImageView
-            android:id="@+id/post_add_photo_btn"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:background="@drawable/touch_feedback_addphoto"
-            android:visibility="visible"
-            app:layout_constraintBottom_toTopOf="@+id/guideline"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.5"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:srcCompat="@drawable/ic_baseline_add_photo_alternate_24" />
+            <ImageView
+                android:id="@+id/post_product_image"
+                android:layout_width="300dp"
+                android:layout_height="200dp"
+                android:visibility="gone"
+                app:layout_constraintBottom_toTopOf="@+id/guideline"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:srcCompat="@tools:sample/avatars"
+                changeViewVisibility="@{postViewModel.currentDisplayPhotoUri}"
+                loadImage="@{postViewModel.currentDisplayPhotoUri}" />
 
-        <ImageView
-            android:id="@+id/deletePhoto_btn"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:background="@drawable/touch_feedback_highlightoff"
-            android:visibility="gone"
-            app:layout_constraintStart_toEndOf="@+id/post_product_image"
-            app:layout_constraintTop_toTopOf="@+id/post_product_image"
-            app:srcCompat="@drawable/ic_baseline_highlight_off_24" />
+            <EditText
+                android:id="@+id/post_product_description"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:background="@drawable/custom_input"
+                android:ems="10"
+                android:gravity="start|top"
+                android:hint="@string/chocolate_description"
+                android:inputType="textMultiLine"
+                android:maxLength="300"
+                android:minLines="10"
+                android:padding="5dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/post_product_type_spinner" />
 
-        <TextView
-            android:id="@+id/post_product_name"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:text="@string/product_name"
-            android:textSize="14sp"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/guideline" />
+            <ImageView
+                android:id="@+id/post_add_photo_btn"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:background="@drawable/touch_feedback_addphoto"
+                android:visibility="visible"
+                app:layout_constraintBottom_toTopOf="@+id/guideline"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:srcCompat="@drawable/ic_baseline_add_photo_alternate_24"
+                changeViewVisibility="@{postViewModel.currentDisplayPhotoUri}" />
 
-        <TextView
-            android:id="@+id/post_brand_name"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:text="@string/brand_name"
-            android:textSize="14sp"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/post_product_name" />
+            <ImageView
+                android:id="@+id/deletePhoto_btn"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/touch_feedback_highlightoff"
+                android:visibility="gone"
+                app:layout_constraintStart_toEndOf="@+id/post_product_image"
+                app:layout_constraintTop_toTopOf="@+id/post_product_image"
+                app:srcCompat="@drawable/ic_baseline_highlight_off_24"
+                changeViewVisibility="@{postViewModel.currentDisplayPhotoUri}"
+                resetCurrentDisplayPhotoUri="@{postViewModel.currentDisplayPhotoUri}" />
 
-        <TextView
-            android:id="@+id/post_product_price"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:text="@string/product_price"
-            android:textSize="14sp"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/post_brand_name" />
+            <TextView
+                android:id="@+id/post_product_name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:text="@string/product_name"
+                android:textSize="14sp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/guideline" />
 
-        <EditText
-            android:id="@+id/post_product_name_et"
-            android:layout_width="wrap_content"
-            android:layout_height="0dp"
-            android:background="@drawable/custom_input"
-            android:ems="10"
-            android:inputType="textPersonName"
-            app:layout_constraintBaseline_toBaselineOf="@+id/post_product_name"
-            app:layout_constraintEnd_toEndOf="parent" />
+            <TextView
+                android:id="@+id/post_brand_name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:text="@string/brand_name"
+                android:textSize="14sp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/post_product_name" />
 
-        <EditText
-            android:id="@+id/post_brand_name_et"
-            android:layout_width="wrap_content"
-            android:layout_height="0dp"
-            android:background="@drawable/custom_input"
-            android:ems="10"
-            android:inputType="textPersonName"
-            app:layout_constraintBaseline_toBaselineOf="@+id/post_brand_name"
-            app:layout_constraintEnd_toEndOf="parent" />
+            <TextView
+                android:id="@+id/post_product_price"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:text="@string/product_price"
+                android:textSize="14sp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/post_brand_name" />
 
-        <EditText
-            android:id="@+id/post_product_price_et"
-            android:layout_width="wrap_content"
-            android:layout_height="0dp"
-            android:background="@drawable/custom_input"
-            android:ems="10"
-            android:inputType="number"
-            app:layout_constraintBaseline_toBaselineOf="@+id/post_currency_unit"
-            app:layout_constraintEnd_toEndOf="parent" />
+            <EditText
+                android:id="@+id/post_product_name_et"
+                android:layout_width="wrap_content"
+                android:layout_height="0dp"
+                android:background="@drawable/custom_input"
+                android:ems="10"
+                android:inputType="textPersonName"
+                app:layout_constraintBaseline_toBaselineOf="@+id/post_product_name"
+                app:layout_constraintEnd_toEndOf="parent" />
 
-        <TextView
-            android:id="@+id/post_currency_unit"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="8dp"
-            android:text="@string/currency_unit"
-            app:layout_constraintBaseline_toBaselineOf="@+id/post_product_price"
-            app:layout_constraintEnd_toStartOf="@+id/post_product_price_et" />
+            <EditText
+                android:id="@+id/post_brand_name_et"
+                android:layout_width="wrap_content"
+                android:layout_height="0dp"
+                android:background="@drawable/custom_input"
+                android:ems="10"
+                android:inputType="textPersonName"
+                app:layout_constraintBaseline_toBaselineOf="@+id/post_brand_name"
+                app:layout_constraintEnd_toEndOf="parent" />
 
-        <Spinner
-            android:id="@+id/post_product_type_spinner"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:entries="@array/chocolate_type_entries"
-            app:layout_constraintBottom_toBottomOf="@+id/post_product_type"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="@+id/post_product_price_et"
-            app:layout_constraintTop_toTopOf="@+id/post_product_type" />
+            <EditText
+                android:id="@+id/post_product_price_et"
+                android:layout_width="wrap_content"
+                android:layout_height="0dp"
+                android:background="@drawable/custom_input"
+                android:ems="10"
+                android:inputType="number"
+                app:layout_constraintBaseline_toBaselineOf="@+id/post_currency_unit"
+                app:layout_constraintEnd_toEndOf="parent" />
 
-        <TextView
-            android:id="@+id/post_product_type"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:text="@string/chocolate_type"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/post_product_price" />
+            <TextView
+                android:id="@+id/post_currency_unit"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="8dp"
+                android:text="@string/currency_unit"
+                app:layout_constraintBaseline_toBaselineOf="@+id/post_product_price"
+                app:layout_constraintEnd_toStartOf="@+id/post_product_price_et" />
 
-        <androidx.constraintlayout.widget.Guideline
-            android:id="@+id/guideline"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            app:layout_constraintGuide_percent="0.4" />
+            <Spinner
+                android:id="@+id/post_product_type_spinner"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:entries="@array/chocolate_type_entries"
+                app:layout_constraintBottom_toBottomOf="@+id/post_product_type"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="@+id/post_product_price_et"
+                app:layout_constraintTop_toTopOf="@+id/post_product_type" />
+
+            <TextView
+                android:id="@+id/post_product_type"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:text="@string/chocolate_type"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/post_product_price" />
+
+            <androidx.constraintlayout.widget.Guideline
+                android:id="@+id/guideline"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                app:layout_constraintGuide_percent="0.4" />
 
 
-    </androidx.constraintlayout.widget.ConstraintLayout>
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
-</ScrollView>
+    </ScrollView>
+</layout>

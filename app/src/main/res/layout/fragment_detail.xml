@@ -6,7 +6,7 @@
     <data>
         <variable
             name="args"
-            type="com.example.pien.fragments.detail.DetailFragmentArgs" />
+            type="com.example.pien.ui.fragments.detail.DetailFragmentArgs" />
     </data>
 
     <ScrollView
@@ -17,7 +17,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:padding="20dp"
-            tools:context=".fragments.detail.DetailFragment">
+            tools:context=".ui.fragments.detail.DetailFragment">
 
             <TextView
                 android:id="@+id/detail_product_name"

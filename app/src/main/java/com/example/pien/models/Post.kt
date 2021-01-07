@@ -1,4 +1,4 @@
-package com.example.pien.data.model
+package com.example.pien.models
 
 import android.os.Parcelable
 import com.google.firebase.firestore.ServerTimestamp

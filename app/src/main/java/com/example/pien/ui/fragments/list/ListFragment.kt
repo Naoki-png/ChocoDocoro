@@ -1,4 +1,4 @@
-package com.example.pien.fragments.list
+package com.example.pien.ui.fragments.list
 
 import android.content.Context
 import android.os.Bundle
@@ -10,9 +10,9 @@ import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
-import com.example.pien.MainViewModel
+import com.example.pien.viewmodels.MainViewModel
 import com.example.pien.R
-import com.example.pien.data.model.SignInMethod
+import com.example.pien.util.SignInMethod
 import com.example.pien.util.METHOD
 import com.example.pien.util.SIGNIN_METHOD
 import com.facebook.login.LoginManager

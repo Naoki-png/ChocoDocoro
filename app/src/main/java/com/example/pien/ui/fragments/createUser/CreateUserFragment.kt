@@ -1,4 +1,4 @@
-package com.example.pien.fragments.createUser
+package com.example.pien.ui.fragments.createUser
 
 import android.os.Bundle
 import android.util.Log

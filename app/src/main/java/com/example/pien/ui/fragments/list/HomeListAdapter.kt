@@ -1,4 +1,4 @@
-package com.example.pien.fragments.list
+package com.example.pien.ui.fragments.list
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
@@ -6,7 +6,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.pien.MyApplication
 import com.example.pien.R
-import com.example.pien.data.model.Post
+import com.example.pien.models.Post
 import com.example.pien.databinding.PostRowBinding
 
 class HomeListAdapter: RecyclerView.Adapter<HomeListAdapter.HomeListViewHolder>() {

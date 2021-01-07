@@ -1,11 +1,8 @@
-package com.example.pien.data.repository
+package com.example.pien.data
 
-import android.app.Activity
-import android.content.Intent
 import android.net.Uri
-import android.util.Log
-import com.example.pien.data.model.Post
-import com.example.pien.data.model.State
+import com.example.pien.models.Post
+import com.example.pien.util.State
 import com.example.pien.util.*
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
@@ -29,30 +26,6 @@ class PostRepository {
 
     var postImageUriFromDevice: String? = null
     var userImageUriFromDevice: String? = null
-
-    /**
-     * 画像のUriをゲットする
-     */
-    fun getImageUriFromDevice(requestCode: Int, resultCode: Int, data: Intent?) {
-
-        if (resultCode != Activity.RESULT_OK) {
-            Log.e(logTag, "getting image result is not OK")
-        } else if (data == null) {
-            Log.e(logTag, "image result is null")
-        } else {
-            when (requestCode) {
-                REQUEST_GET_POST_IMAGE -> {
-                    postImageUriFromDevice = data.data.toString()
-                }
-                REQUEST_GET_USER_IMAGE -> {
-                    userImageUriFromDevice = data.data.toString()
-                }
-                else -> {
-                    Log.e(logTag, "requestCode is inaccurate")
-                }
-            }
-        }
-    }
 
     /**
      * ユーザープロフィール変更

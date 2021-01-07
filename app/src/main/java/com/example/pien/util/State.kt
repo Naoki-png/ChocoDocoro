@@ -1,4 +1,4 @@
-package com.example.pien.data.model
+package com.example.pien.util
 
 sealed class State<T> {
     class Loading<T> : State<T>()

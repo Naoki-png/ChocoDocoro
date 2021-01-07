@@ -1,15 +1,12 @@
-package com.example.pien
+package com.example.pien.viewmodels
 
 import android.app.Application
 import android.content.Context
-import android.content.Intent
 import android.util.Log
 import androidx.lifecycle.*
-import com.example.pien.data.model.Post
-import com.example.pien.data.model.State
-import com.example.pien.data.repository.PostRepository
-import com.example.pien.util.REQUEST_GET_POST_IMAGE
-import com.example.pien.util.REQUEST_GET_USER_IMAGE
+import com.example.pien.models.Post
+import com.example.pien.util.State
+import com.example.pien.data.PostRepository
 import com.example.pien.util.makeToast
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
@@ -20,18 +17,6 @@ class MainViewModel(val app: Application) : AndroidViewModel(app) {
     var userProfileName = MutableLiveData<String>()
     var userProfileImage = MutableLiveData<String>()
     private val postRepository = PostRepository()
-
-    /**
-     * 画像のUriをゲットする
-     */
-    fun getImageUriFromDevice(requestCode: Int, resultCode: Int, data: Intent?) : String? {
-        postRepository.getImageUriFromDevice(requestCode, resultCode, data)
-        when (requestCode) {
-            REQUEST_GET_POST_IMAGE -> return postRepository.postImageUriFromDevice
-            REQUEST_GET_USER_IMAGE -> return postRepository.userImageUriFromDevice
-            else -> return null
-        }
-    }
 
     /**
      * ユーザープロフィール変更

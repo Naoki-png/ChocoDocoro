@@ -1,4 +1,4 @@
-package com.example.pien.fragments.detail
+package com.example.pien.ui.fragments.detail
 
 import android.os.Bundle
 import androidx.fragment.app.Fragment

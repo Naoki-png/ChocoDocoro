@@ -19,7 +19,7 @@
             android:value="@string/facebook_app_id"/>
 
         <activity
-            android:name="com.example.pien.MainActivity"
+            android:name="com.example.pien.ui.MainActivity"
             android:label="@string/app_name"
             android:theme="@style/AppTheme.Launcher"
             android:windowSoftInputMode="adjustPan">

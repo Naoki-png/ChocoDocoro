@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:padding="24dp"
-    tools:context=".fragments.login.LoginFragment">
+    tools:context=".ui.fragments.login.LoginFragment">
 
     <com.google.android.gms.common.SignInButton
         android:id="@+id/login_google_login_btn"

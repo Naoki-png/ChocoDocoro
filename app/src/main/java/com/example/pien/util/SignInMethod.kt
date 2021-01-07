@@ -1,4 +1,4 @@
-package com.example.pien.data.model
+package com.example.pien.util
 
 enum class SignInMethod {
     GOOGLE,
