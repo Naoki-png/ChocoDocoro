@@ -79,8 +79,8 @@ class EditAccountFragment : Fragment() {
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         if (item.itemId == R.id.save) {
-            if (!TextUtils.isEmpty(edit_userName.text)) {
-                mainViewModel.editUserInfo(edit_userName.text.toString(), editAccountViewModel.currentDisplayPhotoUri.toString())
+            if (!TextUtils.isEmpty(binding.editUserName.text)) {
+                mainViewModel.editUserInfo(binding.editUserName.text.toString(), editAccountViewModel.currentDisplayPhotoUri.value.toString())
                 findNavController().navigate(R.id.action_editAccountFragment_to_myPageFragment)
             } else {
                 makeToast(MyApplication.appContext, "user name can't be empty")
