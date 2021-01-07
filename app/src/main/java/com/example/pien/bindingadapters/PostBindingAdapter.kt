@@ -9,7 +9,7 @@ import androidx.lifecycle.MutableLiveData
 import com.bumptech.glide.Glide
 import com.example.pien.R
 
-class PostFragmentBindingAdapter {
+class PostBindingAdapter {
 
     companion object {
 

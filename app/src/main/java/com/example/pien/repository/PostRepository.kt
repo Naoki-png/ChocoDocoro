@@ -1,4 +1,4 @@
-package com.example.pien.data
+package com.example.pien.repository
 
 import android.net.Uri
 import com.example.pien.models.Post
@@ -19,13 +19,9 @@ import java.util.*
 
 
 class PostRepository {
-    private val logTag = javaClass.name
-    private val currentUser: FirebaseUser? by lazy { FirebaseAuth.getInstance().currentUser }
-    private val postDatabaseRef = FirebaseFirestore.getInstance().collection(POST_REF)
-    private val storageRef: StorageReference? by lazy { FirebaseStorage.getInstance().getReference(currentUser!!.uid) }
-
-    var postImageUriFromDevice: String? = null
-    var userImageUriFromDevice: String? = null
+    private val currentUser: FirebaseUser by lazy { FirebaseAuth.getInstance().currentUser!! }
+    private val postDatabaseRef: CollectionReference by lazy { FirebaseFirestore.getInstance().collection(POST_REF) }
+    private val storageRef: StorageReference by lazy { FirebaseStorage.getInstance().getReference(currentUser.uid) }
 
     /**
      * ユーザープロフィール変更
@@ -35,7 +31,7 @@ class PostRepository {
 
         updateProfileInDB(userName, userImage)
         val snapshot = postDatabaseRef
-            .whereEqualTo(USERID, currentUser!!.uid)
+            .whereEqualTo(USERID, currentUser.uid)
             .orderBy(TIMESTAMP, Query.Direction.DESCENDING)
             .get()
             .await()
@@ -45,7 +41,7 @@ class PostRepository {
             .setDisplayName(userName)
             .setPhotoUri(Uri.parse(posts[0].userImage))
             .build()
-        currentUser!!.updateProfile(changeRequest).await()
+        currentUser.updateProfile(changeRequest).await()
 
         emit(State.success(posts))
 
@@ -58,11 +54,11 @@ class PostRepository {
      */
     private suspend fun updateProfileInDB(userName: String, userImage: String) {
         //new storage file
-        val userImageStorageRef = storageRef?.child("userImage")?.child(Date().toString())
-        userImageStorageRef!!.putFile(Uri.parse(userImage)).await()
+        val userImageStorageRef = storageRef.child("userImage").child(Date().toString())
+        userImageStorageRef.putFile(Uri.parse(userImage)).await()
 
         //更新対象ドキュメントの取得
-        val snapshot = postDatabaseRef.whereEqualTo(USERID, currentUser!!.uid).get().await()
+        val snapshot = postDatabaseRef.whereEqualTo(USERID, currentUser.uid).get().await()
 
         //ドキュメントの更新
         val downloadUrl: Uri = userImageStorageRef.downloadUrl.await()
@@ -75,19 +71,13 @@ class PostRepository {
      * Home表示用の全件データ取得
      */
     fun getAllPosts() = flow<State<List<Post>>> {
-
-        // Emit loading state
         emit(State.loading())
 
         val snapshot = postDatabaseRef.orderBy(TIMESTAMP, Query.Direction.DESCENDING).get().await()
-        // parse data to java object
         val posts: List<Post> = snapshot.toObjects(Post::class.java)
-
-        // Emit success state with data
         emit(State.success(posts))
 
     }.catch { exception ->
-        // If exception is thrown, emit failed state along with message.
         emit(State.failed(exception.message.toString()))
     }.flowOn(Dispatchers.IO)
 
@@ -95,23 +85,17 @@ class PostRepository {
      * MyPage表示用のデータ取得
      */
     fun getMyPosts() = flow<State<List<Post>>> {
-
-        // Emit loading state
         emit(State.loading())
 
         val snapshot = postDatabaseRef
-            .whereEqualTo(USERID, currentUser!!.uid)
+            .whereEqualTo(USERID, currentUser.uid)
             .orderBy(TIMESTAMP, Query.Direction.DESCENDING)
             .get()
             .await()
-        // parse data to java object
         val posts: List<Post> = snapshot.toObjects(Post::class.java)
-
-        // Emit success state with data
         emit(State.success(posts))
 
     }.catch { exception ->
-        // If exception is thrown, emit failed state along with message.
         emit(State.failed(exception.message.toString()))
     }.flowOn(Dispatchers.IO)
 
@@ -119,8 +103,6 @@ class PostRepository {
      * 投稿する
      */
     fun addPost(post: Post) = flow<State<List<Post>>> {
-
-        // Emit loading state
         emit(State.loading())
 
         val docRef = postDatabaseRef.document()
@@ -132,7 +114,6 @@ class PostRepository {
         emit(State.success(posts))
 
     }.catch { exception ->
-        // If exception is thrown, emit failed state along with message.
         emit(State.failed(exception.message.toString()))
     }.flowOn(Dispatchers.IO)
 
@@ -140,9 +121,7 @@ class PostRepository {
      * storageに画像を保存する
      */
     private suspend fun storeImage(documentId: String, photoUri: Uri?) {
-        val storageRef = FirebaseStorage.getInstance().getReference(currentUser!!.uid)
-            .child(documentId).child(photoUri?.lastPathSegment!!)
-
+        storageRef.child(documentId).child(photoUri?.lastPathSegment!!)
         storageRef.putFile(photoUri).await()
         val downloadUrl: Uri = storageRef.downloadUrl.await()
         postDatabaseRef.document(documentId).update(POSTIMAGE, downloadUrl.toString()).await()

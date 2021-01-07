@@ -1,13 +1,8 @@
 package com.example.pien.util
 
-//collection references
-const val USERS_REF = "users_collection"
+//fireStore collection references
 const val POST_REF = "posts_collection"
-
-//user db keys
-const val DATE_CREATED = "date_created"
-
-//posts db keys
+//fireStore posts db keys
 const val USERID = "userId"
 const val USERNAME = "userName"
 const val USERIMAGE = "userImage"

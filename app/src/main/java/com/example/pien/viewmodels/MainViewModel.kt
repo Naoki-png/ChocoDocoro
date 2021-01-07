@@ -6,12 +6,15 @@ import android.util.Log
 import androidx.lifecycle.*
 import com.example.pien.models.Post
 import com.example.pien.util.State
-import com.example.pien.data.PostRepository
+import com.example.pien.repository.PostRepository
 import com.example.pien.util.makeToast
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseUser
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 
 class MainViewModel(val app: Application) : AndroidViewModel(app) {
+    private val currentUser: FirebaseUser by lazy { FirebaseAuth.getInstance().currentUser!! }
     var posts = MutableLiveData<List<Post>>()
     var myPosts = MutableLiveData<List<Post>>()
     var userProfileName = MutableLiveData<String>()
@@ -30,8 +33,8 @@ class MainViewModel(val app: Application) : AndroidViewModel(app) {
                     }
                     is State.Success -> {
                         myPosts.value = state.data
-                        userProfileName.value = state.data[0].userName
-                        userProfileImage.value = state.data[0].userImage
+                        userProfileName.value = currentUser.displayName
+                        userProfileImage.value = currentUser.photoUrl.toString()
                     }
                     is State.Failed -> {
                         // error時に表示用のデータ処理
@@ -91,7 +94,7 @@ class MainViewModel(val app: Application) : AndroidViewModel(app) {
             postRepository.addPost(post).collect { state ->
                 when (state) {
                     is State.Loading -> {
-                        Log.d("loading", "loading")
+                        Log.d("PostFragment", "loading")
                         // load中に表示用のデータ処理
                     }
                     is State.Success -> {
@@ -100,9 +103,18 @@ class MainViewModel(val app: Application) : AndroidViewModel(app) {
                     }
                     is State.Failed -> {
                         // error時に表示用のデータ処理
+                        Log.e("PostFragment", "posting isn't completed")
                     }
                 }
             }
         }
+    }
+
+    fun setUserProfileImage(imageUri: String) {
+        userProfileImage.value = imageUri
+    }
+
+    fun setUserProfileName(displayName: String?) {
+        userProfileName.value = displayName
     }
 }

@@ -8,6 +8,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
+import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import com.example.pien.viewmodels.MainViewModel
@@ -63,7 +64,7 @@ class ListFragment : Fragment() {
         setHasOptionsMenu(true)
         val list = view.findViewById<RecyclerView>(R.id.list_list)
         list.adapter = homeListAdapter
-        list.layoutManager = StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL)
+        list.layoutManager = GridLayoutManager(requireContext(), 2)
         mainViewModel.getAllPosts()
         mainViewModel.posts.observe(requireActivity(), Observer { posts ->
             homeListAdapter.setHomeData(posts)
