@@ -5,8 +5,8 @@ import android.content.Context
 import android.util.Log
 import androidx.lifecycle.*
 import com.example.pien.models.Post
-import com.example.pien.util.State
 import com.example.pien.repository.PostRepository
+import com.example.pien.util.State
 import com.example.pien.util.makeToast
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
@@ -19,6 +19,7 @@ class MainViewModel(val app: Application) : AndroidViewModel(app) {
     var myPosts = MutableLiveData<List<Post>>()
     var userProfileName = MutableLiveData<String>()
     var userProfileImage = MutableLiveData<String>()
+    var state = MutableLiveData<String>()
     private val postRepository = PostRepository()
 
     /**
@@ -26,18 +27,20 @@ class MainViewModel(val app: Application) : AndroidViewModel(app) {
      */
     fun editUserInfo(userName: String, userImage: String) {
         viewModelScope.launch {
-            postRepository.editUserInfo(userName, userImage).collect { state ->
-                when (state) {
+            postRepository.editUserInfo(userName, userImage).collect { currentState ->
+                when (currentState) {
                     is State.Loading -> {
-                        // load中に表示用のデータ処理
+                        state.value = State.StateConst.LOADING.name
                     }
                     is State.Success -> {
-                        myPosts.value = state.data
+                        myPosts.value = currentState.data
                         userProfileName.value = currentUser.displayName
                         userProfileImage.value = currentUser.photoUrl.toString()
+
+                        state.value = State.StateConst.SUCCESS.name
                     }
                     is State.Failed -> {
-                        // error時に表示用のデータ処理
+                        state.value = State.StateConst.FAILED.name
                     }
                 }
             }
@@ -49,16 +52,18 @@ class MainViewModel(val app: Application) : AndroidViewModel(app) {
      */
     fun getAllPosts() {
         viewModelScope.launch {
-            postRepository.getAllPosts().collect { state ->
-                when (state) {
+            postRepository.getAllPosts().collect { currentState ->
+                when (currentState) {
                     is State.Loading -> {
-                        // load中に表示用のデータ処理
+                        state.value = State.StateConst.LOADING.name
                     }
                     is State.Success -> {
-                        posts.value = state.data
+                        posts.value = currentState.data
+
+                        state.value = State.StateConst.SUCCESS.name
                     }
                     is State.Failed -> {
-                        // error時に表示用のデータ処理
+                        state.value = State.StateConst.FAILED.name
                     }
                 }
             }
@@ -70,16 +75,18 @@ class MainViewModel(val app: Application) : AndroidViewModel(app) {
      */
     fun getMyPosts() {
         viewModelScope.launch {
-            postRepository.getMyPosts().collect { state ->
-                when (state) {
+            postRepository.getMyPosts().collect { currentState ->
+                when (currentState) {
                     is State.Loading -> {
-                        // load中に表示用のデータ処理
+                        state.value = State.StateConst.LOADING.name
                     }
                     is State.Success -> {
-                        myPosts.value = state.data
+                        myPosts.value = currentState.data
+
+                        state.value = State.StateConst.SUCCESS.name
                     }
                     is State.Failed -> {
-                        // error時に表示用のデータ処理
+                        state.value = State.StateConst.FAILED.name
                     }
                 }
             }
@@ -91,19 +98,19 @@ class MainViewModel(val app: Application) : AndroidViewModel(app) {
      */
     fun addPost(post: Post) {
         viewModelScope.launch {
-            postRepository.addPost(post).collect { state ->
-                when (state) {
+            postRepository.addPost(post).collect { currentState ->
+                when (currentState) {
                     is State.Loading -> {
-                        Log.d("PostFragment", "loading")
-                        // load中に表示用のデータ処理
+                        state.value = State.StateConst.LOADING.name
                     }
                     is State.Success -> {
-                        posts.value = state.data
+                        posts.value = currentState.data
                         makeToast(app as Context, "Successfully Posted!")
+
+                        state.value = State.StateConst.SUCCESS.name
                     }
                     is State.Failed -> {
-                        // error時に表示用のデータ処理
-                        Log.e("PostFragment", "posting isn't completed")
+                        state.value = State.StateConst.FAILED.name
                     }
                 }
             }

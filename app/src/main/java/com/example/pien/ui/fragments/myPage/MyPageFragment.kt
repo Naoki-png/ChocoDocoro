@@ -14,6 +14,7 @@ import com.example.pien.viewmodels.MainViewModel
 import com.example.pien.R
 import com.example.pien.databinding.FragmentMyPageBinding
 import com.example.pien.ui.fragments.list.HomeListAdapter
+import com.example.pien.util.State
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import kotlinx.android.synthetic.main.fragment_my_page.view.*
@@ -45,6 +46,19 @@ class MyPageFragment : Fragment() {
         mainViewModel.myPosts.observe(requireActivity(), { posts ->
             listAdapter.setHomeData(posts)
         })
+        mainViewModel.state.observe(requireActivity(), { currentState ->
+            when (State.StateConst.valueOf(currentState)) {
+                State.StateConst.LOADING -> {
+                    binding.mypageList.showShimmer()
+                }
+                State.StateConst.SUCCESS -> {
+                    binding.mypageList.hideShimmer()
+                }
+                State.StateConst.FAILED -> {
+                    binding.mypageList.hideShimmer()
+                }
+            }
+        })
 
         return binding.root
     }
@@ -52,5 +66,6 @@ class MyPageFragment : Fragment() {
     private fun setRecyclerView() {
         binding.mypageList.adapter = listAdapter
         binding.mypageList.layoutManager = LinearLayoutManager(requireContext())
+        binding.mypageList.showShimmer()
     }
 }
