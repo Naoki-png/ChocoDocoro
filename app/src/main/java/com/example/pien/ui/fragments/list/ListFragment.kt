@@ -6,31 +6,27 @@ import android.util.Log
 import android.view.*
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
-import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.GridLayoutManager
-import androidx.recyclerview.widget.RecyclerView
-import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import com.example.pien.viewmodels.MainViewModel
 import com.example.pien.R
-import com.example.pien.util.SignInMethod
-import com.example.pien.util.METHOD
-import com.example.pien.util.SIGNIN_METHOD
+import com.example.pien.databinding.FragmentListBinding
+import com.example.pien.util.*
 import com.facebook.login.LoginManager
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
+import com.todkars.shimmer.ShimmerRecyclerView
 import com.twitter.sdk.android.core.SessionManager
 import com.twitter.sdk.android.core.TwitterCore
 import com.twitter.sdk.android.core.TwitterSession
 
 class ListFragment : Fragment() {
-    private lateinit var logTag: String
-
     private val homeListAdapter: HomeListAdapter by lazy { HomeListAdapter() }
     private val mainViewModel: MainViewModel by activityViewModels()
+    private lateinit var binding: FragmentListBinding
 
     private lateinit var auth: FirebaseAuth
     private var firebaseUser: FirebaseUser? = null
@@ -40,7 +36,6 @@ class ListFragment : Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        logTag = javaClass.name
         auth = FirebaseAuth.getInstance()
         firebaseUser = auth.currentUser
 
@@ -53,6 +48,8 @@ class ListFragment : Fragment() {
         //facebookのログインマネージャ
         mLoginManager = LoginManager.getInstance()
 
+
+
         loginCheck()
     }
 
@@ -60,17 +57,42 @@ class ListFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        val view = inflater.inflate(R.layout.fragment_list, container, false)
+        binding = FragmentListBinding.inflate(layoutInflater, container, false)
         setHasOptionsMenu(true)
-        val list = view.findViewById<RecyclerView>(R.id.list_list)
-        list.adapter = homeListAdapter
-        list.layoutManager = GridLayoutManager(requireContext(), 2)
+        return binding.root
+    }
+
+    override fun onActivityCreated(savedInstanceState: Bundle?) {
+        super.onActivityCreated(savedInstanceState)
+
+        setRecyclerView(binding.listList)
+
         mainViewModel.getAllPosts()
-        mainViewModel.posts.observe(requireActivity(), Observer { posts ->
+        mainViewModel.state.observe(requireActivity(), { currentState ->
+            when (State.StateConst.valueOf(currentState)) {
+                State.StateConst.LOADING -> {
+                    binding.listList.showShimmer()
+                }
+                State.StateConst.SUCCESS -> {
+                    binding.listList.hideShimmer()
+                }
+                State.StateConst.FAILED -> {
+                    binding.listList.hideShimmer()
+                }
+            }
+        })
+        mainViewModel.posts.observe(requireActivity(), { posts ->
             homeListAdapter.setHomeData(posts)
         })
-        return view
+
     }
+
+    private fun setRecyclerView(list: ShimmerRecyclerView) {
+        list.adapter = homeListAdapter
+        list.layoutManager = GridLayoutManager(requireContext(), 2)
+        list.showShimmer()
+    }
+
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         inflater.inflate(R.menu.list_fragment_menu, menu)
