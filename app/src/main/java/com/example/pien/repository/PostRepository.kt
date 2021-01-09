@@ -136,9 +136,9 @@ class PostRepository {
      * storageに画像を保存する
      */
     private suspend fun storeImage(documentId: String, photoUri: Uri?) {
-        storageRef.child(documentId).child(photoUri?.lastPathSegment!!)
-        storageRef.putFile(photoUri).await()
-        val downloadUrl: Uri = storageRef.downloadUrl.await()
+        val newFileRef = storageRef.child(documentId).child(photoUri?.lastPathSegment!!)
+        newFileRef.putFile(photoUri).await()
+        val downloadUrl: Uri = newFileRef.downloadUrl.await()
         postDatabaseRef.document(documentId).update(POSTIMAGE, downloadUrl.toString()).await()
     }
 }
