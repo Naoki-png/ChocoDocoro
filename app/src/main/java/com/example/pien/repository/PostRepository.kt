@@ -29,19 +29,18 @@ class PostRepository {
     fun editUserInfo(userName: String, userImage: String) = flow<State<List<Post>>> {
         emit(State.loading())
 
-        updateProfileInDB(userName, userImage)
+        if (userImage == currentUser.photoUrl.toString()) {
+            updateProfileName(userName)
+        } else {
+            updateProfileImage(userImage)
+            updateProfileName(userName)
+        }
         val snapshot = postDatabaseRef
             .whereEqualTo(USERID, currentUser.uid)
             .orderBy(TIMESTAMP, Query.Direction.DESCENDING)
             .get()
             .await()
         val posts: List<Post> = snapshot.toObjects(Post::class.java)
-
-        val changeRequest = UserProfileChangeRequest.Builder()
-            .setDisplayName(userName)
-            .setPhotoUri(Uri.parse(posts[0].userImage))
-            .build()
-        currentUser.updateProfile(changeRequest).await()
 
         emit(State.success(posts))
 
@@ -50,21 +49,37 @@ class PostRepository {
     }.flowOn(Dispatchers.IO)
 
     /**
-     * DB内のプロフィール情報を変更
+     * DB内とauthのプロフィール写真を変更
      */
-    private suspend fun updateProfileInDB(userName: String, userImage: String) {
-        //new storage file
+    private suspend fun updateProfileImage(userImage: String) {
         val userImageStorageRef = storageRef.child("userImage").child(Date().toString())
         userImageStorageRef.putFile(Uri.parse(userImage)).await()
 
-        //更新対象ドキュメントの取得
         val snapshot = postDatabaseRef.whereEqualTo(USERID, currentUser.uid).get().await()
-
-        //ドキュメントの更新
         val downloadUrl: Uri = userImageStorageRef.downloadUrl.await()
         for (document in snapshot) {
-            postDatabaseRef.document(document.id).update(USERNAME, userName, USERIMAGE, downloadUrl.toString()).await()
+            postDatabaseRef.document(document.id).update(USERIMAGE, downloadUrl.toString()).await()
         }
+
+        val changeRequest = UserProfileChangeRequest.Builder()
+            .setPhotoUri(downloadUrl)
+            .build()
+        currentUser.updateProfile(changeRequest).await()
+    }
+
+    /**
+     * DB内とauthのプロフィール名を変更
+     */
+    private suspend fun updateProfileName(userName: String) {
+        val snapshot = postDatabaseRef.whereEqualTo(USERID, currentUser.uid).get().await()
+        for (document in snapshot) {
+            postDatabaseRef.document(document.id).update(USERNAME, userName).await()
+        }
+
+        val changeRequest = UserProfileChangeRequest.Builder()
+            .setDisplayName(userName)
+            .build()
+        currentUser.updateProfile(changeRequest).await()
     }
 
     /**
