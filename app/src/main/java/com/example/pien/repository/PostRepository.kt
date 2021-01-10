@@ -11,6 +11,7 @@ import com.google.firebase.firestore.*
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageReference
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
@@ -26,7 +27,8 @@ class PostRepository {
     /**
      * ユーザープロフィール変更
      */
-    fun editUserInfo(userName: String, userImage: String) = flow<State<List<Post>>> {
+    @ExperimentalCoroutinesApi
+    suspend fun editUserInfo(userName: String, userImage: String) = flow<State<List<Post>>> {
         emit(State.loading())
 
         if (userImage == currentUser.photoUrl.toString()) {
@@ -85,7 +87,8 @@ class PostRepository {
     /**
      * Home表示用の全件データ取得
      */
-    fun getAllPosts() = flow<State<List<Post>>> {
+    @ExperimentalCoroutinesApi
+    suspend fun getAllPosts() = flow<State<List<Post>>> {
         emit(State.loading())
 
         val snapshot = postDatabaseRef.orderBy(TIMESTAMP, Query.Direction.DESCENDING).get().await()
@@ -99,6 +102,7 @@ class PostRepository {
     /**
      * 検索データ取得
      */
+    @ExperimentalCoroutinesApi
     suspend fun getSearchedPosts(query: String) = flow<State<List<Post>>> {
         emit(State.loading())
 
@@ -117,7 +121,8 @@ class PostRepository {
     /**
      * MyPage表示用のデータ取得
      */
-    fun getMyPosts() = flow<State<List<Post>>> {
+    @ExperimentalCoroutinesApi
+    suspend fun getMyPosts() = flow<State<List<Post>>> {
         emit(State.loading())
 
         val snapshot = postDatabaseRef
@@ -135,7 +140,8 @@ class PostRepository {
     /**
      * 投稿する
      */
-    fun addPost(post: Post) = flow<State<List<Post>>> {
+    @ExperimentalCoroutinesApi
+    suspend fun addPost(post: Post) = flow<State<List<Post>>> {
         emit(State.loading())
 
         val docRef = postDatabaseRef.document()
