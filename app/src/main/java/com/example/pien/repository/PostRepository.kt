@@ -97,6 +97,24 @@ class PostRepository {
     }.flowOn(Dispatchers.IO)
 
     /**
+     * 検索データ取得
+     */
+    suspend fun getSearchedPosts(query: String) = flow<State<List<Post>>> {
+        emit(State.loading())
+
+        val snapshot = postDatabaseRef
+            .orderBy(TIMESTAMP, Query.Direction.DESCENDING)
+            .whereEqualTo(BRAND_NAME, query)
+            .get()
+            .await()
+        val searchedPosts: List<Post> = snapshot.toObjects(Post::class.java)
+        emit(State.success(searchedPosts))
+
+    }.catch { exception ->
+        emit(State.failed(exception.message.toString()))
+    }.flowOn(Dispatchers.IO)
+
+    /**
      * MyPage表示用のデータ取得
      */
     fun getMyPosts() = flow<State<List<Post>>> {
@@ -141,4 +159,5 @@ class PostRepository {
         val downloadUrl: Uri = newFileRef.downloadUrl.await()
         postDatabaseRef.document(documentId).update(POSTIMAGE, downloadUrl.toString()).await()
     }
+
 }

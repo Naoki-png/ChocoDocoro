@@ -11,8 +11,7 @@
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:navigateToDetailFragment="@{post}">
+        android:layout_height="wrap_content">
 
         <androidx.cardview.widget.CardView
             android:layout_width="match_parent"
@@ -29,7 +28,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="@drawable/custom_frame"
-                android:padding="20dp">
+                android:padding="20dp"
+                android:navigateToDetailFragment="@{post}">
 
                 <de.hdodenhof.circleimageview.CircleImageView
                     android:id="@+id/row_user_image"

@@ -4,6 +4,7 @@ import android.content.Context
 import android.os.Bundle
 import android.util.Log
 import android.view.*
+import androidx.appcompat.widget.SearchView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
@@ -23,7 +24,7 @@ import com.twitter.sdk.android.core.SessionManager
 import com.twitter.sdk.android.core.TwitterCore
 import com.twitter.sdk.android.core.TwitterSession
 
-class ListFragment : Fragment() {
+class ListFragment : Fragment(), SearchView.OnQueryTextListener {
     private val homeListAdapter: HomeListAdapter by lazy { HomeListAdapter() }
     private val mainViewModel: MainViewModel by activityViewModels()
     private lateinit var binding: FragmentListBinding
@@ -39,16 +40,13 @@ class ListFragment : Fragment() {
         auth = FirebaseAuth.getInstance()
         firebaseUser = auth.currentUser
 
-        //googleAPIクライアントの取得
         val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
             .requestIdToken(getString(R.string.default_web_client_id))
             .requestEmail()
             .build()
         mGoogleSignInClient = GoogleSignIn.getClient(requireContext(), gso)
-        //facebookのログインマネージャ
+
         mLoginManager = LoginManager.getInstance()
-
-
 
         loginCheck()
     }
@@ -96,6 +94,11 @@ class ListFragment : Fragment() {
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         inflater.inflate(R.menu.list_fragment_menu, menu)
+
+        val searchView = menu.findItem(R.id.search).actionView as? SearchView
+        searchView?.isSubmitButtonEnabled = true
+        searchView?.queryHint = getString(R.string.search_hint)
+        searchView?.setOnQueryTextListener(this)
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
@@ -130,9 +133,7 @@ class ListFragment : Fragment() {
      * Google Logout メソッド
      */
     private fun googleSignOut() {
-        //firebaseからのサインアウト
         auth.signOut()
-        //googleからのサインアウト
         mGoogleSignInClient.signOut()
             .addOnCompleteListener { task ->
                 if (task.isSuccessful) {
@@ -145,9 +146,7 @@ class ListFragment : Fragment() {
      * Facebook Logout メソッド
      */
     private fun facebookSignOut() {
-        //firebaseからのサインアウト
         auth.signOut()
-        //facebookからのサインアウト
         mLoginManager.logOut()
         findNavController().navigate(R.id.action_listFragment_to_loginFragment)
     }
@@ -156,9 +155,7 @@ class ListFragment : Fragment() {
      * Twitter Logout メソッド
      */
     private fun twitterSignOut() {
-        //firebaseからのサインアウト
         auth.signOut()
-        //twitterからのサインアウト
         val sessionManager: SessionManager<TwitterSession> = TwitterCore.getInstance().sessionManager
         if (sessionManager.activeSession != null) {
             sessionManager.clearActiveSession()
@@ -172,5 +169,23 @@ class ListFragment : Fragment() {
     private fun emailSignOut() {
         auth.signOut()
         findNavController().navigate(R.id.action_listFragment_to_loginFragment)
+    }
+
+    override fun onQueryTextSubmit(query: String?): Boolean {
+        query?.let {
+            searchDatabase(query)
+        }
+        return true
+    }
+
+    override fun onQueryTextChange(newText: String?): Boolean {
+        return true
+    }
+
+    private fun searchDatabase(query: String) {
+        mainViewModel.getSearchedPosts(query)
+        mainViewModel.searchedPosts.observe(viewLifecycleOwner, { searchedPosts ->
+            homeListAdapter.setHomeData(searchedPosts)
+        })
     }
 }

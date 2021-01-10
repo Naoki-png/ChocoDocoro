@@ -1,5 +1,6 @@
 package com.example.pien.bindingadapters
 
+import android.view.View
 import android.widget.ImageView
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.databinding.BindingAdapter
@@ -26,7 +27,7 @@ class CoBindingAdapter {
 
         @BindingAdapter("android:navigateToDetailFragment")
         @JvmStatic
-        fun navigateToDetailFragment(view: ConstraintLayout, currentItem: Post) {
+        fun navigateToDetailFragment(view: View, currentItem: Post) {
             view.setOnClickListener {
                 val action : NavDirections
                 if (view.findNavController().currentDestination?.id == R.id.listFragment) {

@@ -16,6 +16,7 @@ import kotlinx.coroutines.launch
 class MainViewModel(val app: Application) : AndroidViewModel(app) {
     private val currentUser: FirebaseUser by lazy { FirebaseAuth.getInstance().currentUser!! }
     var posts = MutableLiveData<List<Post>>()
+    var searchedPosts = MutableLiveData<List<Post>>()
     var myPosts = MutableLiveData<List<Post>>()
     var userProfileName = MutableLiveData<String>()
     var userProfileImage = MutableLiveData<String>()
@@ -59,6 +60,29 @@ class MainViewModel(val app: Application) : AndroidViewModel(app) {
                     }
                     is State.Success -> {
                         posts.value = currentState.data
+
+                        state.value = State.StateConst.SUCCESS.name
+                    }
+                    is State.Failed -> {
+                        state.value = State.StateConst.FAILED.name
+                    }
+                }
+            }
+        }
+    }
+
+    /**
+     * 検索データ取得
+     */
+    fun getSearchedPosts(query: String) {
+        viewModelScope.launch {
+            postRepository.getSearchedPosts(query).collect { currentState ->
+                when (currentState) {
+                    is State.Loading -> {
+                        state.value = State.StateConst.LOADING.name
+                    }
+                    is State.Success -> {
+                        searchedPosts.value = currentState.data
 
                         state.value = State.StateConst.SUCCESS.name
                     }

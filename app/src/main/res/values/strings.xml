@@ -25,6 +25,7 @@
 
     <!--    list fragment用-->
     <string name="search">search</string>
+    <string name="search_hint">search by brand name</string>
     <string name="logout">logout</string>
 
     <!--    post fragment用-->
