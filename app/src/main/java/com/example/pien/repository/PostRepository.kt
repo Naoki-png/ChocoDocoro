@@ -1,6 +1,7 @@
 package com.example.pien.repository
 
 import android.net.Uri
+import com.example.pien.models.Favorite
 import com.example.pien.models.Post
 import com.example.pien.util.State
 import com.example.pien.util.*
@@ -21,7 +22,10 @@ import java.util.*
 
 class PostRepository {
     private val currentUser: FirebaseUser by lazy { FirebaseAuth.getInstance().currentUser!! }
-    private val postDatabaseRef: CollectionReference by lazy { FirebaseFirestore.getInstance().collection(POST_REF) }
+    private val postCollectionRef: CollectionReference by lazy { FirebaseFirestore.getInstance().collection(POST_REF) }
+    private val favoriteCollectionRef: CollectionReference by lazy {
+        FirebaseFirestore.getInstance().collection(FAVORITES_REF).document(currentUser.uid).collection(EACH_USER_FAVORITES_REF)
+    }
     private val storageRef: StorageReference by lazy { FirebaseStorage.getInstance().getReference(currentUser.uid) }
 
     /**
@@ -37,7 +41,7 @@ class PostRepository {
             updateProfileImage(userImage)
             updateProfileName(userName)
         }
-        val snapshot = postDatabaseRef
+        val snapshot = postCollectionRef
             .whereEqualTo(USERID, currentUser.uid)
             .orderBy(TIMESTAMP, Query.Direction.DESCENDING)
             .get()
@@ -57,10 +61,10 @@ class PostRepository {
         val userImageStorageRef = storageRef.child("userImage").child(Date().toString())
         userImageStorageRef.putFile(Uri.parse(userImage)).await()
 
-        val snapshot = postDatabaseRef.whereEqualTo(USERID, currentUser.uid).get().await()
+        val snapshot = postCollectionRef.whereEqualTo(USERID, currentUser.uid).get().await()
         val downloadUrl: Uri = userImageStorageRef.downloadUrl.await()
         for (document in snapshot) {
-            postDatabaseRef.document(document.id).update(USERIMAGE, downloadUrl.toString()).await()
+            postCollectionRef.document(document.id).update(USERIMAGE, downloadUrl.toString()).await()
         }
 
         val changeRequest = UserProfileChangeRequest.Builder()
@@ -73,9 +77,9 @@ class PostRepository {
      * DB内とauthのプロフィール名を変更
      */
     private suspend fun updateProfileName(userName: String) {
-        val snapshot = postDatabaseRef.whereEqualTo(USERID, currentUser.uid).get().await()
+        val snapshot = postCollectionRef.whereEqualTo(USERID, currentUser.uid).get().await()
         for (document in snapshot) {
-            postDatabaseRef.document(document.id).update(USERNAME, userName).await()
+            postCollectionRef.document(document.id).update(USERNAME, userName).await()
         }
 
         val changeRequest = UserProfileChangeRequest.Builder()
@@ -91,7 +95,7 @@ class PostRepository {
     suspend fun getAllPosts() = flow<State<List<Post>>> {
         emit(State.loading())
 
-        val snapshot = postDatabaseRef.orderBy(TIMESTAMP, Query.Direction.DESCENDING).get().await()
+        val snapshot = postCollectionRef.orderBy(TIMESTAMP, Query.Direction.DESCENDING).get().await()
         val posts: List<Post> = snapshot.toObjects(Post::class.java)
         emit(State.success(posts))
 
@@ -106,7 +110,7 @@ class PostRepository {
     suspend fun getSearchedPosts(query: String) = flow<State<List<Post>>> {
         emit(State.loading())
 
-        val snapshot = postDatabaseRef
+        val snapshot = postCollectionRef
             .orderBy(TIMESTAMP, Query.Direction.DESCENDING)
             .whereEqualTo(BRAND_NAME, query)
             .get()
@@ -125,7 +129,7 @@ class PostRepository {
     suspend fun getMyPosts() = flow<State<List<Post>>> {
         emit(State.loading())
 
-        val snapshot = postDatabaseRef
+        val snapshot = postCollectionRef
             .whereEqualTo(USERID, currentUser.uid)
             .orderBy(TIMESTAMP, Query.Direction.DESCENDING)
             .get()
@@ -144,11 +148,13 @@ class PostRepository {
     suspend fun addPost(post: Post) = flow<State<List<Post>>> {
         emit(State.loading())
 
-        val docRef = postDatabaseRef.document()
+        val docRef = postCollectionRef.document()
         docRef.set(post).await()
+        //documentIdの更新
+        docRef.update(DOCUMENTID, docRef.id).await()
         storeImage(docRef.id, Uri.parse(post.postImage))
 
-        val postsSnapshot = postDatabaseRef.orderBy(TIMESTAMP, Query.Direction.DESCENDING).get().await()
+        val postsSnapshot = postCollectionRef.orderBy(TIMESTAMP, Query.Direction.DESCENDING).get().await()
         val posts: List<Post> = postsSnapshot.toObjects(Post::class.java)
         emit(State.success(posts))
 
@@ -163,7 +169,75 @@ class PostRepository {
         val newFileRef = storageRef.child(documentId).child(photoUri?.lastPathSegment!!)
         newFileRef.putFile(photoUri).await()
         val downloadUrl: Uri = newFileRef.downloadUrl.await()
-        postDatabaseRef.document(documentId).update(POSTIMAGE, downloadUrl.toString()).await()
+        postCollectionRef.document(documentId).update(POSTIMAGE, downloadUrl.toString()).await()
     }
+
+    /**
+     * お気に入り追加
+     */
+    @ExperimentalCoroutinesApi
+    suspend fun addFavorite(favorite: Favorite) = flow<State<List<Post>>> {
+        emit(State.loading())
+
+        val docRef = favoriteCollectionRef.document()
+        docRef.set(favorite).await()
+        docRef.update(FAVORITEID, docRef.id).await()
+
+        val favoritesSnapshot = favoriteCollectionRef.orderBy(TIMESTAMP, Query.Direction.DESCENDING).get().await()
+        val favorites: List<Favorite> = favoritesSnapshot.toObjects(Favorite::class.java)
+        val favoritePostList = parseFavoriteToPost(favorites)
+        emit(State.success(favoritePostList))
+    }.catch { exception ->
+        emit(State.failed(exception.message.toString()))
+    }.flowOn(Dispatchers.IO)
+
+    /**
+     * Favoriteのモデルから、Postのモデルへ
+     */
+    private suspend fun parseFavoriteToPost(favorites: List<Favorite>): List<Post> {
+        val postList = mutableListOf<Post>()
+        for (favorite in favorites) {
+            val postSnapshot = postCollectionRef.whereEqualTo(DOCUMENTID, favorite.documentId).get().await()
+            val post: List<Post> = postSnapshot.toObjects(Post::class.java)
+            postList.add(post[0])
+        }
+        return postList
+    }
+
+    /**
+     * お気に入りから削除
+     */
+    @ExperimentalCoroutinesApi
+    suspend fun removeFavorite(favorite: Favorite) = flow<State<List<Favorite>>> {
+        emit(State.loading())
+
+        val docRef = favoriteCollectionRef.document(favorite.favoriteId!!)
+        docRef.delete().await()
+
+        val favoritesSnapshot = favoriteCollectionRef.orderBy(TIMESTAMP, Query.Direction.DESCENDING).get().await()
+        val favorites: List<Favorite> = favoritesSnapshot.toObjects(Favorite::class.java)
+        emit(State.success(favorites))
+    }.catch { exception ->
+        emit(State.failed(exception.message.toString()))
+    }.flowOn(Dispatchers.IO)
+
+    /**
+     * お気に入りデータ取得
+     */
+    @ExperimentalCoroutinesApi
+    suspend fun getFavorite() = flow<State<List<Post>>> {
+        emit(State.loading())
+
+        val snapshot = favoriteCollectionRef
+            .orderBy(TIMESTAMP, Query.Direction.DESCENDING)
+            .get()
+            .await()
+        val favorites: List<Favorite> = snapshot.toObjects(Favorite::class.java)
+        val favoritePostList = parseFavoriteToPost(favorites)
+        emit(State.success(favoritePostList))
+
+    }.catch { exception ->
+        emit(State.failed(exception.message.toString()))
+    }.flowOn(Dispatchers.IO)
 
 }
