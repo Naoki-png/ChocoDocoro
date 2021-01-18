@@ -23,7 +23,9 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import kotlinx.android.synthetic.main.fragment_edit_account.*
 import kotlinx.android.synthetic.main.fragment_edit_account.view.*
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 
+@ExperimentalCoroutinesApi
 class EditAccountFragment : Fragment() {
     private val currentUser: FirebaseUser by lazy { FirebaseAuth.getInstance().currentUser!! }
     private val mainViewModel: MainViewModel by activityViewModels()

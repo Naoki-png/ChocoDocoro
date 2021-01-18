@@ -137,8 +137,6 @@ class MainViewModel(val app: Application) : AndroidViewModel(app) {
                     }
                     is State.Success -> {
                         posts.value = currentState.data
-                        makeToast(app as Context, "Successfully Posted!")
-
                         state.value = State.StateConst.SUCCESS.name
                     }
                     is State.Failed -> {

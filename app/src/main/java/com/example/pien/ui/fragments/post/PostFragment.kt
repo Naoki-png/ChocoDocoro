@@ -21,11 +21,13 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import kotlinx.android.synthetic.main.fragment_post.*
 import kotlinx.android.synthetic.main.fragment_post.view.*
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import java.util.*
 
+@ExperimentalCoroutinesApi
 class PostFragment : Fragment() {
     private val currentUser: FirebaseUser by lazy { FirebaseAuth.getInstance().currentUser!! }
-    private val mainViewModel: MainViewModel by activityViewModels()
+    private val mainViewModel: MainViewModel by viewModels()
     private val postViewModel: PostViewModel by viewModels()
     private lateinit var binding: FragmentPostBinding
 
@@ -44,6 +46,21 @@ class PostFragment : Fragment() {
             }
             startActivityForResult(intent, REQUEST_GET_POST_IMAGE)
         }
+        mainViewModel.state.observe(viewLifecycleOwner, { currentState ->
+            when (State.StateConst.valueOf(currentState)) {
+                State.StateConst.LOADING -> {
+                    //処理なし
+                }
+                State.StateConst.SUCCESS -> {
+                    makeToast(requireContext(), "successfully posted!")
+                    hideKeyboard(requireActivity())
+                    findNavController().navigate(R.id.listFragment)
+                }
+                State.StateConst.FAILED -> {
+                    makeToast(requireContext(), "failed to post...")
+                }
+            }
+        })
 
         setHasOptionsMenu(true)
         return binding.root
@@ -89,11 +106,7 @@ class PostFragment : Fragment() {
                     productType = post_product_type_spinner.selectedItem.toString(),
                     postMessage = post_product_description.text.toString(),
                     timeStamp = Date()
-                )
-                )
-
-                hideKeyboard(requireActivity())
-                findNavController().navigate(R.id.listFragment)
+                ))
             } else {
                 makeToast(requireContext(), "All entries must be filled out")
             }
