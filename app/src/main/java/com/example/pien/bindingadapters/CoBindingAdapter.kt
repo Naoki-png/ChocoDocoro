@@ -8,6 +8,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.navigation.NavDirections
 import androidx.navigation.findNavController
 import com.bumptech.glide.Glide
+import com.example.pien.FavoriteFragmentDirections
 import com.example.pien.R
 import com.example.pien.models.Post
 import com.example.pien.ui.fragments.list.ListFragmentDirections
@@ -29,13 +30,19 @@ class CoBindingAdapter {
         @JvmStatic
         fun navigateToDetailFragment(view: View, currentItem: Post) {
             view.setOnClickListener {
-                val action : NavDirections
                 if (view.findNavController().currentDestination?.id == R.id.listFragment) {
-                    action = ListFragmentDirections.actionListFragmentToDetailFragment(currentItem)
-                } else {
-                    action = MyPageFragmentDirections.actionMyPageFragmentToDetailFragment(currentItem)
+                    val action = ListFragmentDirections.actionListFragmentToDetailFragment(currentItem)
+                    view.findNavController().navigate(action)
+
+                } else if (view.findNavController().currentDestination?.id == R.id.myPageFragment) {
+                    val action = MyPageFragmentDirections.actionMyPageFragmentToDetailFragment(currentItem)
+                    view.findNavController().navigate(action)
+
+                } else if (view.findNavController().currentDestination?.id == R.id.favoriteFragment) {
+                    val action = FavoriteFragmentDirections.actionFavoriteFragmentToDetailFragment(currentItem)
+                    view.findNavController().navigate(action)
+
                 }
-                view.findNavController().navigate(action)
             }
         }
     }

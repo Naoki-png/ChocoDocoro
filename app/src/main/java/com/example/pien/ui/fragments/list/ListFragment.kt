@@ -23,7 +23,9 @@ import com.todkars.shimmer.ShimmerRecyclerView
 import com.twitter.sdk.android.core.SessionManager
 import com.twitter.sdk.android.core.TwitterCore
 import com.twitter.sdk.android.core.TwitterSession
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 
+@ExperimentalCoroutinesApi
 class ListFragment : Fragment(), SearchView.OnQueryTextListener {
     private val homeListAdapter: HomeListAdapter by lazy { HomeListAdapter() }
     private val mainViewModel: MainViewModel by activityViewModels()
@@ -63,25 +65,25 @@ class ListFragment : Fragment(), SearchView.OnQueryTextListener {
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
 
-        setRecyclerView(binding.listList)
+        setRecyclerView(binding.listRecyclerView)
 
-        mainViewModel.getAllPosts()
-        mainViewModel.state.observe(requireActivity(), { currentState ->
+        mainViewModel.state.observe(viewLifecycleOwner, { currentState ->
             when (State.StateConst.valueOf(currentState)) {
                 State.StateConst.LOADING -> {
-                    binding.listList.showShimmer()
+                    binding.listRecyclerView.showShimmer()
                 }
                 State.StateConst.SUCCESS -> {
-                    binding.listList.hideShimmer()
+                    binding.listRecyclerView.hideShimmer()
                 }
                 State.StateConst.FAILED -> {
-                    binding.listList.hideShimmer()
+                    binding.listRecyclerView.hideShimmer()
                 }
             }
         })
-        mainViewModel.posts.observe(requireActivity(), { posts ->
+        mainViewModel.posts.observe(viewLifecycleOwner, { posts ->
             homeListAdapter.setHomeData(posts)
         })
+        mainViewModel.getAllPosts()
 
     }
 
@@ -106,7 +108,7 @@ class ListFragment : Fragment(), SearchView.OnQueryTextListener {
             R.id.logout -> {
                 val prefs = requireContext().getSharedPreferences(SIGNIN_METHOD, Context.MODE_PRIVATE)
                 val signInMethod = prefs.getString(METHOD, "logout now")
-                prefs.edit().putString(METHOD, "logout now")
+                prefs.edit().putString(METHOD, "logout now").apply()
                 when (SignInMethod.valueOf(signInMethod!!)) {
                     SignInMethod.GOOGLE -> googleSignOut()
                     SignInMethod.FACEBOOK -> facebookSignOut()

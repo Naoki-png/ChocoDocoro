@@ -4,7 +4,7 @@ import android.widget.TextView
 import androidx.databinding.BindingAdapter
 import androidx.lifecycle.MutableLiveData
 
-class MyPageViewBinding {
+class MyPageBindingAdapter {
 
     companion object {
         @BindingAdapter("displayUserName")
