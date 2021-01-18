@@ -111,8 +111,9 @@ class PostRepository {
         emit(State.loading())
 
         val snapshot = postCollectionRef
-            .orderBy(TIMESTAMP, Query.Direction.DESCENDING)
-            .whereEqualTo(BRAND_NAME, query)
+            .orderBy(BRAND_NAME)
+            .startAt(query)
+            .endAt(query + '\uf8ff')
             .get()
             .await()
         val searchedPosts: List<Post> = snapshot.toObjects(Post::class.java)
