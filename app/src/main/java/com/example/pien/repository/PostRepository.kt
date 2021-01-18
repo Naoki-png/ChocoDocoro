@@ -95,7 +95,11 @@ class PostRepository {
     suspend fun getAllPosts() = flow<State<List<Post>>> {
         emit(State.loading())
 
-        val snapshot = postCollectionRef.orderBy(TIMESTAMP, Query.Direction.DESCENDING).get().await()
+        val snapshot = postCollectionRef
+            .orderBy(TIMESTAMP, Query.Direction.DESCENDING)
+            .limit(50)
+            .get()
+            .await()
         val posts: List<Post> = snapshot.toObjects(Post::class.java)
         emit(State.success(posts))
 
@@ -114,6 +118,7 @@ class PostRepository {
             .orderBy(BRAND_NAME)
             .startAt(query)
             .endAt(query + '\uf8ff')
+            .limit(50)
             .get()
             .await()
         val searchedPosts: List<Post> = snapshot.toObjects(Post::class.java)
@@ -155,7 +160,11 @@ class PostRepository {
         docRef.update(DOCUMENTID, docRef.id).await()
         storeImage(docRef.id, Uri.parse(post.postImage))
 
-        val postsSnapshot = postCollectionRef.orderBy(TIMESTAMP, Query.Direction.DESCENDING).get().await()
+        val postsSnapshot = postCollectionRef
+            .orderBy(TIMESTAMP, Query.Direction.DESCENDING)
+            .limit(50)
+            .get()
+            .await()
         val posts: List<Post> = postsSnapshot.toObjects(Post::class.java)
         emit(State.success(posts))
 
