@@ -176,47 +176,31 @@ class PostRepository {
      * お気に入り追加
      */
     @ExperimentalCoroutinesApi
-    suspend fun addFavorite(favorite: Favorite) = flow<State<List<Post>>> {
+    suspend fun addFavorite(post: Post) = flow<State<String>> {
         emit(State.loading())
 
-        val docRef = favoriteCollectionRef.document()
-        docRef.set(favorite).await()
-        docRef.update(FAVORITEID, docRef.id).await()
+        val docRef = favoriteCollectionRef.document(post.documentId!!)
+        docRef.set(Favorite(
+            postId = post.documentId,
+            timeStamp = Date()
+        )).await()
+        emit(State.success(State.StateConst.SUCCESS.name))
 
-        val favoritesSnapshot = favoriteCollectionRef.orderBy(TIMESTAMP, Query.Direction.DESCENDING).get().await()
-        val favorites: List<Favorite> = favoritesSnapshot.toObjects(Favorite::class.java)
-        val favoritePostList = parseFavoriteToPost(favorites)
-        emit(State.success(favoritePostList))
     }.catch { exception ->
         emit(State.failed(exception.message.toString()))
     }.flowOn(Dispatchers.IO)
 
     /**
-     * Favoriteのモデルから、Postのモデルへ
-     */
-    private suspend fun parseFavoriteToPost(favorites: List<Favorite>): List<Post> {
-        val postList = mutableListOf<Post>()
-        for (favorite in favorites) {
-            val postSnapshot = postCollectionRef.whereEqualTo(DOCUMENTID, favorite.documentId).get().await()
-            val post: List<Post> = postSnapshot.toObjects(Post::class.java)
-            postList.add(post[0])
-        }
-        return postList
-    }
-
-    /**
      * お気に入りから削除
      */
     @ExperimentalCoroutinesApi
-    suspend fun removeFavorite(favorite: Favorite) = flow<State<List<Favorite>>> {
+    suspend fun removeFavorite(post: Post) = flow<State<String>> {
         emit(State.loading())
 
-        val docRef = favoriteCollectionRef.document(favorite.favoriteId!!)
+        val docRef = favoriteCollectionRef.document(post.documentId!!)
         docRef.delete().await()
+        emit(State.success(State.StateConst.SUCCESS.name))
 
-        val favoritesSnapshot = favoriteCollectionRef.orderBy(TIMESTAMP, Query.Direction.DESCENDING).get().await()
-        val favorites: List<Favorite> = favoritesSnapshot.toObjects(Favorite::class.java)
-        emit(State.success(favorites))
     }.catch { exception ->
         emit(State.failed(exception.message.toString()))
     }.flowOn(Dispatchers.IO)
@@ -240,4 +224,16 @@ class PostRepository {
         emit(State.failed(exception.message.toString()))
     }.flowOn(Dispatchers.IO)
 
+    /**
+     * Favoriteのモデルから、Postのモデルへ
+     */
+    private suspend fun parseFavoriteToPost(favorites: List<Favorite>): List<Post> {
+        val postList = mutableListOf<Post>()
+        for (favorite in favorites) {
+            val postSnapshot = postCollectionRef.whereEqualTo(DOCUMENTID, favorite.postId).get().await()
+            val post: List<Post> = postSnapshot.toObjects(Post::class.java)
+            postList.add(post[0])
+        }
+        return postList
+    }
 }

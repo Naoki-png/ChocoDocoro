@@ -153,17 +153,38 @@ class MainViewModel(val app: Application) : AndroidViewModel(app) {
      * お気に入り追加
      */
     @ExperimentalCoroutinesApi
-    fun addFavorite(favorite: Favorite) {
+    fun addFavorite(post: Post) {
         viewModelScope.launch {
-            postRepository.addFavorite(favorite).collect { currentState ->
+            postRepository.addFavorite(post).collect { currentState ->
                 when (currentState) {
                     is State.Loading -> {
                         state.value = State.StateConst.LOADING.name
                     }
                     is State.Success -> {
-                        favoritePosts.value = currentState.data
                         makeToast(app as Context, "add to Favorite")
+                        state.value = State.StateConst.SUCCESS.name
+                    }
+                    is State.Failed -> {
+                        state.value = State.StateConst.FAILED.name
+                    }
+                }
+            }
+        }
+    }
 
+    /**
+     * お気に入りから削除
+     */
+    @ExperimentalCoroutinesApi
+    fun removeFavorite(post: Post) {
+        viewModelScope.launch {
+            postRepository.removeFavorite(post).collect { currentState ->
+                when (currentState) {
+                    is State.Loading -> {
+                        state.value = State.StateConst.LOADING.name
+                    }
+                    is State.Success -> {
+                        makeToast(app as Context, "remove from Favorite")
                         state.value = State.StateConst.SUCCESS.name
                     }
                     is State.Failed -> {
@@ -177,6 +198,7 @@ class MainViewModel(val app: Application) : AndroidViewModel(app) {
     /**
      * お気に入りデータ取得
      */
+    @ExperimentalCoroutinesApi
     fun getFavorite() {
         viewModelScope.launch {
             postRepository.getFavorite().collect { currentState ->

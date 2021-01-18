@@ -4,8 +4,7 @@ import com.google.firebase.firestore.ServerTimestamp
 import java.util.*
 
 class Favorite(
-    val favoriteId: String? = null,
-    val documentId: String? = null,
+    val postId: String? = null,
     @ServerTimestamp
     val timeStamp: Date? = null
 )

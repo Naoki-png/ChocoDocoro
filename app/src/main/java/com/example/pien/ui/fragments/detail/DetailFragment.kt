@@ -10,6 +10,7 @@ import com.bumptech.glide.Glide
 import com.example.pien.R
 import com.example.pien.databinding.FragmentDetailBinding
 import com.example.pien.models.Favorite
+import com.example.pien.models.Post
 import com.example.pien.viewmodels.MainViewModel
 import com.google.firebase.firestore.FieldValue
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -44,13 +45,11 @@ class DetailFragment : Fragment() {
     }
 
     private fun checkIfFavorite(menu: Menu) {
-        mainViewModel.favoritePosts.observe(viewLifecycleOwner, { favoriteList ->
-            for (favorite in favoriteList) {
-                if (args.post.documentId == favorite.documentId) {
-                    menu.findItem(R.id.favorite).icon.setTint(ContextCompat.getColor(requireContext(), R.color.yellow))
+        mainViewModel.favoritePosts.observe(viewLifecycleOwner, { favoritePostList ->
+            for (favoritePost in favoritePostList) {
+                if (args.post.documentId == favoritePost.documentId) {
+                    menu.findItem(R.id.favorite).icon.setTint(ContextCompat.getColor(requireContext(), R.color.red))
                     favoriteFlag = true
-                }  else {
-                    favoriteFlag = false
                 }
             }
         })
@@ -58,15 +57,13 @@ class DetailFragment : Fragment() {
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         if (item.itemId == R.id.favorite && !favoriteFlag) {
-            mainViewModel.addFavorite(Favorite(
-                favoriteId = "",
-                documentId = args.post.documentId,
-                timeStamp = Date()
-            ))
-            item.icon.setTint(ContextCompat.getColor(requireContext(), R.color.yellow))
+            mainViewModel.addFavorite(args.post)
+            item.icon.setTint(ContextCompat.getColor(requireContext(), R.color.red))
             favoriteFlag = true
         } else if (item.itemId == R.id.favorite && favoriteFlag) {
-            //todo remove favorite
+            mainViewModel.removeFavorite(args.post)
+            item.icon.setTint(ContextCompat.getColor(requireContext(), R.color.white))
+            favoriteFlag = false
         }
         return super.onOptionsItemSelected(item)
     }
