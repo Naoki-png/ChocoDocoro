@@ -25,6 +25,7 @@ import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
+import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.firebase.auth.FacebookAuthProvider
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.GoogleAuthProvider
@@ -60,6 +61,8 @@ class LoginFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+        requireActivity().findViewById<BottomNavigationView>(R.id.bottomNavigationView).visibility = View.INVISIBLE
+
         val view = inflater.inflate(R.layout.fragment_login, container, false)
 
         view.login_google_login_btn.setOnClickListener {
@@ -177,7 +180,7 @@ class LoginFragment : Fragment() {
     /**
      * TwitterアカウントでTwitterへログインするメソッド
      * 認証成功後、auth.currentUserが更新される
-     * @param token facebookの認証トークン
+     * @param session facebookの認証トークン
      */
     private fun firebaseAuthWithTwitter(session: TwitterSession) {
         val credential = TwitterAuthProvider.getCredential(
