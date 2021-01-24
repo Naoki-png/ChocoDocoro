@@ -13,7 +13,9 @@
             android:id="@+id/action_listFragment_to_loginFragment"
             app:destination="@id/loginFragment"
             app:enterAnim="@anim/slide_from_left"
-            app:exitAnim="@anim/slide_to_right" />
+            app:exitAnim="@anim/slide_to_right"
+            app:popUpTo="@id/listFragment"
+            app:popUpToInclusive="true" />
         <action
             android:id="@+id/action_listFragment_to_detailFragment"
             app:destination="@id/detailFragment" />
@@ -27,7 +29,9 @@
             android:id="@+id/action_loginFragment_to_listFragment"
             app:destination="@id/listFragment"
             app:enterAnim="@anim/slide_from_right"
-            app:exitAnim="@anim/slide_to_left" />
+            app:exitAnim="@anim/slide_to_left"
+            app:popUpTo="@id/loginFragment"
+            app:popUpToInclusive="true" />
         <action
             android:id="@+id/action_loginFragment_to_createUserFragment"
             app:destination="@id/createUserFragment"
