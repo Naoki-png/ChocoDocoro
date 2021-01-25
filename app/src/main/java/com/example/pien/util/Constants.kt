@@ -17,7 +17,7 @@ const val BRAND_NAME = "brandName"
 const val FAVORITEID = "favoriteId"
 
 //request code
-const val REQUEST_SIGN_IN = 0
+const val REQUEST_SIGN_IN_WITH_GOOGLE = 0
 const val REQUEST_GET_POST_IMAGE = 1
 const val REQUEST_GET_USER_IMAGE = 2
 

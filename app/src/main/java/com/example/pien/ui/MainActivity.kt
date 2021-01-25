@@ -7,6 +7,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.findNavController
 import androidx.navigation.ui.NavigationUI.setupWithNavController
 import com.example.pien.R
+import com.example.pien.ui.fragments.login.LoginFragment
 import com.twitter.sdk.android.core.DefaultLogger
 import com.twitter.sdk.android.core.Twitter
 import com.twitter.sdk.android.core.TwitterAuthConfig
@@ -44,9 +45,11 @@ class MainActivity : AppCompatActivity() {
         //Activityに戻ってくる結果を、LoginFragmentのonActivityResult()に渡す。
         // （そして、LoginFragmentのonActivityResult()では、twitterLoginButtonのonActivityResult()に渡す。）
         val childFragments = supportFragmentManager.findFragmentById(R.id.nav_host_fragment)!!.childFragmentManager.fragments
-            childFragments.forEach {fragment ->
-                if (fragment.id == R.id.loginFragment) {
-                    fragment?.onActivityResult(requestCode, resultCode, data)
+            childFragments.forEach { fragment ->
+                when (fragment) {
+                    is LoginFragment -> {
+                        fragment.onActivityResult(requestCode, resultCode, data)
+                    }
                 }
             }
     }

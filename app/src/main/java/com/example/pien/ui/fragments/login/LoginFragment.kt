@@ -8,11 +8,12 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.fragment.app.findFragment
 import androidx.navigation.fragment.findNavController
 import com.example.pien.R
 import com.example.pien.util.SignInMethod
 import com.example.pien.util.METHOD
-import com.example.pien.util.REQUEST_SIGN_IN
+import com.example.pien.util.REQUEST_SIGN_IN_WITH_GOOGLE
 import com.example.pien.util.SIGNIN_METHOD
 import com.example.pien.util.makeToast
 import com.facebook.AccessToken
@@ -40,21 +41,21 @@ class LoginFragment : Fragment() {
 
     lateinit var auth: FirebaseAuth
     lateinit var mGoogleSignInClient: GoogleSignInClient
-    lateinit var mCallbackManager: CallbackManager
+    lateinit var mFacebookCallbackManager: CallbackManager
     lateinit var twitterLoginBtn: TwitterLoginButton
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         auth = FirebaseAuth.getInstance()
-        //googleサインインの設定
+
         val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
             .requestIdToken(getString(R.string.default_web_client_id))
             .requestEmail()
             .build()
         mGoogleSignInClient = GoogleSignIn.getClient(requireContext(), gso)
-        // Initialize Facebook Login button
-        mCallbackManager = CallbackManager.Factory.create()
+
+        mFacebookCallbackManager = CallbackManager.Factory.create()
     }
 
     override fun onCreateView(
@@ -72,7 +73,7 @@ class LoginFragment : Fragment() {
         view.login_facebook_login_btn.setReadPermissions("email", "public_profile")
         //fragment内で使う場合
         view.login_facebook_login_btn.fragment = this
-        view.login_facebook_login_btn.registerCallback(mCallbackManager, object :
+        view.login_facebook_login_btn.registerCallback(mFacebookCallbackManager, object :
             FacebookCallback<LoginResult> {
             override fun onSuccess(loginResult: LoginResult) {
                 Log.d("Facebook Login", "facebook:onSuccess:$loginResult")
@@ -95,7 +96,7 @@ class LoginFragment : Fragment() {
                 }
             }
             override fun failure(exception: TwitterException?) {
-                Log.e("Twitter Login", "twitter:onError")
+                Log.e("Twitter Login", exception?.localizedMessage.toString())
             }
         }
 
@@ -113,21 +114,21 @@ class LoginFragment : Fragment() {
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
 
-        if (requestCode == REQUEST_SIGN_IN) {
+        if (requestCode == REQUEST_SIGN_IN_WITH_GOOGLE) {
             val result = Auth.GoogleSignInApi.getSignInResultFromIntent(data)
             if (result != null) {
-                if (!result.isSuccess) {
+                if (result.isSuccess) {
+                    val account = result.signInAccount
+                    firebaseAuthWithGoogle(account!!)
+                } else {
                     makeToast(requireContext(), "google login failed")
                     return
                 }
-                //これがユーザーのgoogleアカ
-                val account = result.signInAccount
-                firebaseAuthWithGoogle(account!!)
             }
         }
 
         // Pass the activity result back to the Facebook SDK
-        mCallbackManager.onActivityResult(requestCode, resultCode, data)
+        mFacebookCallbackManager.onActivityResult(requestCode, resultCode, data)
 
         // Pass the activity result back to the login button.
         twitterLoginBtn.onActivityResult(requestCode, resultCode, data)
@@ -138,7 +139,7 @@ class LoginFragment : Fragment() {
      */
     private fun googleSignIn() {
         val signInIntent = mGoogleSignInClient.signInIntent
-        startActivityForResult(signInIntent, REQUEST_SIGN_IN)
+        startActivityForResult(signInIntent, REQUEST_SIGN_IN_WITH_GOOGLE)
     }
 
     /**
