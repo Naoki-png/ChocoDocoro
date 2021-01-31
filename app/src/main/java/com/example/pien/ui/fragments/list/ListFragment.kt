@@ -116,7 +116,6 @@ class ListFragment : Fragment(), SearchView.OnQueryTextListener {
                     SignInMethod.GOOGLE -> googleSignOut()
                     SignInMethod.FACEBOOK -> facebookSignOut()
                     SignInMethod.TWITTER -> twitterSignOut()
-                    SignInMethod.EMAIL -> emailSignOut()
                 }
             }
         }
@@ -165,14 +164,6 @@ class ListFragment : Fragment(), SearchView.OnQueryTextListener {
         if (sessionManager.activeSession != null) {
             sessionManager.clearActiveSession()
         }
-        findNavController().navigate(R.id.action_listFragment_to_loginFragment)
-    }
-
-    /**
-     * Email Logout メソッド (Firebaseのみのログアウト)
-     */
-    private fun emailSignOut() {
-        auth.signOut()
         findNavController().navigate(R.id.action_listFragment_to_loginFragment)
     }
 

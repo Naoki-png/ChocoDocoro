@@ -32,24 +32,6 @@
             app:exitAnim="@anim/slide_to_left"
             app:popUpTo="@id/loginFragment"
             app:popUpToInclusive="true" />
-        <action
-            android:id="@+id/action_loginFragment_to_createUserFragment"
-            app:destination="@id/createUserFragment"
-            app:enterAnim="@anim/slide_from_left"
-            app:exitAnim="@anim/slide_to_right"
-            app:popEnterAnim="@anim/slide_from_right"
-            app:popExitAnim="@anim/slide_to_left" />
-    </fragment>
-    <fragment
-        android:id="@+id/createUserFragment"
-        android:name="com.example.pien.ui.fragments.createUser.CreateUserFragment"
-        android:label="fragment_create_user"
-        tools:layout="@layout/fragment_create_user" >
-        <action
-            android:id="@+id/action_createUserFragment_to_loginFragment"
-            app:destination="@id/loginFragment"
-            app:enterAnim="@anim/slide_from_right"
-            app:exitAnim="@anim/slide_to_left" />
     </fragment>
     <fragment
         android:id="@+id/postFragment"
@@ -94,7 +76,7 @@
     </fragment>
     <fragment
         android:id="@+id/favoriteFragment"
-        android:name="com.example.pien.FavoriteFragment"
+        android:name="com.example.pien.ui.fragments.favorite.FavoriteFragment"
         android:label="fragment_favorite"
         tools:layout="@layout/fragment_favorite" >
         <action

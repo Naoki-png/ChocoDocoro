@@ -100,14 +100,6 @@ class LoginFragment : Fragment() {
             }
         }
 
-        view.login_btn.setOnClickListener {
-            loginWithEmailAndPassword()
-        }
-
-        view.login_createUser_btn.setOnClickListener {
-            findNavController().navigate(R.id.action_loginFragment_to_createUserFragment)
-        }
-
         return view
     }
 
@@ -196,26 +188,6 @@ class LoginFragment : Fragment() {
             }
             .addOnFailureListener { exception ->
                 Log.e("Twitter Login", "firebase auth with twitter login failed: ${exception.localizedMessage}")
-            }
-    }
-
-    /**
-     * emailとpasswordでfirebaseへログインするメソッド
-     * 認証成功後、auth.currentUserが更新される
-     */
-    private fun loginWithEmailAndPassword() {
-        val email = login_email_et.text.toString()
-        val password = login_password_et.text.toString()
-
-        auth.signInWithEmailAndPassword(email, password)
-            .addOnSuccessListener {
-                val prefs = requireContext().getSharedPreferences(SIGNIN_METHOD, Context.MODE_PRIVATE)
-                prefs.edit().putString(METHOD, SignInMethod.EMAIL.name).apply()
-                findNavController().navigate(R.id.action_loginFragment_to_listFragment)
-            }
-            .addOnFailureListener { exception ->
-                makeToast(requireContext(), "inncorrect email or password!")
-                Log.e("LoginFragment", "login with email and password failed: ${exception.localizedMessage}")
             }
     }
 }

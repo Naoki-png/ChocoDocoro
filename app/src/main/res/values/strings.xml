@@ -59,5 +59,6 @@
     <string name="twitter_consumer_key" translatable="false">6C5LQNBzyyl3J1f9C9tF54WX6</string>
     <string name="twitter_consumer_secret" translatable="false">cI0lC1ILErTeQUJ2I3bvUjJoBnkrB3y6GSvOI246mRuOFrV3L1</string>
     <string name="no_favorite">No Favorite</string>
+    <string name="chocodocoro">ChocoDocoro</string>
 
 </resources>

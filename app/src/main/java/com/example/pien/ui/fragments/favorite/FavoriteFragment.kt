@@ -1,4 +1,4 @@
-package com.example.pien
+package com.example.pien.ui.fragments.favorite
 
 import android.os.Bundle
 import androidx.fragment.app.Fragment
@@ -27,7 +27,7 @@ class FavoriteFragment : Fragment() {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         binding = FragmentFavoriteBinding.inflate(layoutInflater, container, false)
         binding.mainViewModel = mainViewModel
         binding.lifecycleOwner = this

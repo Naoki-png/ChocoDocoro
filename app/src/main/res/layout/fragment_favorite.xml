@@ -12,7 +12,7 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:context=".FavoriteFragment">
+        tools:context=".ui.fragments.favorite.FavoriteFragment">
 
         <ImageView
             android:id="@+id/favorite_no_imageView"

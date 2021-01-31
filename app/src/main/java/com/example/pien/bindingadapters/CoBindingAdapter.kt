@@ -8,9 +8,9 @@ import androidx.lifecycle.MutableLiveData
 import androidx.navigation.NavDirections
 import androidx.navigation.findNavController
 import com.bumptech.glide.Glide
-import com.example.pien.FavoriteFragmentDirections
 import com.example.pien.R
 import com.example.pien.models.Post
+import com.example.pien.ui.fragments.favorite.FavoriteFragmentDirections
 import com.example.pien.ui.fragments.list.ListFragmentDirections
 import com.example.pien.ui.fragments.myPage.MyPageFragmentDirections
 
