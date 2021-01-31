@@ -7,21 +7,8 @@
     <string name="new_post">new post</string>
     <string name="my_page">My Page</string>
 
-    <!--    create user fragment用-->
-    <string name="enter_user_name">enter user name</string>
-    <string name="enter_email">enter email</string>
-    <string name="enter_password">enter password</string>
-    <string name="enter_password_again">enter password again</string>
-    <string name="register">register</string>
-    <string name="checkPassword">passwords check failed!</string>
-
     <!--    login fragment用-->
-    <string name="login_by_your_email">login by your email</string>
-    <string name="enter_your_email">enter your email</string>
-    <string name="enter_your_password">enter your password</string>
-    <string name="login">login</string>
-    <string name="otherwise_create_a_new_account">otherwise, create a new account</string>
-    <string name="create_user">create user</string>
+    <string name="chocodocoro">ChocoDocoro</string>
 
     <!--    list fragment用-->
     <string name="search">search</string>
@@ -30,11 +17,10 @@
 
     <!--    post fragment用-->
     <string name="post">post</string>
-    <string name="currency_unit">$</string>
-    <string name="chocolate_description">chocolate description....</string>
     <string name="product_name">product name:</string>
     <string name="brand_name">brand name:</string>
     <string name="product_price">product price:</string>
+    <string name="currency_unit">$</string>
     <string name="chocolate_type">chocolate type:</string>
     <string-array name="chocolate_type_entries">
         <item>milk</item>
@@ -42,6 +28,12 @@
         <item>high cacao</item>
         <item>white</item>
     </string-array>
+    <string name="cheap_or_luxury">cheap or luxury</string>
+    <string-array name="cheap_or_luxury_entries">
+        <item>cheap</item>
+        <item>luxury</item>
+    </string-array>
+    <string name="chocolate_description">chocolate description....</string>
 
     <!--    edit account fragment用-->
     <string name="save">save</string>
@@ -50,6 +42,7 @@
 
     <!--    favorite fragment用-->
     <string name="favorite">Favorite</string>
+    <string name="no_favorite">No Favorite</string>
 
     <!--    facebook login用-->
     <string name="facebook_app_id">396640895088956</string>
@@ -58,7 +51,5 @@
     <!--    twitter login用-->
     <string name="twitter_consumer_key" translatable="false">6C5LQNBzyyl3J1f9C9tF54WX6</string>
     <string name="twitter_consumer_secret" translatable="false">cI0lC1ILErTeQUJ2I3bvUjJoBnkrB3y6GSvOI246mRuOFrV3L1</string>
-    <string name="no_favorite">No Favorite</string>
-    <string name="chocodocoro">ChocoDocoro</string>
 
 </resources>

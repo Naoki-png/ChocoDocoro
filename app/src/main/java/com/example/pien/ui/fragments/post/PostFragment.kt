@@ -34,7 +34,7 @@ class PostFragment : Fragment() {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         binding = FragmentPostBinding.inflate(layoutInflater, container, false)
         binding.postViewModel = postViewModel
         binding.lifecycleOwner = this
@@ -104,6 +104,7 @@ class PostFragment : Fragment() {
                     brandName = post_brand_name_et.text.toString(),
                     productPrice = post_product_price_et.text.toString(),
                     productType = post_product_type_spinner.selectedItem.toString(),
+                    cheapOrLuxury = cheap_or_luxury_spinner.selectedItem.toString(),
                     postMessage = post_product_description.text.toString(),
                     timeStamp = Date()
                 ))
@@ -124,6 +125,7 @@ class PostFragment : Fragment() {
             || TextUtils.isEmpty(view.post_brand_name_et.text.toString())
             || TextUtils.isEmpty(view.post_product_price_et.text.toString())
             || TextUtils.isEmpty(view.post_product_type_spinner.selectedItem.toString())
+            || TextUtils.isEmpty(view.cheap_or_luxury_spinner.selectedItem.toString())
             || TextUtils.isEmpty(view.post_product_description.text.toString())
         ) {
             return false

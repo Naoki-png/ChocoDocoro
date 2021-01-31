@@ -16,6 +16,7 @@ data class Post(
     val brandName: String? = null,
     val productPrice: String? = null,
     val productType: String? = null,
+    val cheapOrLuxury: String? = null,
     val postMessage: String? = null,
     @ServerTimestamp
     val timeStamp: Date? = null
