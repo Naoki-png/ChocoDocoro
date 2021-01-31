@@ -47,7 +47,7 @@ class PostFragment : Fragment() {
             startActivityForResult(intent, REQUEST_GET_POST_IMAGE)
         }
         mainViewModel.state.observe(viewLifecycleOwner, { currentState ->
-            when (State.StateConst.valueOf(currentState)) {
+            when (currentState) {
                 State.StateConst.LOADING -> {
                     //処理なし
                 }
@@ -58,6 +58,9 @@ class PostFragment : Fragment() {
                 }
                 State.StateConst.FAILED -> {
                     makeToast(requireContext(), "failed to post...")
+                }
+                else -> {
+                    //error 処理
                 }
             }
         })

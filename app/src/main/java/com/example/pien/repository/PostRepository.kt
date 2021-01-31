@@ -89,13 +89,34 @@ class PostRepository {
     }
 
     /**
-     * Home表示用の全件データ取得
+     * Cheapデータ取得
      */
     @ExperimentalCoroutinesApi
-    suspend fun getAllPosts() = flow<State<List<Post>>> {
+    suspend fun getCheapPosts() = flow<State<List<Post>>> {
         emit(State.loading())
 
         val snapshot = postCollectionRef
+            .whereEqualTo(CHEAP_OR_LUXURY, "cheap")
+            .orderBy(TIMESTAMP, Query.Direction.DESCENDING)
+            .limit(50)
+            .get()
+            .await()
+        val posts: List<Post> = snapshot.toObjects(Post::class.java)
+        emit(State.success(posts))
+
+    }.catch { exception ->
+        emit(State.failed(exception.message.toString()))
+    }.flowOn(Dispatchers.IO)
+
+    /**
+     * Luxuryデータ取得
+     */
+    @ExperimentalCoroutinesApi
+    suspend fun getLuxuryPosts() = flow<State<List<Post>>> {
+        emit(State.loading())
+
+        val snapshot = postCollectionRef
+            .whereEqualTo(CHEAP_OR_LUXURY, "luxury")
             .orderBy(TIMESTAMP, Query.Direction.DESCENDING)
             .limit(50)
             .get()
@@ -111,10 +132,11 @@ class PostRepository {
      * 検索データ取得
      */
     @ExperimentalCoroutinesApi
-    suspend fun getSearchedPosts(query: String) = flow<State<List<Post>>> {
+    suspend fun getSearchedPosts(query: String, currentTab: String?) = flow<State<List<Post>>> {
         emit(State.loading())
 
         val snapshot = postCollectionRef
+            .whereEqualTo(CHEAP_OR_LUXURY, currentTab)
             .orderBy(BRAND_NAME)
             .startAt(query)
             .endAt(query + '\uf8ff')

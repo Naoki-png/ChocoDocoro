@@ -9,7 +9,7 @@ import com.example.pien.R
 import com.example.pien.models.Post
 import com.example.pien.databinding.PostRowBinding
 
-class HomeListAdapter: RecyclerView.Adapter<HomeListAdapter.HomeListViewHolder>() {
+class ListAdapter: RecyclerView.Adapter<ListAdapter.HomeListViewHolder>() {
     private val appContext = MyApplication.appContext
     private var homeListData = emptyList<Post>()
 
@@ -41,7 +41,7 @@ class HomeListAdapter: RecyclerView.Adapter<HomeListAdapter.HomeListViewHolder>(
 
     override fun getItemCount() = homeListData.size
 
-    fun setHomeData(listData: List<Post>) {
+    fun setData(listData: List<Post>) {
         homeListData = listData
         notifyDataSetChanged()
     }

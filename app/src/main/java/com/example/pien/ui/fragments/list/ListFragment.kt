@@ -8,19 +8,20 @@ import androidx.appcompat.widget.SearchView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
-import androidx.recyclerview.widget.GridLayoutManager
-import com.example.pien.viewmodels.MainViewModel
+import androidx.viewpager2.widget.ViewPager2
 import com.example.pien.R
-import com.example.pien.databinding.FragmentListBinding
 import com.example.pien.util.*
+import com.example.pien.viewmodels.MainViewModel
 import com.facebook.login.LoginManager
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.material.bottomnavigation.BottomNavigationView
+import com.google.android.material.tabs.TabLayout
+import com.google.android.material.tabs.TabLayout.OnTabSelectedListener
+import com.google.android.material.tabs.TabLayoutMediator
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
-import com.todkars.shimmer.ShimmerRecyclerView
 import com.twitter.sdk.android.core.SessionManager
 import com.twitter.sdk.android.core.TwitterCore
 import com.twitter.sdk.android.core.TwitterSession
@@ -28,9 +29,8 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 
 @ExperimentalCoroutinesApi
 class ListFragment : Fragment(), SearchView.OnQueryTextListener {
-    private val homeListAdapter: HomeListAdapter by lazy { HomeListAdapter() }
     private val mainViewModel: MainViewModel by activityViewModels()
-    private lateinit var binding: FragmentListBinding
+    private val viewPagerAdapter: ListViewPagerAdapter by lazy { ListViewPagerAdapter() }
 
     private lateinit var auth: FirebaseAuth
     private var firebaseUser: FirebaseUser? = null
@@ -57,45 +57,55 @@ class ListFragment : Fragment(), SearchView.OnQueryTextListener {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View {
+    ): View? {
         requireActivity().findViewById<BottomNavigationView>(R.id.bottomNavigationView).visibility = View.VISIBLE
 
-        binding = FragmentListBinding.inflate(layoutInflater, container, false)
-        setHasOptionsMenu(true)
-        return binding.root
-    }
+        mainViewModel.cheapPosts.observe(viewLifecycleOwner, { posts ->
+            viewPagerAdapter.setRecyclerViewListData(posts)
+        })
+        mainViewModel.luxuryPosts.observe(viewLifecycleOwner, { posts ->
+            viewPagerAdapter.setRecyclerViewListData(posts)
+        })
 
-    override fun onActivityCreated(savedInstanceState: Bundle?) {
-        super.onActivityCreated(savedInstanceState)
+        val view = inflater.inflate(R.layout.fragment_list, container, false)
+        val viewPager2 = view.findViewById<ViewPager2>(R.id.list_viewPager)
+        viewPager2.adapter = viewPagerAdapter
+        viewPager2.orientation = ViewPager2.ORIENTATION_HORIZONTAL
 
-        setRecyclerView(binding.listRecyclerView)
-
-        mainViewModel.state.observe(viewLifecycleOwner, { currentState ->
-            when (State.StateConst.valueOf(currentState)) {
-                State.StateConst.LOADING -> {
-                    binding.listRecyclerView.showShimmer()
-                }
-                State.StateConst.SUCCESS -> {
-                    binding.listRecyclerView.hideShimmer()
-                }
-                State.StateConst.FAILED -> {
-                    binding.listRecyclerView.hideShimmer()
+        val tabLayout = view.findViewById<TabLayout>(R.id.list_tabLayout)
+        tabLayout.addOnTabSelectedListener(object : OnTabSelectedListener {
+            override fun onTabSelected(tab: TabLayout.Tab) {
+                when (tab.text) {
+                    "cheap" -> {
+                        mainViewModel.getCheapPosts()
+                        val prefs = requireContext().getSharedPreferences(CURRENT_TAB, Context.MODE_PRIVATE)
+                        prefs.edit().putString(TAB, CHEAP).apply()
+                    }
+                    "luxury" -> {
+                        mainViewModel.getLuxuryPosts()
+                        val prefs = requireContext().getSharedPreferences(CURRENT_TAB, Context.MODE_PRIVATE)
+                        prefs.edit().putString(TAB, LUXURY).apply()
+                    }
                 }
             }
+
+            override fun onTabUnselected(tab: TabLayout.Tab) {}
+            override fun onTabReselected(tab: TabLayout.Tab) {}
         })
-        mainViewModel.posts.observe(viewLifecycleOwner, { posts ->
-            homeListAdapter.setHomeData(posts)
-        })
-        mainViewModel.getAllPosts()
 
+        TabLayoutMediator(
+            tabLayout,
+            viewPager2
+        ) { tab, position ->
+            when (position) {
+                0 -> tab.text = "cheap"
+                1 -> tab.text = "luxury"
+            }
+        }.attach()
+
+        setHasOptionsMenu(true)
+        return view
     }
-
-    private fun setRecyclerView(list: ShimmerRecyclerView) {
-        list.adapter = homeListAdapter
-        list.layoutManager = GridLayoutManager(requireContext(), 2)
-        list.showShimmer()
-    }
-
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         inflater.inflate(R.menu.list_fragment_menu, menu)
@@ -109,7 +119,10 @@ class ListFragment : Fragment(), SearchView.OnQueryTextListener {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when(item.itemId) {
             R.id.logout -> {
-                val prefs = requireContext().getSharedPreferences(SIGNIN_METHOD, Context.MODE_PRIVATE)
+                val prefs = requireContext().getSharedPreferences(
+                    SIGNIN_METHOD,
+                    Context.MODE_PRIVATE
+                )
                 val signInMethod = prefs.getString(METHOD, "logout now")
                 prefs.edit().putString(METHOD, "logout now").apply()
                 when (SignInMethod.valueOf(signInMethod!!)) {
@@ -120,6 +133,26 @@ class ListFragment : Fragment(), SearchView.OnQueryTextListener {
             }
         }
         return super.onOptionsItemSelected(item)
+    }
+
+    override fun onQueryTextSubmit(query: String?): Boolean {
+        query?.let {
+            searchDatabase(query)
+        }
+        return true
+    }
+
+    override fun onQueryTextChange(newText: String?): Boolean {
+        return true
+    }
+
+    private fun searchDatabase(query: String) {
+        val prefs = requireContext().getSharedPreferences(CURRENT_TAB, Context.MODE_PRIVATE)
+        val currentTab = prefs.getString(TAB, null)
+        mainViewModel.searchedPosts.observe(viewLifecycleOwner, { searchedPosts ->
+            viewPagerAdapter.setRecyclerViewListData(searchedPosts)
+        })
+        mainViewModel.getSearchedPosts(query, currentTab)
     }
 
     /**
@@ -165,23 +198,5 @@ class ListFragment : Fragment(), SearchView.OnQueryTextListener {
             sessionManager.clearActiveSession()
         }
         findNavController().navigate(R.id.action_listFragment_to_loginFragment)
-    }
-
-    override fun onQueryTextSubmit(query: String?): Boolean {
-        query?.let {
-            searchDatabase(query)
-        }
-        return true
-    }
-
-    override fun onQueryTextChange(newText: String?): Boolean {
-        return true
-    }
-
-    private fun searchDatabase(query: String) {
-        mainViewModel.getSearchedPosts(query)
-        mainViewModel.searchedPosts.observe(viewLifecycleOwner, { searchedPosts ->
-            homeListAdapter.setHomeData(searchedPosts)
-        })
     }
 }

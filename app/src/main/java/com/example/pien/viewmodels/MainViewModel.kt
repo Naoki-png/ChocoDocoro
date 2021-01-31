@@ -2,9 +2,7 @@ package com.example.pien.viewmodels
 
 import android.app.Application
 import android.content.Context
-import android.util.Log
 import androidx.lifecycle.*
-import com.example.pien.models.Favorite
 import com.example.pien.models.Post
 import com.example.pien.repository.PostRepository
 import com.example.pien.util.State
@@ -17,13 +15,14 @@ import kotlinx.coroutines.launch
 
 class MainViewModel(val app: Application) : AndroidViewModel(app) {
     private val currentUser: FirebaseUser by lazy { FirebaseAuth.getInstance().currentUser!! }
-    var posts = MutableLiveData<List<Post>>()
+    var cheapPosts = MutableLiveData<List<Post>>()
+    var luxuryPosts = MutableLiveData<List<Post>>()
     var searchedPosts = MutableLiveData<List<Post>>()
     var myPosts = MutableLiveData<List<Post>>()
     var favoritePosts = MutableLiveData<List<Post>>()
     var userProfileName = MutableLiveData<String>()
     var userProfileImage = MutableLiveData<String>()
-    var state = MutableLiveData<String>()
+    var state = MutableLiveData<State.StateConst>()
     private val postRepository = PostRepository()
 
     /**
@@ -35,17 +34,17 @@ class MainViewModel(val app: Application) : AndroidViewModel(app) {
             postRepository.editUserInfo(userName, userImage).collect { currentState ->
                 when (currentState) {
                     is State.Loading -> {
-                        state.value = State.StateConst.LOADING.name
+                        state.value = State.StateConst.LOADING
                     }
                     is State.Success -> {
                         myPosts.value = currentState.data
                         userProfileName.value = currentUser.displayName
                         userProfileImage.value = currentUser.photoUrl.toString()
 
-                        state.value = State.StateConst.SUCCESS.name
+                        state.value = State.StateConst.SUCCESS
                     }
                     is State.Failed -> {
-                        state.value = State.StateConst.FAILED.name
+                        state.value = State.StateConst.FAILED
                     }
                 }
             }
@@ -53,23 +52,47 @@ class MainViewModel(val app: Application) : AndroidViewModel(app) {
     }
 
     /**
-     * Home表示用の全件データ取得
+     * Cheapデータ取得
      */
     @ExperimentalCoroutinesApi
-    fun getAllPosts() {
+    fun getCheapPosts() {
         viewModelScope.launch {
-            postRepository.getAllPosts().collect { currentState ->
+            postRepository.getCheapPosts().collect { currentState ->
                 when (currentState) {
                     is State.Loading -> {
-                        state.value = State.StateConst.LOADING.name
+                        state.value = State.StateConst.LOADING
                     }
                     is State.Success -> {
-                        posts.value = currentState.data
+                        cheapPosts.value = currentState.data
 
-                        state.value = State.StateConst.SUCCESS.name
+                        state.value = State.StateConst.SUCCESS
                     }
                     is State.Failed -> {
-                        state.value = State.StateConst.FAILED.name
+                        state.value = State.StateConst.FAILED
+                    }
+                }
+            }
+        }
+    }
+
+    /**
+     * Cheapデータ取得
+     */
+    @ExperimentalCoroutinesApi
+    fun getLuxuryPosts() {
+        viewModelScope.launch {
+            postRepository.getLuxuryPosts().collect { currentState ->
+                when (currentState) {
+                    is State.Loading -> {
+                        state.value = State.StateConst.LOADING
+                    }
+                    is State.Success -> {
+                        luxuryPosts.value = currentState.data
+
+                        state.value = State.StateConst.SUCCESS
+                    }
+                    is State.Failed -> {
+                        state.value = State.StateConst.FAILED
                     }
                 }
             }
@@ -80,20 +103,20 @@ class MainViewModel(val app: Application) : AndroidViewModel(app) {
      * 検索データ取得
      */
     @ExperimentalCoroutinesApi
-    fun getSearchedPosts(query: String) {
+    fun getSearchedPosts(query: String, currentTab: String?) {
         viewModelScope.launch {
-            postRepository.getSearchedPosts(query).collect { currentState ->
+            postRepository.getSearchedPosts(query, currentTab).collect { currentState ->
                 when (currentState) {
                     is State.Loading -> {
-                        state.value = State.StateConst.LOADING.name
+                        state.value = State.StateConst.LOADING
                     }
                     is State.Success -> {
                         searchedPosts.value = currentState.data
 
-                        state.value = State.StateConst.SUCCESS.name
+                        state.value = State.StateConst.SUCCESS
                     }
                     is State.Failed -> {
-                        state.value = State.StateConst.FAILED.name
+                        state.value = State.StateConst.FAILED
                     }
                 }
             }
@@ -109,15 +132,15 @@ class MainViewModel(val app: Application) : AndroidViewModel(app) {
             postRepository.getMyPosts().collect { currentState ->
                 when (currentState) {
                     is State.Loading -> {
-                        state.value = State.StateConst.LOADING.name
+                        state.value = State.StateConst.LOADING
                     }
                     is State.Success -> {
                         myPosts.value = currentState.data
 
-                        state.value = State.StateConst.SUCCESS.name
+                        state.value = State.StateConst.SUCCESS
                     }
                     is State.Failed -> {
-                        state.value = State.StateConst.FAILED.name
+                        state.value = State.StateConst.FAILED
                     }
                 }
             }
@@ -133,14 +156,14 @@ class MainViewModel(val app: Application) : AndroidViewModel(app) {
             postRepository.addPost(post).collect { currentState ->
                 when (currentState) {
                     is State.Loading -> {
-                        state.value = State.StateConst.LOADING.name
+                        state.value = State.StateConst.LOADING
                     }
                     is State.Success -> {
-                        posts.value = currentState.data
-                        state.value = State.StateConst.SUCCESS.name
+                        cheapPosts.value = currentState.data
+                        state.value = State.StateConst.SUCCESS
                     }
                     is State.Failed -> {
-                        state.value = State.StateConst.FAILED.name
+                        state.value = State.StateConst.FAILED
                     }
                 }
             }
@@ -156,14 +179,14 @@ class MainViewModel(val app: Application) : AndroidViewModel(app) {
             postRepository.addFavorite(post).collect { currentState ->
                 when (currentState) {
                     is State.Loading -> {
-                        state.value = State.StateConst.LOADING.name
+                        state.value = State.StateConst.LOADING
                     }
                     is State.Success -> {
                         makeToast(app as Context, "add to Favorite")
-                        state.value = State.StateConst.SUCCESS.name
+                        state.value = State.StateConst.SUCCESS
                     }
                     is State.Failed -> {
-                        state.value = State.StateConst.FAILED.name
+                        state.value = State.StateConst.FAILED
                     }
                 }
             }
@@ -179,14 +202,14 @@ class MainViewModel(val app: Application) : AndroidViewModel(app) {
             postRepository.removeFavorite(post).collect { currentState ->
                 when (currentState) {
                     is State.Loading -> {
-                        state.value = State.StateConst.LOADING.name
+                        state.value = State.StateConst.LOADING
                     }
                     is State.Success -> {
                         makeToast(app as Context, "remove from Favorite")
-                        state.value = State.StateConst.SUCCESS.name
+                        state.value = State.StateConst.SUCCESS
                     }
                     is State.Failed -> {
-                        state.value = State.StateConst.FAILED.name
+                        state.value = State.StateConst.FAILED
                     }
                 }
             }
@@ -202,14 +225,14 @@ class MainViewModel(val app: Application) : AndroidViewModel(app) {
             postRepository.getFavorite().collect { currentState ->
                 when (currentState) {
                     is State.Loading -> {
-                        state.value = State.StateConst.LOADING.name
+                        state.value = State.StateConst.LOADING
                     }
                     is State.Success -> {
                         favoritePosts.value = currentState.data
-                        state.value = State.StateConst.SUCCESS.name
+                        state.value = State.StateConst.SUCCESS
                     }
                     is State.Failed -> {
-                        state.value = State.StateConst.FAILED.name
+                        state.value = State.StateConst.FAILED
                     }
                 }
             }

@@ -7,14 +7,11 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import com.example.pien.databinding.FragmentFavoriteBinding
-import com.example.pien.ui.fragments.list.HomeListAdapter
+import com.example.pien.ui.fragments.list.ListAdapter
 import com.example.pien.util.State
 import com.example.pien.viewmodels.MainViewModel
 import com.todkars.shimmer.ShimmerRecyclerView
-import kotlinx.android.synthetic.main.fragment_favorite.*
-import kotlinx.android.synthetic.main.fragment_favorite.view.*
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 
 
@@ -22,7 +19,7 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 class FavoriteFragment : Fragment() {
     private lateinit var binding: FragmentFavoriteBinding
     private val mainViewModel: MainViewModel by viewModels()
-    private val adapter: HomeListAdapter by lazy { HomeListAdapter() }
+    private val adapter: ListAdapter by lazy { ListAdapter() }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -34,7 +31,7 @@ class FavoriteFragment : Fragment() {
         setRecyclerView(binding.favoriteRecyclerView)
 
         mainViewModel.state.observe(viewLifecycleOwner, { currentState ->
-            when (State.StateConst.valueOf(currentState)) {
+            when (currentState) {
                 State.StateConst.LOADING -> {
                     binding.favoriteRecyclerView.showShimmer()
                 }
@@ -44,10 +41,13 @@ class FavoriteFragment : Fragment() {
                 State.StateConst.FAILED -> {
                     binding.favoriteRecyclerView.hideShimmer()
                 }
+                else -> {
+                    //error 処理
+                }
             }
         })
         mainViewModel.favoritePosts.observe(viewLifecycleOwner, { favoritePosts ->
-            adapter.setHomeData(favoritePosts)
+            adapter.setData(favoritePosts)
         })
         mainViewModel.getFavorite()
 
