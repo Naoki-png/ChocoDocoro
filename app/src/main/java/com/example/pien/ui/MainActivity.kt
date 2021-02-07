@@ -12,25 +12,26 @@ import com.twitter.sdk.android.core.DefaultLogger
 import com.twitter.sdk.android.core.Twitter
 import com.twitter.sdk.android.core.TwitterAuthConfig
 import com.twitter.sdk.android.core.TwitterConfig
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.android.synthetic.main.activity_main.*
 
-
+@AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         setTheme(R.style.AppTheme)
         super.onCreate(savedInstanceState)
-        val config = TwitterConfig.Builder(this)
-            .logger(DefaultLogger(Log.DEBUG))
-            .twitterAuthConfig(
-                TwitterAuthConfig(
-                    getString(R.string.twitter_consumer_key),
-                    getString(R.string.twitter_consumer_secret)
-                )
-            )
-            .debug(true)
-            .build()
-        Twitter.initialize(config)
+//        val config = TwitterConfig.Builder(this)
+//            .logger(DefaultLogger(Log.DEBUG))
+//            .twitterAuthConfig(
+//                TwitterAuthConfig(
+//                    getString(R.string.twitter_consumer_key),
+//                    getString(R.string.twitter_consumer_secret)
+//                )
+//            )
+//            .debug(true)
+//            .build()
+//        Twitter.initialize(config)
 
         setContentView(R.layout.activity_main)
 

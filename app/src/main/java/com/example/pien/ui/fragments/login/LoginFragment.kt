@@ -33,21 +33,21 @@ import com.google.firebase.auth.GoogleAuthProvider
 import com.google.firebase.auth.TwitterAuthProvider
 import com.twitter.sdk.android.core.*
 import com.twitter.sdk.android.core.identity.TwitterLoginButton
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.android.synthetic.main.fragment_login.*
 import kotlinx.android.synthetic.main.fragment_login.view.*
+import javax.inject.Inject
 
-
+@AndroidEntryPoint
 class LoginFragment : Fragment() {
 
-    lateinit var auth: FirebaseAuth
+    @Inject lateinit var auth: FirebaseAuth
     lateinit var mGoogleSignInClient: GoogleSignInClient
     lateinit var mFacebookCallbackManager: CallbackManager
     lateinit var twitterLoginBtn: TwitterLoginButton
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        auth = FirebaseAuth.getInstance()
 
         val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
             .requestIdToken(getString(R.string.default_web_client_id))
@@ -87,18 +87,18 @@ class LoginFragment : Fragment() {
             }
         })
 
-        twitterLoginBtn = view.login_twitter_login_btn
-        twitterLoginBtn.callback = object : Callback<TwitterSession>() {
-            override fun success(result: Result<TwitterSession>?) {
-                Log.d("Twitter Login", "twitter:onSuccess")
-                if (result != null) {
-                    firebaseAuthWithTwitter(result.data)
-                }
-            }
-            override fun failure(exception: TwitterException?) {
-                Log.e("Twitter Login", exception?.localizedMessage.toString())
-            }
-        }
+//        twitterLoginBtn = view.login_twitter_login_btn
+//        twitterLoginBtn.callback = object : Callback<TwitterSession>() {
+//            override fun success(result: Result<TwitterSession>?) {
+//                Log.d("Twitter Login", "twitter:onSuccess")
+//                if (result != null) {
+//                    firebaseAuthWithTwitter(result.data)
+//                }
+//            }
+//            override fun failure(exception: TwitterException?) {
+//                Log.e("Twitter Login", exception?.localizedMessage.toString())
+//            }
+//        }
 
         return view
     }
@@ -123,7 +123,7 @@ class LoginFragment : Fragment() {
         mFacebookCallbackManager.onActivityResult(requestCode, resultCode, data)
 
         // Pass the activity result back to the login button.
-        twitterLoginBtn.onActivityResult(requestCode, resultCode, data)
+//        twitterLoginBtn.onActivityResult(requestCode, resultCode, data)
     }
 
     /**
