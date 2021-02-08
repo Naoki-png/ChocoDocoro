@@ -1,7 +1,10 @@
 package com.example.pien.di.inappcomponent
 
 import android.app.Application
+import android.content.Context
+import androidx.datastore.preferences.createDataStore
 import com.example.pien.MyApplication
+import com.example.pien.util.SIGNIN_METHOD
 import com.google.firebase.auth.FirebaseAuth
 import dagger.Module
 import dagger.Provides
@@ -14,10 +17,7 @@ import javax.inject.Singleton
 object AppModule {
 
     @Provides
-    @Singleton
-    fun firebaseAuth() = FirebaseAuth.getInstance()
+    fun dataStore(application: Application) = (application as Context).createDataStore(name = SIGNIN_METHOD)
 
-    @Provides
-    fun firebaseCurrentUser(firebaseAuth: FirebaseAuth) = firebaseAuth.currentUser
 
 }

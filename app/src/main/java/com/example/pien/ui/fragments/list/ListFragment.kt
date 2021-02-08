@@ -7,15 +7,15 @@ import android.view.*
 import androidx.appcompat.widget.SearchView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.viewpager2.widget.ViewPager2
 import com.example.pien.R
+import com.example.pien.login.LoginRepository
 import com.example.pien.util.*
 import com.example.pien.viewmodels.MainViewModel
 import com.facebook.login.LoginManager
-import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
-import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayout.OnTabSelectedListener
@@ -26,7 +26,9 @@ import com.twitter.sdk.android.core.SessionManager
 import com.twitter.sdk.android.core.TwitterCore
 import com.twitter.sdk.android.core.TwitterSession
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @ExperimentalCoroutinesApi
@@ -34,21 +36,20 @@ import javax.inject.Inject
 class ListFragment : Fragment(), SearchView.OnQueryTextListener {
     private val mainViewModel: MainViewModel by activityViewModels()
     private val viewPagerAdapter: ListViewPagerAdapter by lazy { ListViewPagerAdapter() }
+    private  var firebaseUser: FirebaseUser? = null
 
-    private lateinit var auth: FirebaseAuth
-    private var firebaseUser: FirebaseUser? = null
+    @Inject lateinit var firebaseAuth: FirebaseAuth
+    @Inject lateinit var loginRepository: LoginRepository
 
-    @Inject lateinit var mGoogleSignInClient: GoogleSignInClient
     lateinit var mLoginManager: LoginManager
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        auth = FirebaseAuth.getInstance()
-        firebaseUser = auth.currentUser
 
         mLoginManager = LoginManager.getInstance()
 
-        loginCheck()
+        firebaseUser = firebaseAuth.currentUser
+        loginCheck(firebaseUser)
     }
 
     override fun onCreateView(
@@ -116,17 +117,10 @@ class ListFragment : Fragment(), SearchView.OnQueryTextListener {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when(item.itemId) {
             R.id.logout -> {
-                val prefs = requireContext().getSharedPreferences(
-                    SIGNIN_METHOD,
-                    Context.MODE_PRIVATE
-                )
-                val signInMethod = prefs.getString(METHOD, "logout now")
-                prefs.edit().putString(METHOD, "logout now").apply()
-                when (SignInMethod.valueOf(signInMethod!!)) {
-                    SignInMethod.GOOGLE -> googleSignOut()
-                    SignInMethod.FACEBOOK -> facebookSignOut()
-                    SignInMethod.TWITTER -> twitterSignOut()
+                lifecycleScope.launch() {
+                    loginRepository.signOut()
                 }
+                findNavController().navigate(R.id.action_listFragment_to_loginFragment)
             }
         }
         return super.onOptionsItemSelected(item)
@@ -155,45 +149,20 @@ class ListFragment : Fragment(), SearchView.OnQueryTextListener {
     /**
      * ログインチェックメソッド
      */
-    private fun loginCheck() {
+    private fun loginCheck(firebaseUser: FirebaseUser?) {
         if (firebaseUser == null) {
             findNavController().navigate(R.id.action_listFragment_to_loginFragment)
             return
         }
-        Log.d("LoginUserName", "name: ${firebaseUser?.displayName}, uid: ${firebaseUser?.uid}")
-    }
-
-    /**
-     * Google Logout メソッド
-     */
-    private fun googleSignOut() {
-        auth.signOut()
-        mGoogleSignInClient.signOut()
-            .addOnCompleteListener { task ->
-                if (task.isSuccessful) {
-                    findNavController().navigate(R.id.action_listFragment_to_loginFragment)
-                }
-            }
+        Log.d("LoginUserName", "name: ${this.firebaseUser?.displayName}, uid: ${this.firebaseUser?.uid}")
     }
 
     /**
      * Facebook Logout メソッド
      */
     private fun facebookSignOut() {
-        auth.signOut()
+        firebaseAuth.signOut()
         mLoginManager.logOut()
-        findNavController().navigate(R.id.action_listFragment_to_loginFragment)
-    }
-
-    /**
-     * Twitter Logout メソッド
-     */
-    private fun twitterSignOut() {
-        auth.signOut()
-        val sessionManager: SessionManager<TwitterSession> = TwitterCore.getInstance().sessionManager
-        if (sessionManager.activeSession != null) {
-            sessionManager.clearActiveSession()
-        }
         findNavController().navigate(R.id.action_listFragment_to_loginFragment)
     }
 }
