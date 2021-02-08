@@ -25,9 +25,12 @@ import com.google.firebase.auth.FirebaseUser
 import com.twitter.sdk.android.core.SessionManager
 import com.twitter.sdk.android.core.TwitterCore
 import com.twitter.sdk.android.core.TwitterSession
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import javax.inject.Inject
 
 @ExperimentalCoroutinesApi
+@AndroidEntryPoint
 class ListFragment : Fragment(), SearchView.OnQueryTextListener {
     private val mainViewModel: MainViewModel by activityViewModels()
     private val viewPagerAdapter: ListViewPagerAdapter by lazy { ListViewPagerAdapter() }
@@ -35,19 +38,13 @@ class ListFragment : Fragment(), SearchView.OnQueryTextListener {
     private lateinit var auth: FirebaseAuth
     private var firebaseUser: FirebaseUser? = null
 
-    lateinit var mGoogleSignInClient: GoogleSignInClient
+    @Inject lateinit var mGoogleSignInClient: GoogleSignInClient
     lateinit var mLoginManager: LoginManager
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         auth = FirebaseAuth.getInstance()
         firebaseUser = auth.currentUser
-
-        val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-            .requestIdToken(getString(R.string.default_web_client_id))
-            .requestEmail()
-            .build()
-        mGoogleSignInClient = GoogleSignIn.getClient(requireContext(), gso)
 
         mLoginManager = LoginManager.getInstance()
 

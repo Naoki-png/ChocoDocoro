@@ -42,18 +42,12 @@ import javax.inject.Inject
 class LoginFragment : Fragment() {
 
     @Inject lateinit var auth: FirebaseAuth
-    lateinit var mGoogleSignInClient: GoogleSignInClient
+    @Inject lateinit var mGoogleSignInClient: GoogleSignInClient
     lateinit var mFacebookCallbackManager: CallbackManager
     lateinit var twitterLoginBtn: TwitterLoginButton
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-            .requestIdToken(getString(R.string.default_web_client_id))
-            .requestEmail()
-            .build()
-        mGoogleSignInClient = GoogleSignIn.getClient(requireContext(), gso)
 
         mFacebookCallbackManager = CallbackManager.Factory.create()
     }
