@@ -11,29 +11,24 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.viewpager2.widget.ViewPager2
 import com.example.pien.R
+import com.example.pien.login.BaseLoginCallback
 import com.example.pien.login.LoginRepository
 import com.example.pien.util.*
 import com.example.pien.viewmodels.MainViewModel
-import com.facebook.login.LoginManager
-import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayout.OnTabSelectedListener
 import com.google.android.material.tabs.TabLayoutMediator
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
-import com.twitter.sdk.android.core.SessionManager
-import com.twitter.sdk.android.core.TwitterCore
-import com.twitter.sdk.android.core.TwitterSession
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @ExperimentalCoroutinesApi
 @AndroidEntryPoint
-class ListFragment : Fragment(), SearchView.OnQueryTextListener {
+class ListFragment : Fragment(), SearchView.OnQueryTextListener, BaseLoginCallback.LogoutListener {
     private val mainViewModel: MainViewModel by activityViewModels()
     private val viewPagerAdapter: ListViewPagerAdapter by lazy { ListViewPagerAdapter() }
     private  var firebaseUser: FirebaseUser? = null
@@ -41,12 +36,8 @@ class ListFragment : Fragment(), SearchView.OnQueryTextListener {
     @Inject lateinit var firebaseAuth: FirebaseAuth
     @Inject lateinit var loginRepository: LoginRepository
 
-    lateinit var mLoginManager: LoginManager
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        mLoginManager = LoginManager.getInstance()
 
         firebaseUser = firebaseAuth.currentUser
         loginCheck(firebaseUser)
@@ -114,18 +105,6 @@ class ListFragment : Fragment(), SearchView.OnQueryTextListener {
         searchView?.setOnQueryTextListener(this)
     }
 
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        when(item.itemId) {
-            R.id.logout -> {
-                lifecycleScope.launch() {
-                    loginRepository.signOut()
-                }
-                findNavController().navigate(R.id.action_listFragment_to_loginFragment)
-            }
-        }
-        return super.onOptionsItemSelected(item)
-    }
-
     override fun onQueryTextSubmit(query: String?): Boolean {
         query?.let {
             searchDatabase(query)
@@ -146,6 +125,17 @@ class ListFragment : Fragment(), SearchView.OnQueryTextListener {
         mainViewModel.getSearchedPosts(query, currentTab)
     }
 
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when(item.itemId) {
+            R.id.logout -> {
+                lifecycleScope.launch() {
+                    loginRepository.signOut()
+                }
+            }
+        }
+        return super.onOptionsItemSelected(item)
+    }
+
     /**
      * ログインチェックメソッド
      */
@@ -157,12 +147,17 @@ class ListFragment : Fragment(), SearchView.OnQueryTextListener {
         Log.d("LoginUserName", "name: ${this.firebaseUser?.displayName}, uid: ${this.firebaseUser?.uid}")
     }
 
-    /**
-     * Facebook Logout メソッド
-     */
-    private fun facebookSignOut() {
-        firebaseAuth.signOut()
-        mLoginManager.logOut()
+    override fun onLogoutCompleted() {
         findNavController().navigate(R.id.action_listFragment_to_loginFragment)
+    }
+
+    override fun onStart() {
+        super.onStart()
+        loginRepository.myFaceBookCallback.registerLogoutListener(this)
+    }
+
+    override fun onStop() {
+        super.onStop()
+        loginRepository.myFaceBookCallback.unregisterLogoutListener()
     }
 }

@@ -2,7 +2,13 @@ package com.example.pien.di.inactivitycomponent
 
 import android.app.Activity
 import android.app.Application
+import android.util.Log
 import com.example.pien.R
+import com.facebook.CallbackManager
+import com.facebook.FacebookCallback
+import com.facebook.FacebookException
+import com.facebook.login.LoginManager
+import com.facebook.login.LoginResult
 import com.google.android.gms.auth.api.Auth
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
@@ -40,6 +46,12 @@ object LoginModule {
     @Provides
     fun googleSignInApi() = Auth.GoogleSignInApi
 
+    // Facebook SignIn
+    @Provides
+    fun callbackManager() = CallbackManager.Factory.create()
+
+    @Provides
+    fun loginManager() = LoginManager.getInstance()
 
 
 }

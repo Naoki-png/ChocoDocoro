@@ -9,7 +9,10 @@ import com.example.pien.util.*
 import com.google.android.gms.auth.api.signin.GoogleSignInApi
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.GoogleAuthProvider
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 
@@ -25,17 +28,15 @@ class GoogleSignIn @Inject constructor(
         fragment.startActivityForResult(signInIntent, REQUEST_SIGN_IN_WITH_GOOGLE)
     }
 
-    suspend fun handleResult(requestCode: Int, resultCode: Int, data: Intent?): Boolean {
+    suspend fun handleResult(requestCode: Int, resultCode: Int, data: Intent?) {
         if (requestCode == REQUEST_SIGN_IN_WITH_GOOGLE) {
             val result = googleSignInApi.getSignInResultFromIntent(data)
             if (result != null && result.isSuccess) {
                 val credential = GoogleAuthProvider.getCredential(result.signInAccount?.idToken, null)
-                val currentUser = firebaseAuth.signInWithCredential(credential).await().user
+                firebaseAuth.signInWithCredential(credential).await()
                 loginDataStore.saveSignInMethod(SignInMethod.GOOGLE.name)
-                return currentUser != null
             }
         }
-        return false
     }
 
     suspend fun googleSignOut() {
