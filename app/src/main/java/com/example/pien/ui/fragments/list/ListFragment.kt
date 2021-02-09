@@ -22,9 +22,7 @@ import com.google.android.material.tabs.TabLayout.OnTabSelectedListener
 import com.google.android.material.tabs.TabLayoutMediator
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
-import com.twitter.sdk.android.core.SessionManager
-import com.twitter.sdk.android.core.TwitterCore
-import com.twitter.sdk.android.core.TwitterSession
+
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 
 @ExperimentalCoroutinesApi
@@ -128,7 +126,6 @@ class ListFragment : Fragment(), SearchView.OnQueryTextListener {
                 when (SignInMethod.valueOf(signInMethod!!)) {
                     SignInMethod.GOOGLE -> googleSignOut()
                     SignInMethod.FACEBOOK -> facebookSignOut()
-                    SignInMethod.TWITTER -> twitterSignOut()
                 }
             }
         }
@@ -188,15 +185,5 @@ class ListFragment : Fragment(), SearchView.OnQueryTextListener {
         findNavController().navigate(R.id.action_listFragment_to_loginFragment)
     }
 
-    /**
-     * Twitter Logout メソッド
-     */
-    private fun twitterSignOut() {
-        auth.signOut()
-        val sessionManager: SessionManager<TwitterSession> = TwitterCore.getInstance().sessionManager
-        if (sessionManager.activeSession != null) {
-            sessionManager.clearActiveSession()
-        }
-        findNavController().navigate(R.id.action_listFragment_to_loginFragment)
-    }
+
 }

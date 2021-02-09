@@ -1,10 +1,8 @@
 package com.example.pien.ui.fragments.myPage
 
 import android.os.Bundle
+import android.view.*
 import androidx.fragment.app.Fragment
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
@@ -63,6 +61,7 @@ class MyPageFragment : Fragment() {
             }
         })
 
+        setHasOptionsMenu(true)
         return binding.root
     }
 
@@ -70,5 +69,16 @@ class MyPageFragment : Fragment() {
         binding.mypageList.adapter = listAdapter
         binding.mypageList.layoutManager = LinearLayoutManager(requireContext())
         binding.mypageList.showShimmer()
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        inflater.inflate(R.menu.mypage_fragment_menu, menu)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        if (item.itemId == R.id.delete_account) {
+            DeleteAccountDialog().show(parentFragmentManager, "")
+        }
+        return super.onOptionsItemSelected(item)
     }
 }
