@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.activityViewModels
+import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.pien.viewmodels.MainViewModel
@@ -21,14 +22,16 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 class MyPageFragment : Fragment() {
     private val currentUser: FirebaseUser by lazy { FirebaseAuth.getInstance().currentUser!! }
     private val listAdapter : ListAdapter by lazy { ListAdapter() }
-    private val mainViewModel: MainViewModel by activityViewModels()
-    private lateinit var binding: FragmentMyPageBinding
+    private val mainViewModel: MainViewModel by viewModels()
+
+    private var _binding: FragmentMyPageBinding? = null
+    private val binding get() = _binding!!
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        binding = FragmentMyPageBinding.inflate(layoutInflater, container, false)
+        _binding = FragmentMyPageBinding.inflate(layoutInflater, container, false)
         binding.mainViewModel = mainViewModel
         binding.lifecycleOwner = this
 
@@ -42,10 +45,10 @@ class MyPageFragment : Fragment() {
         setRecyclerView()
 
         mainViewModel.getMyPosts()
-        mainViewModel.myPosts.observe(requireActivity(), { posts ->
+        mainViewModel.myPosts.observe(viewLifecycleOwner, { posts ->
             listAdapter.setData(posts)
         })
-        mainViewModel.state.observe(requireActivity(), { currentState ->
+        mainViewModel.state.observe(viewLifecycleOwner, { currentState ->
             when (currentState) {
                 State.StateConst.LOADING -> {
                     binding.mypageList.showShimmer()
@@ -69,5 +72,10 @@ class MyPageFragment : Fragment() {
         binding.mypageList.adapter = listAdapter
         binding.mypageList.layoutManager = LinearLayoutManager(requireContext())
         binding.mypageList.showShimmer()
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 }
