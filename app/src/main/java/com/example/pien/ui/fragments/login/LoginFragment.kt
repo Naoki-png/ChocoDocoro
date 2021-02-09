@@ -30,11 +30,7 @@ import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.firebase.auth.FacebookAuthProvider
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.GoogleAuthProvider
-import com.google.firebase.auth.TwitterAuthProvider
-import com.twitter.sdk.android.core.*
-import com.twitter.sdk.android.core.identity.TwitterLoginButton
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.android.synthetic.main.fragment_login.*
 import kotlinx.android.synthetic.main.fragment_login.view.*
 import javax.inject.Inject
 
@@ -44,7 +40,6 @@ class LoginFragment : Fragment() {
     @Inject lateinit var auth: FirebaseAuth
     lateinit var mGoogleSignInClient: GoogleSignInClient
     lateinit var mFacebookCallbackManager: CallbackManager
-    lateinit var twitterLoginBtn: TwitterLoginButton
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -87,18 +82,6 @@ class LoginFragment : Fragment() {
             }
         })
 
-//        twitterLoginBtn = view.login_twitter_login_btn
-//        twitterLoginBtn.callback = object : Callback<TwitterSession>() {
-//            override fun success(result: Result<TwitterSession>?) {
-//                Log.d("Twitter Login", "twitter:onSuccess")
-//                if (result != null) {
-//                    firebaseAuthWithTwitter(result.data)
-//                }
-//            }
-//            override fun failure(exception: TwitterException?) {
-//                Log.e("Twitter Login", exception?.localizedMessage.toString())
-//            }
-//        }
 
         return view
     }
@@ -121,9 +104,6 @@ class LoginFragment : Fragment() {
 
         // Pass the activity result back to the Facebook SDK
         mFacebookCallbackManager.onActivityResult(requestCode, resultCode, data)
-
-        // Pass the activity result back to the login button.
-//        twitterLoginBtn.onActivityResult(requestCode, resultCode, data)
     }
 
     /**
@@ -170,24 +150,4 @@ class LoginFragment : Fragment() {
             }
     }
 
-    /**
-     * TwitterアカウントでTwitterへログインするメソッド
-     * 認証成功後、auth.currentUserが更新される
-     * @param session facebookの認証トークン
-     */
-    private fun firebaseAuthWithTwitter(session: TwitterSession) {
-        val credential = TwitterAuthProvider.getCredential(
-            session.authToken.token,
-            session.authToken.secret
-        )
-        auth.signInWithCredential(credential)
-            .addOnSuccessListener {
-                val prefs = requireContext().getSharedPreferences(SIGNIN_METHOD, Context.MODE_PRIVATE)
-                prefs.edit().putString(METHOD, SignInMethod.TWITTER.name).apply()
-                findNavController().navigate(R.id.action_loginFragment_to_listFragment)
-            }
-            .addOnFailureListener { exception ->
-                Log.e("Twitter Login", "firebase auth with twitter login failed: ${exception.localizedMessage}")
-            }
-    }
 }
