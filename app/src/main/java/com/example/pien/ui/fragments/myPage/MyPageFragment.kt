@@ -12,15 +12,19 @@ import com.example.pien.R
 import com.example.pien.databinding.FragmentMyPageBinding
 import com.example.pien.ui.fragments.list.ListAdapter
 import com.example.pien.util.State
+import com.example.pien.viewmodels.MyPageViewModel
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 
+@AndroidEntryPoint
 @ExperimentalCoroutinesApi
 class MyPageFragment : Fragment() {
     private val currentUser: FirebaseUser by lazy { FirebaseAuth.getInstance().currentUser!! }
     private val listAdapter : ListAdapter by lazy { ListAdapter() }
     private val mainViewModel: MainViewModel by viewModels()
+    private val myPageViewModel: MyPageViewModel by viewModels()
     private lateinit var binding: FragmentMyPageBinding
 
     override fun onCreateView(

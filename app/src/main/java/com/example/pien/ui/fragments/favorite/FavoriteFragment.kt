@@ -12,9 +12,10 @@ import com.example.pien.ui.fragments.list.ListAdapter
 import com.example.pien.util.State
 import com.example.pien.viewmodels.MainViewModel
 import com.todkars.shimmer.ShimmerRecyclerView
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 
-
+@AndroidEntryPoint
 @ExperimentalCoroutinesApi
 class FavoriteFragment : Fragment() {
     private lateinit var binding: FragmentFavoriteBinding

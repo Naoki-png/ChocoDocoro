@@ -13,9 +13,11 @@ import com.example.pien.models.Favorite
 import com.example.pien.models.Post
 import com.example.pien.viewmodels.MainViewModel
 import com.google.firebase.firestore.FieldValue
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import java.util.*
 
+@AndroidEntryPoint
 @ExperimentalCoroutinesApi
 class DetailFragment : Fragment() {
 

@@ -2,6 +2,7 @@ package com.example.pien.viewmodels
 
 import android.app.Application
 import android.content.Context
+import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.*
 import com.example.pien.models.Post
 import com.example.pien.repository.PostRepository
@@ -9,11 +10,16 @@ import com.example.pien.util.State
 import com.example.pien.util.makeToast
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
+import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.WriteBatch
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 
-class MainViewModel(val app: Application) : AndroidViewModel(app) {
+class MainViewModel @ViewModelInject constructor(
+    val app: Application,
+    private val postRepository: PostRepository
+) : AndroidViewModel(app) {
     private val currentUser: FirebaseUser by lazy { FirebaseAuth.getInstance().currentUser!! }
     var cheapPosts = MutableLiveData<List<Post>>()
     var luxuryPosts = MutableLiveData<List<Post>>()
@@ -23,7 +29,7 @@ class MainViewModel(val app: Application) : AndroidViewModel(app) {
     var userProfileName = MutableLiveData<String>()
     var userProfileImage = MutableLiveData<String>()
     var state = MutableLiveData<State.StateConst>()
-    private val postRepository = PostRepository()
+
 
     /**
      * ユーザープロフィール変更

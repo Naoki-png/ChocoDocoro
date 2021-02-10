@@ -22,9 +22,11 @@ import com.google.android.material.tabs.TabLayout.OnTabSelectedListener
 import com.google.android.material.tabs.TabLayoutMediator
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
+import dagger.hilt.android.AndroidEntryPoint
 
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 
+@AndroidEntryPoint
 @ExperimentalCoroutinesApi
 class ListFragment : Fragment(), SearchView.OnQueryTextListener {
     private val mainViewModel: MainViewModel by activityViewModels()

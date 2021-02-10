@@ -21,10 +21,12 @@ import com.example.pien.util.makeToast
 import com.example.pien.viewmodels.EditAccountViewModel
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.android.synthetic.main.fragment_edit_account.*
 import kotlinx.android.synthetic.main.fragment_edit_account.view.*
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 
+@AndroidEntryPoint
 @ExperimentalCoroutinesApi
 class EditAccountFragment : Fragment() {
     private val currentUser: FirebaseUser by lazy { FirebaseAuth.getInstance().currentUser!! }

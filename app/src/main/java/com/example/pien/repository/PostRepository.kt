@@ -1,6 +1,7 @@
 package com.example.pien.repository
 
 import android.net.Uri
+import android.util.Log
 import com.example.pien.models.Favorite
 import com.example.pien.models.Post
 import com.example.pien.util.State
@@ -11,6 +12,7 @@ import com.google.firebase.auth.UserProfileChangeRequest
 import com.google.firebase.firestore.*
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageReference
+import dagger.hilt.android.scopes.ActivityRetainedScoped
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.catch
@@ -18,9 +20,13 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.tasks.await
 import java.util.*
+import javax.inject.Inject
 
-
-class PostRepository {
+@ActivityRetainedScoped
+class PostRepository @Inject constructor(
+    private val firebaseAuth: FirebaseAuth,
+    private val firestore: FirebaseFirestore
+) {
     private val currentUser: FirebaseUser by lazy { FirebaseAuth.getInstance().currentUser!! }
     private val postCollectionRef: CollectionReference by lazy { FirebaseFirestore.getInstance().collection(POST_REF) }
     private val favoriteCollectionRef: CollectionReference by lazy {
@@ -267,5 +273,59 @@ class PostRepository {
             postList.add(post[0])
         }
         return postList
+    }
+
+    fun deleteAccount() {
+//        var result = firebaseAuth.currentUser!!.reauthenticateAndRetrieveData()
+//        result.user.delete();
+        firebaseAuth.currentUser!!
+            .delete()
+            .addOnSuccessListener {
+                Log.d(
+                    "Delete Account",
+                    "name: ${firebaseAuth.currentUser!!.displayName}, uid: ${firebaseAuth.currentUser!!.uid}"
+                )
+                //to LoginFragment
+        }
+            .addOnFailureListener { exception ->
+                Log.e("Delete Account", exception.localizedMessage)
+            }
+    }
+
+    fun deleteAccountsPosts() {
+        val batch = firestore.batch()
+        postCollectionRef
+            .whereEqualTo(USERID, firebaseAuth.currentUser!!.uid).get()
+            .addOnSuccessListener { snapshot ->
+                for (document in snapshot) {
+                    val docRef = postCollectionRef.document(document.id)
+                    batch.delete(docRef)
+                }
+                batch.commit()
+            }
+    }
+
+    fun deleteAccountsFavorites() {
+        val batch = firestore.batch()
+        FirebaseFirestore.getInstance()
+            .collection(FAVORITES_REF)
+            .document(firebaseAuth.currentUser!!.uid)
+            .collection(EACH_USER_FAVORITES_REF)
+            .get()
+            .addOnSuccessListener { snapshot ->
+                for (document in snapshot) {
+                    val docRef = FirebaseFirestore.getInstance()
+                        .collection(FAVORITES_REF)
+                        .document(firebaseAuth.currentUser!!.uid)
+                        .collection(EACH_USER_FAVORITES_REF)
+                        .document(document.id)
+                    batch.delete(docRef)
+                }
+                batch.commit()
+            }
+    }
+
+    fun deleteAccountsStorage() {
+        FirebaseStorage.getInstance().getReference(firebaseAuth.currentUser!!.uid).delete()
     }
 }

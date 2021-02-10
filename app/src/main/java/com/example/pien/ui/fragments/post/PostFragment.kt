@@ -19,11 +19,13 @@ import com.example.pien.util.*
 import com.example.pien.viewmodels.PostViewModel
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.android.synthetic.main.fragment_post.*
 import kotlinx.android.synthetic.main.fragment_post.view.*
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import java.util.*
 
+@AndroidEntryPoint
 @ExperimentalCoroutinesApi
 class PostFragment : Fragment() {
     private val currentUser: FirebaseUser by lazy { FirebaseAuth.getInstance().currentUser!! }
