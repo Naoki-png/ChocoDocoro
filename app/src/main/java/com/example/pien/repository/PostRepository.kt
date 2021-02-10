@@ -279,82 +279,63 @@ class PostRepository @Inject constructor(
         return postList
     }
 
-    fun deleteAccount() {
-//        var result = firebaseAuth.currentUser!!.reauthenticateAndRetrieveData()
-//        result.user.delete();
-        firebaseAuth.currentUser!!
-            .delete()
-            .addOnSuccessListener {
-                Log.d(
-                    "Delete Account",
-                    "name: ${firebaseAuth.currentUser!!.displayName}, uid: ${firebaseAuth.currentUser!!.uid}"
-                )
-                //to LoginFragment
-        }
-            .addOnFailureListener { exception ->
-                Log.e("Delete Account", exception.localizedMessage)
-            }
-    }
-
-    fun deleteAllPosts() {
-        val batch = firebaseFireStore.batch()
-        postCollectionRef
-            .whereEqualTo(USERID, firebaseAuth.currentUser!!.uid).get()
-            .addOnSuccessListener { snapshot ->
-                for (document in snapshot) {
-                    val docRef = postCollectionRef.document(document.id)
-                    batch.delete(docRef)
-                }
-                //batch インスタンスはcommit()後に参照してはいけない
-                batch.commit()
-            }
-    }
-
-    fun deleteAllFavorites() {
-        val batch = firebaseFireStore.batch()
-        firebaseFireStore
-            .collection(FAVORITES_REF)
-            .document(firebaseAuth.currentUser!!.uid)
-            .collection(EACH_USER_FAVORITES_REF)
-            .get()
-            .addOnSuccessListener { snapshot ->
-                for (document in snapshot) {
-                    val docRef = firebaseFireStore
-                        .collection(FAVORITES_REF)
-                        .document(firebaseAuth.currentUser!!.uid)
-                        .collection(EACH_USER_FAVORITES_REF)
-                        .document(document.id)
-                    batch.delete(docRef)
-                }
-                batch.commit()
-            }
-    }
-
-    fun deleteAllFilesInStorage() {
+    suspend fun deleteAllFilesInStorage() {
         deleteAllPostImage()
         deleteUserImage()
     }
 
-    private fun deleteAllPostImage() {
-        postCollectionRef
-            .whereEqualTo(USERID, firebaseAuth.currentUser!!.uid).get()
-            .addOnSuccessListener { snapshot ->
-                val postList: List<Post> = snapshot.toObjects(Post::class.java)
-                for (post in postList) {
-                    val downloadUrl = post.postImage!!
-                    firebaseStorage.getReferenceFromUrl(downloadUrl).delete()
-                }
-            }
+    private suspend fun deleteAllPostImage() {
+        val snapshot = firebaseFireStore.collection(POST_REF).whereEqualTo(USERID, firebaseAuth.currentUser!!.uid).get().await()
+        val postList: List<Post> = snapshot.toObjects(Post::class.java)
+        for (post in postList) {
+            val downloadUrl = post.postImage!!
+            firebaseStorage.getReferenceFromUrl(downloadUrl).delete().await()
+        }
     }
 
-    private fun deleteUserImage() {
+    private suspend fun deleteUserImage() {
         val userImageUrl = firebaseAuth.currentUser!!.photoUrl.toString()
-        firebaseStorage.getReferenceFromUrl(userImageUrl).delete()
-            .addOnSuccessListener {
-                Log.d("Delete User", "deleting user image is completed")
-            }
-            .addOnFailureListener { exception ->
-            Log.d("Delete User", exception.localizedMessage)
+        firebaseStorage.getReferenceFromUrl(userImageUrl).delete().await()
+    }
+
+    suspend fun deleteAllPosts() {
+        val batch = firebaseFireStore.batch()
+        val snapshot = firebaseFireStore
+            .collection(POST_REF)
+            .whereEqualTo(USERID, firebaseAuth.currentUser!!.uid)
+            .get()
+            .await()
+        for (document in snapshot) {
+            val docRef = firebaseFireStore.collection(POST_REF).document(document.id)
+            batch.delete(docRef)
         }
+        //batch インスタンスはcommit()後に参照してはいけない
+        batch.commit().await()
+    }
+
+    suspend fun deleteAllFavorites() {
+        val batch = firebaseFireStore.batch()
+        val snapshot = firebaseFireStore
+            .collection(FAVORITES_REF)
+            .document(firebaseAuth.currentUser!!.uid)
+            .collection(EACH_USER_FAVORITES_REF)
+            .get()
+            .await()
+        for (document in snapshot) {
+            val docRef = firebaseFireStore
+                .collection(FAVORITES_REF)
+                .document(firebaseAuth.currentUser!!.uid)
+                .collection(EACH_USER_FAVORITES_REF)
+                .document(document.id)
+            batch.delete(docRef)
+        }
+        batch.commit().await()
+    }
+
+    suspend fun deleteAccount() {
+//        var result = firebaseAuth.currentUser!!.reauthenticateAndRetrieveData()
+//        result.user.delete();
+        firebaseAuth.currentUser!!.delete().await()
+        // navigate to login fragment
     }
 }

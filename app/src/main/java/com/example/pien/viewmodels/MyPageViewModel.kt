@@ -4,8 +4,12 @@ import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.example.pien.repository.PostRepository
 import com.example.pien.util.State
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 class MyPageViewModel @ViewModelInject constructor(
     private val postRepository: PostRepository
@@ -14,25 +18,28 @@ class MyPageViewModel @ViewModelInject constructor(
     val state: LiveData<State.StateConst> = _state
 
     fun deleteAccountCompletely() {
-//        deleteAccount()
-//        deleteAllPosts()
-//        deleteAllFavorites()
-        deleteAllFilesInStorage()
+        //todo make coroutineScope accurate scope(should be MypageFragmentScope, this method be called in the fragment)
+        CoroutineScope(Dispatchers.IO).launch {
+            deleteAllFilesInStorage()
+            deleteAllPosts()
+            deleteAllFavorites()
+//            deleteAccount()
+        }
     }
 
-    private fun deleteAccount() {
-        postRepository.deleteAccount()
+    private suspend fun deleteAllFilesInStorage() {
+        postRepository.deleteAllFilesInStorage()
     }
 
-    private fun deleteAllPosts() {
+    private suspend fun deleteAllPosts() {
         postRepository.deleteAllPosts()
     }
 
-    private fun deleteAllFavorites() {
+    private suspend fun deleteAllFavorites() {
         postRepository.deleteAllFavorites()
     }
 
-    private fun deleteAllFilesInStorage() {
-        postRepository.deleteAllFilesInStorage()
+    private suspend fun deleteAccount() {
+        postRepository.deleteAccount()
     }
 }
