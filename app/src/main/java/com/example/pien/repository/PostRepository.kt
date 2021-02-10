@@ -330,7 +330,12 @@ class PostRepository @Inject constructor(
             }
     }
 
-    fun deleteAllPostImage() {
+    fun deleteAllFilesInStorage() {
+        deleteAllPostImage()
+        deleteUserImage()
+    }
+
+    private fun deleteAllPostImage() {
         postCollectionRef
             .whereEqualTo(USERID, firebaseAuth.currentUser!!.uid).get()
             .addOnSuccessListener { snapshot ->
@@ -342,11 +347,13 @@ class PostRepository @Inject constructor(
             }
     }
 
-    suspend fun deleteAllUserImage() {
-        val snapshot = postCollectionRef.whereEqualTo(USERID, firebaseAuth.currentUser!!.uid).get().await()
-        val postList: List<Post> = snapshot.toObjects(Post::class.java)
-        val userImageUrl = postList[0].userImage!!
-        firebaseStorage.getReferenceFromUrl(userImageUrl).delete().addOnFailureListener { exception ->
+    private fun deleteUserImage() {
+        val userImageUrl = firebaseAuth.currentUser!!.photoUrl.toString()
+        firebaseStorage.getReferenceFromUrl(userImageUrl).delete()
+            .addOnSuccessListener {
+                Log.d("Delete User", "deleting user image is completed")
+            }
+            .addOnFailureListener { exception ->
             Log.d("Delete User", exception.localizedMessage)
         }
     }

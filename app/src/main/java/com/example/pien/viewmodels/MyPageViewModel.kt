@@ -15,24 +15,24 @@ class MyPageViewModel @ViewModelInject constructor(
 
     fun deleteAccountCompletely() {
 //        deleteAccount()
-//        deleteAccountsPosts()
-//        deleteAccountsFavorites()
-        deleteAccountsStorage()
+//        deleteAllPosts()
+//        deleteAllFavorites()
+        deleteAllFilesInStorage()
     }
 
     private fun deleteAccount() {
         postRepository.deleteAccount()
     }
 
-    private fun deleteAccountsPosts() {
+    private fun deleteAllPosts() {
         postRepository.deleteAllPosts()
     }
 
-    private fun deleteAccountsFavorites() {
+    private fun deleteAllFavorites() {
         postRepository.deleteAllFavorites()
     }
 
-    private fun deleteAccountsStorage() {
-        postRepository.deleteAllPostImage()
+    private fun deleteAllFilesInStorage() {
+        postRepository.deleteAllFilesInStorage()
     }
 }
