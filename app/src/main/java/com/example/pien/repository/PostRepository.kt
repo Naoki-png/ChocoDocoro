@@ -301,20 +301,21 @@ class PostRepository @Inject constructor(
                     val docRef = postCollectionRef.document(document.id)
                     batch.delete(docRef)
                 }
+                //batch インスタンスはcommit()後に参照してはいけない
                 batch.commit()
             }
     }
 
     fun deleteAccountsFavorites() {
         val batch = firestore.batch()
-        FirebaseFirestore.getInstance()
+        firestore
             .collection(FAVORITES_REF)
             .document(firebaseAuth.currentUser!!.uid)
             .collection(EACH_USER_FAVORITES_REF)
             .get()
             .addOnSuccessListener { snapshot ->
                 for (document in snapshot) {
-                    val docRef = FirebaseFirestore.getInstance()
+                    val docRef = firestore
                         .collection(FAVORITES_REF)
                         .document(firebaseAuth.currentUser!!.uid)
                         .collection(EACH_USER_FAVORITES_REF)

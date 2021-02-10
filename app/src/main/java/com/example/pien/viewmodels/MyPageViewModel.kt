@@ -17,8 +17,8 @@ class MyPageViewModel @ViewModelInject constructor(
 
     fun deleteAccountCompletely() {
 //        deleteAccount()
-        deleteAccountsPosts()
-//        deleteAccountsFavorites()
+//        deleteAccountsPosts()
+        deleteAccountsFavorites()
 //        deleteAccountsStorage()
     }
 
