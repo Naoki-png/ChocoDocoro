@@ -6,8 +6,6 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.example.pien.repository.PostRepository
 import com.example.pien.util.State
-import com.google.firebase.auth.FirebaseUser
-import dagger.assisted.Assisted
 
 class MyPageViewModel @ViewModelInject constructor(
     private val postRepository: PostRepository
@@ -18,8 +16,8 @@ class MyPageViewModel @ViewModelInject constructor(
     fun deleteAccountCompletely() {
 //        deleteAccount()
 //        deleteAccountsPosts()
-        deleteAccountsFavorites()
-//        deleteAccountsStorage()
+//        deleteAccountsFavorites()
+        deleteAccountsStorage()
     }
 
     private fun deleteAccount() {
@@ -27,14 +25,14 @@ class MyPageViewModel @ViewModelInject constructor(
     }
 
     private fun deleteAccountsPosts() {
-        postRepository.deleteAccountsPosts()
+        postRepository.deleteAllPosts()
     }
 
     private fun deleteAccountsFavorites() {
-        postRepository.deleteAccountsFavorites()
+        postRepository.deleteAllFavorites()
     }
 
     private fun deleteAccountsStorage() {
-        postRepository.deleteAccountsStorage()
+        postRepository.deleteAllPostImage()
     }
 }

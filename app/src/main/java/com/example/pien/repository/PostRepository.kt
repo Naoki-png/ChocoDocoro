@@ -25,7 +25,8 @@ import javax.inject.Inject
 @ActivityRetainedScoped
 class PostRepository @Inject constructor(
     private val firebaseAuth: FirebaseAuth,
-    private val firestore: FirebaseFirestore
+    private val firebaseFireStore: FirebaseFirestore,
+    private val firebaseStorage: FirebaseStorage
 ) {
     private val currentUser: FirebaseUser by lazy { FirebaseAuth.getInstance().currentUser!! }
     private val postCollectionRef: CollectionReference by lazy { FirebaseFirestore.getInstance().collection(POST_REF) }
@@ -64,13 +65,16 @@ class PostRepository @Inject constructor(
      * DB内とauthのプロフィール写真を変更
      */
     private suspend fun updateProfileImage(userImage: String) {
-        val userImageStorageRef = storageRef.child("userImage").child(Date().toString())
+        val userImageStorageRef = storageRef.child("userImage")
+        //firebaseStorageは勝手に上書きするため削除の必要ない。
         userImageStorageRef.putFile(Uri.parse(userImage)).await()
 
-        val snapshot = postCollectionRef.whereEqualTo(USERID, currentUser.uid).get().await()
+        val snapshot: QuerySnapshot? = postCollectionRef.whereEqualTo(USERID, currentUser.uid).get().await()
         val downloadUrl: Uri = userImageStorageRef.downloadUrl.await()
-        for (document in snapshot) {
-            postCollectionRef.document(document.id).update(USERIMAGE, downloadUrl.toString()).await()
+        if (snapshot != null) {
+            for (document in snapshot) {
+                postCollectionRef.document(document.id).update(USERIMAGE, downloadUrl.toString()).await()
+            }
         }
 
         val changeRequest = UserProfileChangeRequest.Builder()
@@ -292,8 +296,8 @@ class PostRepository @Inject constructor(
             }
     }
 
-    fun deleteAccountsPosts() {
-        val batch = firestore.batch()
+    fun deleteAllPosts() {
+        val batch = firebaseFireStore.batch()
         postCollectionRef
             .whereEqualTo(USERID, firebaseAuth.currentUser!!.uid).get()
             .addOnSuccessListener { snapshot ->
@@ -306,16 +310,16 @@ class PostRepository @Inject constructor(
             }
     }
 
-    fun deleteAccountsFavorites() {
-        val batch = firestore.batch()
-        firestore
+    fun deleteAllFavorites() {
+        val batch = firebaseFireStore.batch()
+        firebaseFireStore
             .collection(FAVORITES_REF)
             .document(firebaseAuth.currentUser!!.uid)
             .collection(EACH_USER_FAVORITES_REF)
             .get()
             .addOnSuccessListener { snapshot ->
                 for (document in snapshot) {
-                    val docRef = firestore
+                    val docRef = firebaseFireStore
                         .collection(FAVORITES_REF)
                         .document(firebaseAuth.currentUser!!.uid)
                         .collection(EACH_USER_FAVORITES_REF)
@@ -326,7 +330,24 @@ class PostRepository @Inject constructor(
             }
     }
 
-    fun deleteAccountsStorage() {
-        FirebaseStorage.getInstance().getReference(firebaseAuth.currentUser!!.uid).delete()
+    fun deleteAllPostImage() {
+        postCollectionRef
+            .whereEqualTo(USERID, firebaseAuth.currentUser!!.uid).get()
+            .addOnSuccessListener { snapshot ->
+                val postList: List<Post> = snapshot.toObjects(Post::class.java)
+                for (post in postList) {
+                    val downloadUrl = post.postImage!!
+                    firebaseStorage.getReferenceFromUrl(downloadUrl).delete()
+                }
+            }
+    }
+
+    suspend fun deleteAllUserImage() {
+        val snapshot = postCollectionRef.whereEqualTo(USERID, firebaseAuth.currentUser!!.uid).get().await()
+        val postList: List<Post> = snapshot.toObjects(Post::class.java)
+        val userImageUrl = postList[0].userImage!!
+        firebaseStorage.getReferenceFromUrl(userImageUrl).delete().addOnFailureListener { exception ->
+            Log.d("Delete User", exception.localizedMessage)
+        }
     }
 }
