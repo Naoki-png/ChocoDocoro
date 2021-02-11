@@ -13,6 +13,7 @@ import com.google.firebase.firestore.*
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageReference
 import dagger.hilt.android.scopes.ActivityRetainedScoped
+import dagger.hilt.android.scopes.ViewModelScoped
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.catch
@@ -22,18 +23,18 @@ import kotlinx.coroutines.tasks.await
 import java.util.*
 import javax.inject.Inject
 
-@ActivityRetainedScoped
-class PostRepository @Inject constructor(
+class FirebaseRepository @Inject constructor(
     private val firebaseAuth: FirebaseAuth,
     private val firebaseFireStore: FirebaseFirestore,
     private val firebaseStorage: FirebaseStorage
 ) {
-    private val currentUser: FirebaseUser by lazy { FirebaseAuth.getInstance().currentUser!! }
-    private val postCollectionRef: CollectionReference by lazy { FirebaseFirestore.getInstance().collection(POST_REF) }
+    private val currentUser: FirebaseUser by lazy { firebaseAuth.currentUser!! }
+    private val postCollectionRef: CollectionReference by lazy { firebaseFireStore.collection(POST_REF) }
     private val favoriteCollectionRef: CollectionReference by lazy {
-        FirebaseFirestore.getInstance().collection(FAVORITES_REF).document(currentUser.uid).collection(EACH_USER_FAVORITES_REF)
+        firebaseFireStore.collection(FAVORITES_REF).document(currentUser.uid).collection(EACH_USER_FAVORITES_REF)
     }
-    private val storageRef: StorageReference by lazy { FirebaseStorage.getInstance().getReference(currentUser.uid) }
+    private val storageRef: StorageReference by lazy { firebaseStorage.getReference(currentUser.uid) }
+    private val userImageStorageRef: StorageReference by lazy { storageRef.child("userImage") }
 
     /**
      * ユーザープロフィール変更
@@ -65,7 +66,6 @@ class PostRepository @Inject constructor(
      * DB内とauthのプロフィール写真を変更
      */
     private suspend fun updateProfileImage(userImage: String) {
-        val userImageStorageRef = storageRef.child("userImage")
         //firebaseStorageは勝手に上書きするため削除の必要ない。
         userImageStorageRef.putFile(Uri.parse(userImage)).await()
 
@@ -285,24 +285,33 @@ class PostRepository @Inject constructor(
     }
 
     private suspend fun deleteAllPostImage() {
-        val snapshot = firebaseFireStore.collection(POST_REF).whereEqualTo(USERID, firebaseAuth.currentUser!!.uid).get().await()
+        val snapshot = firebaseFireStore.collection(POST_REF).whereEqualTo(USERID, currentUser.uid).get().await()
         val postList: List<Post> = snapshot.toObjects(Post::class.java)
-        for (post in postList) {
-            val downloadUrl = post.postImage!!
-            firebaseStorage.getReferenceFromUrl(downloadUrl).delete().await()
+        if (postList.isNotEmpty()) {
+            for (post in postList) {
+                val downloadUrl = post.postImage!!
+                firebaseStorage.getReferenceFromUrl(downloadUrl).delete().await()
+            }
         }
     }
 
     private suspend fun deleteUserImage() {
-        val userImageUrl = firebaseAuth.currentUser!!.photoUrl.toString()
-        firebaseStorage.getReferenceFromUrl(userImageUrl).delete().await()
+        // userImage/のパスにファイルがあるかどうか確認する方法が難しいので、一旦userImage/にファイルを入れてから削除する
+        val userImageUrl = currentUser.photoUrl.toString()
+        runCatching {
+            firebaseStorage.getReferenceFromUrl(userImageUrl).delete().await()
+        }.onFailure { exception ->
+            Log.d("Delete User", "UserImage hasn't never changed so far: ${exception.localizedMessage}")
+            return@onFailure
+        }
+
     }
 
     suspend fun deleteAllPosts() {
         val batch = firebaseFireStore.batch()
         val snapshot = firebaseFireStore
             .collection(POST_REF)
-            .whereEqualTo(USERID, firebaseAuth.currentUser!!.uid)
+            .whereEqualTo(USERID, currentUser.uid)
             .get()
             .await()
         for (document in snapshot) {
@@ -333,7 +342,7 @@ class PostRepository @Inject constructor(
     }
 
     suspend fun deleteAccount() {
-//        var result = firebaseAuth.currentUser!!.reauthenticateAndRetrieveData()
+//        var result = currentUser.reauthenticateAndRetrieveData()
 //        result.user.delete();
         firebaseAuth.currentUser!!.delete().await()
         // navigate to login fragment

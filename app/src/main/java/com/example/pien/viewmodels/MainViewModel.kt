@@ -5,20 +5,18 @@ import android.content.Context
 import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.*
 import com.example.pien.models.Post
-import com.example.pien.repository.PostRepository
+import com.example.pien.repository.FirebaseRepository
 import com.example.pien.util.State
 import com.example.pien.util.makeToast
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
-import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.firestore.WriteBatch
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 
 class MainViewModel @ViewModelInject constructor(
     val app: Application,
-    private val postRepository: PostRepository
+    private val firebaseRepository: FirebaseRepository
 ) : AndroidViewModel(app) {
     private val currentUser: FirebaseUser by lazy { FirebaseAuth.getInstance().currentUser!! }
     var cheapPosts = MutableLiveData<List<Post>>()
@@ -37,7 +35,7 @@ class MainViewModel @ViewModelInject constructor(
     @ExperimentalCoroutinesApi
     fun editUserInfo(userName: String, userImage: String) {
         viewModelScope.launch {
-            postRepository.editUserInfo(userName, userImage).collect { currentState ->
+            firebaseRepository.editUserInfo(userName, userImage).collect { currentState ->
                 when (currentState) {
                     is State.Loading -> {
                         state.value = State.StateConst.LOADING
@@ -63,7 +61,7 @@ class MainViewModel @ViewModelInject constructor(
     @ExperimentalCoroutinesApi
     fun getCheapPosts() {
         viewModelScope.launch {
-            postRepository.getCheapPosts().collect { currentState ->
+            firebaseRepository.getCheapPosts().collect { currentState ->
                 when (currentState) {
                     is State.Loading -> {
                         state.value = State.StateConst.LOADING
@@ -87,7 +85,7 @@ class MainViewModel @ViewModelInject constructor(
     @ExperimentalCoroutinesApi
     fun getLuxuryPosts() {
         viewModelScope.launch {
-            postRepository.getLuxuryPosts().collect { currentState ->
+            firebaseRepository.getLuxuryPosts().collect { currentState ->
                 when (currentState) {
                     is State.Loading -> {
                         state.value = State.StateConst.LOADING
@@ -111,7 +109,7 @@ class MainViewModel @ViewModelInject constructor(
     @ExperimentalCoroutinesApi
     fun getSearchedPosts(query: String, currentTab: String?) {
         viewModelScope.launch {
-            postRepository.getSearchedPosts(query, currentTab).collect { currentState ->
+            firebaseRepository.getSearchedPosts(query, currentTab).collect { currentState ->
                 when (currentState) {
                     is State.Loading -> {
                         state.value = State.StateConst.LOADING
@@ -135,7 +133,7 @@ class MainViewModel @ViewModelInject constructor(
     @ExperimentalCoroutinesApi
     fun getMyPosts() {
         viewModelScope.launch {
-            postRepository.getMyPosts().collect { currentState ->
+            firebaseRepository.getMyPosts().collect { currentState ->
                 when (currentState) {
                     is State.Loading -> {
                         state.value = State.StateConst.LOADING
@@ -159,7 +157,7 @@ class MainViewModel @ViewModelInject constructor(
     @ExperimentalCoroutinesApi
     fun addPost(post: Post) {
         viewModelScope.launch {
-            postRepository.addPost(post).collect { currentState ->
+            firebaseRepository.addPost(post).collect { currentState ->
                 when (currentState) {
                     is State.Loading -> {
                         state.value = State.StateConst.LOADING
@@ -182,7 +180,7 @@ class MainViewModel @ViewModelInject constructor(
     @ExperimentalCoroutinesApi
     fun addFavorite(post: Post) {
         viewModelScope.launch {
-            postRepository.addFavorite(post).collect { currentState ->
+            firebaseRepository.addFavorite(post).collect { currentState ->
                 when (currentState) {
                     is State.Loading -> {
                         state.value = State.StateConst.LOADING
@@ -205,7 +203,7 @@ class MainViewModel @ViewModelInject constructor(
     @ExperimentalCoroutinesApi
     fun removeFavorite(post: Post) {
         viewModelScope.launch {
-            postRepository.removeFavorite(post).collect { currentState ->
+            firebaseRepository.removeFavorite(post).collect { currentState ->
                 when (currentState) {
                     is State.Loading -> {
                         state.value = State.StateConst.LOADING
@@ -228,7 +226,7 @@ class MainViewModel @ViewModelInject constructor(
     @ExperimentalCoroutinesApi
     fun getFavorite() {
         viewModelScope.launch {
-            postRepository.getFavorite().collect { currentState ->
+            firebaseRepository.getFavorite().collect { currentState ->
                 when (currentState) {
                     is State.Loading -> {
                         state.value = State.StateConst.LOADING
