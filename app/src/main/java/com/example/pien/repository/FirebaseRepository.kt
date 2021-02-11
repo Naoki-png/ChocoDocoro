@@ -285,7 +285,7 @@ class FirebaseRepository @Inject constructor(
     }
 
     private suspend fun deleteAllPostImage() {
-        val snapshot = firebaseFireStore.collection(POST_REF).whereEqualTo(USERID, currentUser.uid).get().await()
+        val snapshot = postCollectionRef.whereEqualTo(USERID, currentUser.uid).get().await()
         val postList: List<Post> = snapshot.toObjects(Post::class.java)
         if (postList.isNotEmpty()) {
             for (post in postList) {
@@ -309,13 +309,12 @@ class FirebaseRepository @Inject constructor(
 
     suspend fun deleteAllPosts() {
         val batch = firebaseFireStore.batch()
-        val snapshot = firebaseFireStore
-            .collection(POST_REF)
+        val snapshot = postCollectionRef
             .whereEqualTo(USERID, currentUser.uid)
             .get()
             .await()
         for (document in snapshot) {
-            val docRef = firebaseFireStore.collection(POST_REF).document(document.id)
+            val docRef = postCollectionRef.document(document.id)
             batch.delete(docRef)
         }
         //batch インスタンスはcommit()後に参照してはいけない
@@ -324,17 +323,11 @@ class FirebaseRepository @Inject constructor(
 
     suspend fun deleteAllFavorites() {
         val batch = firebaseFireStore.batch()
-        val snapshot = firebaseFireStore
-            .collection(FAVORITES_REF)
-            .document(firebaseAuth.currentUser!!.uid)
-            .collection(EACH_USER_FAVORITES_REF)
+        val snapshot = favoriteCollectionRef
             .get()
             .await()
         for (document in snapshot) {
-            val docRef = firebaseFireStore
-                .collection(FAVORITES_REF)
-                .document(firebaseAuth.currentUser!!.uid)
-                .collection(EACH_USER_FAVORITES_REF)
+            val docRef = favoriteCollectionRef
                 .document(document.id)
             batch.delete(docRef)
         }
