@@ -18,15 +18,20 @@ class MainViewModel @ViewModelInject constructor(
     val app: Application,
     private val firebaseRepository: FirebaseRepository
 ) : AndroidViewModel(app) {
-    private val currentUser: FirebaseUser by lazy { FirebaseAuth.getInstance().currentUser!! }
+    val currentUser: FirebaseUser by lazy { firebaseRepository.currentUser }
+
     var cheapPosts = MutableLiveData<List<Post>>()
     var luxuryPosts = MutableLiveData<List<Post>>()
     var searchedPosts = MutableLiveData<List<Post>>()
     var myPosts = MutableLiveData<List<Post>>()
     var favoritePosts = MutableLiveData<List<Post>>()
+
+    var state = MutableLiveData<State.StateConst>()
+    var deletePostState = MutableLiveData<State.StateConst>()
+
+
     var userProfileName = MutableLiveData<String>()
     var userProfileImage = MutableLiveData<String>()
-    var state = MutableLiveData<State.StateConst>()
 
 
     /**
@@ -168,6 +173,26 @@ class MainViewModel @ViewModelInject constructor(
                     }
                     is State.Failed -> {
                         state.value = State.StateConst.FAILED
+                    }
+                }
+            }
+        }
+    }
+
+
+    @ExperimentalCoroutinesApi
+    fun deletePost(post: Post) {
+        viewModelScope.launch {
+            firebaseRepository.deletePost(post).collect { currentState ->
+                when (currentState) {
+                    is State.Loading -> {
+                        deletePostState.value = State.StateConst.LOADING
+                    }
+                    is State.Success -> {
+                        deletePostState.value = State.StateConst.SUCCESS
+                    }
+                    is State.Failed -> {
+                        deletePostState.value = State.StateConst.FAILED
                     }
                 }
             }

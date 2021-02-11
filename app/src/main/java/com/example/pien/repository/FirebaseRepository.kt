@@ -28,7 +28,7 @@ class FirebaseRepository @Inject constructor(
     private val firebaseFireStore: FirebaseFirestore,
     private val firebaseStorage: FirebaseStorage
 ) {
-    private val currentUser: FirebaseUser by lazy { firebaseAuth.currentUser!! }
+    val currentUser: FirebaseUser by lazy { firebaseAuth.currentUser!! }
     private val postCollectionRef: CollectionReference by lazy { firebaseFireStore.collection(POST_REF) }
     private val favoriteCollectionRef: CollectionReference by lazy {
         firebaseFireStore.collection(FAVORITES_REF).document(currentUser.uid).collection(EACH_USER_FAVORITES_REF)
@@ -213,6 +213,18 @@ class FirebaseRepository @Inject constructor(
         val downloadUrl: Uri = newFileRef.downloadUrl.await()
         postCollectionRef.document(documentId).update(POSTIMAGE, downloadUrl.toString()).await()
     }
+
+    @ExperimentalCoroutinesApi
+    fun deletePost(post: Post) = flow<State<String>> {
+        emit(State.loading())
+
+        firebaseStorage.getReferenceFromUrl(post.postImage!!).delete().await()
+        postCollectionRef.document(post.documentId!!).delete().await()
+        emit(State.success(State.StateConst.SUCCESS.name))
+
+    }.catch { exception ->
+        emit(State.failed(exception.message.toString()))
+    }.flowOn(Dispatchers.IO)
 
     /**
      * お気に入り追加

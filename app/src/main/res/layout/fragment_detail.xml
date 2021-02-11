@@ -21,7 +21,7 @@
 
             <TextView
                 android:id="@+id/detail_product_name"
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:fontFamily="sans-serif-thin"
                 android:hint="chocolate name"
@@ -29,6 +29,7 @@
                 android:textAllCaps="false"
                 android:textSize="30sp"
                 android:textStyle="bold|italic"
+                app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
@@ -38,10 +39,8 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
-                android:layout_marginBottom="8dp"
-                app:layout_constraintBottom_toTopOf="@+id/linearLayout"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="@+id/detail_product_name"
+                app:layout_constraintStart_toStartOf="@+id/detail_product_name"
                 app:layout_constraintTop_toBottomOf="@id/detail_product_name"
                 tools:src="@tools:sample/avatars" />
 
@@ -52,9 +51,9 @@
                 android:layout_margin="20dp"
                 android:background="@drawable/custom_border"
                 android:orientation="vertical"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent">
+                app:layout_constraintEnd_toEndOf="@+id/detail_product_image"
+                app:layout_constraintStart_toStartOf="@+id/detail_product_image"
+                app:layout_constraintTop_toBottomOf="@id/detail_product_image">
 
                 <TextView
                     android:id="@+id/detail_brand_name"
@@ -96,6 +95,18 @@
                     android:text="@{args.post.postMessage}"
                     android:textSize="20sp" />
             </LinearLayout>
+
+            <ImageView
+                android:id="@+id/detail_delete_button"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:layout_marginTop="8dp"
+                android:visibility="invisible"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="@+id/linearLayout"
+                app:layout_constraintStart_toStartOf="@+id/linearLayout"
+                app:layout_constraintTop_toBottomOf="@+id/linearLayout"
+                app:srcCompat="@drawable/ic_baseline_delete_24" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </ScrollView>
