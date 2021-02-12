@@ -268,6 +268,7 @@ class FirebaseRepository @Inject constructor(
 
         val snapshot = favoriteCollectionRef
             .orderBy(TIMESTAMP, Query.Direction.DESCENDING)
+            .limit(50)
             .get()
             .await()
         val favorites: List<Favorite> = snapshot.toObjects(Favorite::class.java)
@@ -285,8 +286,13 @@ class FirebaseRepository @Inject constructor(
         val postList = mutableListOf<Post>()
         for (favorite in favorites) {
             val postSnapshot = postCollectionRef.whereEqualTo(DOCUMENTID, favorite.postId).get().await()
-            val post: List<Post> = postSnapshot.toObjects(Post::class.java)
-            postList.add(post[0])
+            if (postSnapshot.isEmpty) {
+                val snapshot = favoriteCollectionRef.whereEqualTo(POSTID, favorite.postId).get().await()
+                favoriteCollectionRef.document(snapshot.documents[0].id).delete().await()
+            } else {
+                val post: List<Post> = postSnapshot.toObjects(Post::class.java)
+                postList.add(post[0])
+            }
         }
         return postList
     }

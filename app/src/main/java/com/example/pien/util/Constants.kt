@@ -16,7 +16,7 @@ const val TIMESTAMP = "timeStamp"
 const val BRAND_NAME = "brandName"
 const val CHEAP_OR_LUXURY = "cheapOrLuxury"
 //(favorites)
-const val FAVORITEID = "favoriteId"
+const val POSTID = "postId"
 
 //request code
 const val REQUEST_SIGN_IN_WITH_GOOGLE = 0

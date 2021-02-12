@@ -72,7 +72,6 @@ class DetailFragment : Fragment() {
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         inflater.inflate(R.menu.detail_fragment_menu, menu)
         checkIfFavorite(menu)
-        mainViewModel.getFavorite()
     }
 
     private fun checkIfFavorite(menu: Menu) {
@@ -84,6 +83,7 @@ class DetailFragment : Fragment() {
                 }
             }
         })
+        mainViewModel.getFavorite()
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
