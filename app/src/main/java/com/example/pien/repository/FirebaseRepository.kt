@@ -353,6 +353,7 @@ class FirebaseRepository @Inject constructor(
     }
 
     suspend fun deleteAccount() {
+        //todo  delete account
 //        var result = currentUser.reauthenticateAndRetrieveData()
 //        result.user.delete();
         firebaseAuth.currentUser!!.delete().await()

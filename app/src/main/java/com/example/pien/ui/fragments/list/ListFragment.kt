@@ -120,7 +120,7 @@ class ListFragment : Fragment(), SearchView.OnQueryTextListener {
         when(item.itemId) {
             R.id.logout -> {
                 val prefs = requireContext().getSharedPreferences(
-                    SIGNIN_METHOD,
+                    SIGN_IN_METHOD,
                     Context.MODE_PRIVATE
                 )
                 val signInMethod = prefs.getString(METHOD, "logout now")

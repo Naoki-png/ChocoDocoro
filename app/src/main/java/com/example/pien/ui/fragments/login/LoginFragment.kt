@@ -8,48 +8,38 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.fragment.app.findFragment
+import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.example.pien.R
-import com.example.pien.util.SignInMethod
-import com.example.pien.util.METHOD
-import com.example.pien.util.REQUEST_SIGN_IN_WITH_GOOGLE
-import com.example.pien.util.SIGNIN_METHOD
-import com.example.pien.util.makeToast
+import com.example.pien.util.*
+import com.example.pien.viewmodels.LoginViewModel
 import com.facebook.AccessToken
 import com.facebook.CallbackManager
 import com.facebook.FacebookCallback
 import com.facebook.FacebookException
 import com.facebook.login.LoginResult
 import com.google.android.gms.auth.api.Auth
-import com.google.android.gms.auth.api.signin.GoogleSignIn
-import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
-import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.firebase.auth.FacebookAuthProvider
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.GoogleAuthProvider
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.android.synthetic.main.fragment_login.view.*
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @AndroidEntryPoint
 class LoginFragment : Fragment() {
 
-    @Inject lateinit var auth: FirebaseAuth
-    lateinit var mGoogleSignInClient: GoogleSignInClient
+    @Inject lateinit var googleSignInClient: GoogleSignInClient
     lateinit var mFacebookCallbackManager: CallbackManager
+
+    private val loginViewModel: LoginViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-            .requestIdToken(getString(R.string.default_web_client_id))
-            .requestEmail()
-            .build()
-        mGoogleSignInClient = GoogleSignIn.getClient(requireContext(), gso)
-
         mFacebookCallbackManager = CallbackManager.Factory.create()
     }
 
@@ -94,7 +84,22 @@ class LoginFragment : Fragment() {
             if (result != null) {
                 if (result.isSuccess) {
                     val account = result.signInAccount
-                    firebaseAuthWithGoogle(account!!)
+                    lifecycleScope.launch {
+                        loginViewModel.firebaseAuthWithGoogle(account!!).collect { currentState ->
+                            when (currentState) {
+                                is State.Loading -> {
+                                    //処理なし
+                                }
+                                is State.Success -> {
+                                    findNavController().navigate(R.id.action_loginFragment_to_listFragment)
+                                }
+                                is State.Failed -> {
+                                    //todo
+                                }
+                            }
+
+                        }
+                    }
                 } else {
                     makeToast(requireContext(), "google login failed")
                     return
@@ -110,26 +115,8 @@ class LoginFragment : Fragment() {
      * GoogleSignInApiにリクエストを投げるメソッド
      */
     private fun googleSignIn() {
-        val signInIntent = mGoogleSignInClient.signInIntent
+        val signInIntent = googleSignInClient.signInIntent
         startActivityForResult(signInIntent, REQUEST_SIGN_IN_WITH_GOOGLE)
-    }
-
-    /**
-     * googleアカウントでfirebaseへログインするメソッド
-     * 認証成功後、auth.currentUserが更新される
-     * @param account ユーザーのgoogleアカ
-     */
-    private fun firebaseAuthWithGoogle(account: GoogleSignInAccount) {
-        val credential = GoogleAuthProvider.getCredential(account.idToken, null)
-        auth.signInWithCredential(credential)
-            .addOnSuccessListener {
-                val prefs = requireContext().getSharedPreferences(SIGNIN_METHOD, Context.MODE_PRIVATE)
-                prefs.edit().putString(METHOD, SignInMethod.GOOGLE.name).apply()
-                findNavController().navigate(R.id.action_loginFragment_to_listFragment)
-            }
-            .addOnFailureListener {exception ->
-                Log.e("LoginFragment", "firebase auth woth google login failed: ${exception.localizedMessage}")
-            }
     }
 
     /**
@@ -139,9 +126,9 @@ class LoginFragment : Fragment() {
      */
     private fun firebaseAuthWithFacebook(accessToken: AccessToken) {
         val credential = FacebookAuthProvider.getCredential(accessToken.token)
-        auth.signInWithCredential(credential)
+        FirebaseAuth.getInstance().signInWithCredential(credential)
             .addOnSuccessListener {
-                val prefs = requireContext().getSharedPreferences(SIGNIN_METHOD, Context.MODE_PRIVATE)
+                val prefs = requireContext().getSharedPreferences(SIGN_IN_METHOD, Context.MODE_PRIVATE)
                 prefs.edit().putString(METHOD, SignInMethod.FACEBOOK.name).apply()
                 findNavController().navigate(R.id.action_loginFragment_to_listFragment)
             }
