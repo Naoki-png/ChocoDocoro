@@ -24,13 +24,13 @@ class AppDataStoreModule() {
     @Singleton
     @SignInMethodQualifier
     fun signInMethodDataStore(@ApplicationContext context: Context): DataStore<Preferences> {
-        return context.createDataStore(SIGN_IN_METHOD)
+        return context.createDataStore(name = SIGN_IN_METHOD)
     }
 
     @Provides
     @Singleton
     @CurrentTabQualifier
     fun currentTabDataStore(@ApplicationContext context: Context): DataStore<Preferences> {
-        return context.createDataStore(CURRENT_TAB)
+        return context.createDataStore(name = CURRENT_TAB)
     }
 }

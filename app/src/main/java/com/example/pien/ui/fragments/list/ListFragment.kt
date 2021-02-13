@@ -7,10 +7,13 @@ import android.view.*
 import androidx.appcompat.widget.SearchView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.viewpager2.widget.ViewPager2
 import com.example.pien.R
 import com.example.pien.util.*
+import com.example.pien.viewmodels.LoginViewModel
 import com.example.pien.viewmodels.MainViewModel
 import com.facebook.login.LoginManager
 import com.google.android.gms.auth.api.signin.GoogleSignIn
@@ -25,33 +28,35 @@ import com.google.firebase.auth.FirebaseUser
 import dagger.hilt.android.AndroidEntryPoint
 
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.launch
+import javax.inject.Inject
 
 @AndroidEntryPoint
 @ExperimentalCoroutinesApi
 class ListFragment : Fragment(), SearchView.OnQueryTextListener {
     private val mainViewModel: MainViewModel by activityViewModels()
+    private val loginViewModel: LoginViewModel by viewModels()
     private val viewPagerAdapter: ListViewPagerAdapter by lazy { ListViewPagerAdapter() }
-
-    private lateinit var auth: FirebaseAuth
-    private var firebaseUser: FirebaseUser? = null
-
-    lateinit var mGoogleSignInClient: GoogleSignInClient
-    lateinit var mLoginManager: LoginManager
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        auth = FirebaseAuth.getInstance()
-        firebaseUser = auth.currentUser
 
-        val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-            .requestIdToken(getString(R.string.default_web_client_id))
-            .requestEmail()
-            .build()
-        mGoogleSignInClient = GoogleSignIn.getClient(requireContext(), gso)
-
-        mLoginManager = LoginManager.getInstance()
-
-        loginCheck()
+        lifecycleScope.launch {
+            loginViewModel.loginCheck().collect { currentState ->
+                when (currentState) {
+                    is State.Loading -> {
+                        //処理なし
+                    }
+                    is State.Success -> {
+                        //処理なし
+                    }
+                    is State.Failed -> {
+                        findNavController().navigate(R.id.action_listFragment_to_loginFragment)
+                    }
+                }
+            }
+        }
     }
 
     override fun onCreateView(
@@ -109,7 +114,6 @@ class ListFragment : Fragment(), SearchView.OnQueryTextListener {
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         inflater.inflate(R.menu.list_fragment_menu, menu)
-
         val searchView = menu.findItem(R.id.search).actionView as? SearchView
         searchView?.isSubmitButtonEnabled = true
         searchView?.queryHint = getString(R.string.search_hint)
@@ -118,20 +122,27 @@ class ListFragment : Fragment(), SearchView.OnQueryTextListener {
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when(item.itemId) {
-            R.id.logout -> {
-                val prefs = requireContext().getSharedPreferences(
-                    SIGN_IN_METHOD,
-                    Context.MODE_PRIVATE
-                )
-                val signInMethod = prefs.getString(METHOD, "logout now")
-                prefs.edit().putString(METHOD, "logout now").apply()
-                when (SignInMethod.valueOf(signInMethod!!)) {
-                    SignInMethod.GOOGLE -> googleSignOut()
-                    SignInMethod.FACEBOOK -> facebookSignOut()
+            R.id.logout -> signOut()
+        }
+        return super.onOptionsItemSelected(item)
+    }
+
+    private fun signOut() {
+        lifecycleScope.launch {
+            loginViewModel.signOut().collect { currentState ->
+                when (currentState) {
+                    is State.Loading -> {
+                        //todo
+                    }
+                    is State.Success -> {
+                        findNavController().navigate(R.id.action_listFragment_to_loginFragment)
+                    }
+                    is State.Failed -> {
+                        //todo
+                    }
                 }
             }
         }
-        return super.onOptionsItemSelected(item)
     }
 
     override fun onQueryTextSubmit(query: String?): Boolean {
@@ -153,39 +164,4 @@ class ListFragment : Fragment(), SearchView.OnQueryTextListener {
         })
         mainViewModel.getSearchedPosts(query, currentTab)
     }
-
-    /**
-     * ログインチェックメソッド
-     */
-    private fun loginCheck() {
-        if (firebaseUser == null) {
-            findNavController().navigate(R.id.action_listFragment_to_loginFragment)
-            return
-        }
-        Log.d("LoginUserName", "name: ${firebaseUser?.displayName}, uid: ${firebaseUser?.uid}")
-    }
-
-    /**
-     * Google Logout メソッド
-     */
-    private fun googleSignOut() {
-        auth.signOut()
-        mGoogleSignInClient.signOut()
-            .addOnCompleteListener { task ->
-                if (task.isSuccessful) {
-                    findNavController().navigate(R.id.action_listFragment_to_loginFragment)
-                }
-            }
-    }
-
-    /**
-     * Facebook Logout メソッド
-     */
-    private fun facebookSignOut() {
-        auth.signOut()
-        mLoginManager.logOut()
-        findNavController().navigate(R.id.action_listFragment_to_loginFragment)
-    }
-
-
 }

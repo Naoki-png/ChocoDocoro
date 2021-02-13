@@ -2,6 +2,7 @@ package com.example.pien.di.inappcomponent
 
 import android.app.Application
 import com.example.pien.R
+import com.facebook.login.LoginManager
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
@@ -32,5 +33,9 @@ object AppLoginModule {
     ): GoogleSignInClient {
         return GoogleSignIn.getClient(application.applicationContext, googleSignInOptions)
     }
+
+    @Provides
+    @Singleton
+    fun loginManager() = LoginManager.getInstance()
 
 }
