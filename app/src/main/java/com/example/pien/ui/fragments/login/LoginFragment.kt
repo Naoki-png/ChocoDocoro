@@ -18,6 +18,7 @@ import com.facebook.AccessToken
 import com.facebook.CallbackManager
 import com.facebook.FacebookCallback
 import com.facebook.FacebookException
+import com.facebook.login.LoginManager
 import com.facebook.login.LoginResult
 import com.google.android.gms.auth.api.Auth
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
@@ -34,14 +35,10 @@ import javax.inject.Inject
 class LoginFragment : Fragment() {
 
     @Inject lateinit var googleSignInClient: GoogleSignInClient
-    lateinit var mFacebookCallbackManager: CallbackManager
+    @Inject lateinit var mFacebookCallbackManager: CallbackManager
+    @Inject lateinit var loginManager: LoginManager
 
     private val loginViewModel: LoginViewModel by viewModels()
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        mFacebookCallbackManager = CallbackManager.Factory.create()
-    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -55,37 +52,14 @@ class LoginFragment : Fragment() {
             googleSignIn()
         }
 
-        view.login_facebook_login_btn.setReadPermissions("email", "public_profile")
-        //fragment内で使う場合
-        view.login_facebook_login_btn.fragment = this
-        view.login_facebook_login_btn.registerCallback(mFacebookCallbackManager, object :
-            FacebookCallback<LoginResult> {
-            override fun onSuccess(loginResult: LoginResult) {
-                Log.d("Facebook Login", "facebook:onSuccess:$loginResult")
-                firebaseAuthWithFacebook(loginResult.accessToken!!)
-            }
-            override fun onCancel() {
-                Log.d("Facebook Login", "facebook:onCancel")
-            }
-            override fun onError(error: FacebookException) {
-                Log.d("Facebook Login", "facebook:onError", error)
-            }
-        })
-
-
-        return view
-    }
-
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-
-        if (requestCode == REQUEST_SIGN_IN_WITH_GOOGLE) {
-            val result = Auth.GoogleSignInApi.getSignInResultFromIntent(data)
-            if (result != null) {
-                if (result.isSuccess) {
-                    val account = result.signInAccount
+        view.login_facebook_login_btn.setOnClickListener {
+            loginManager.logInWithReadPermissions(this, listOf("email", "public_profile"))
+            loginManager.registerCallback(mFacebookCallbackManager, object :
+                FacebookCallback<LoginResult> {
+                override fun onSuccess(loginResult: LoginResult) {
+                    Log.d("Facebook Login", "facebook:onSuccess:$loginResult")
                     lifecycleScope.launch {
-                        loginViewModel.firebaseAuthWithGoogle(account!!).collect { currentState ->
+                        loginViewModel.firebaseAuthWithFacebook(loginResult.accessToken!!).collect { currentState ->
                             when (currentState) {
                                 is State.Loading -> {
                                     //処理なし
@@ -97,7 +71,43 @@ class LoginFragment : Fragment() {
                                     //todo
                                 }
                             }
+                        }
+                    }
+                }
+                override fun onCancel() {
+                    Log.d("Facebook Login", "facebook:onCancel")
+                }
+                override fun onError(error: FacebookException) {
+                    Log.d("Facebook Login", "facebook:onError", error)
+                }
+            })
+        }
 
+        return view
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+
+        when (requestCode) {
+            REQUEST_SIGN_IN_WITH_GOOGLE -> {
+                val result = Auth.GoogleSignInApi.getSignInResultFromIntent(data)
+                if (result != null &&
+                    result.isSuccess) {
+                        val account = result.signInAccount
+                        lifecycleScope.launch {
+                            loginViewModel.firebaseAuthWithGoogle(account!!).collect { currentState ->
+                                when (currentState) {
+                                    is State.Loading -> {
+                                        //処理なし
+                                    }
+                                    is State.Success -> {
+                                        findNavController().navigate(R.id.action_loginFragment_to_listFragment)
+                                    }
+                                    is State.Failed -> {
+                                        //todo
+                                    }
+                                }
                         }
                     }
                 } else {
@@ -105,10 +115,10 @@ class LoginFragment : Fragment() {
                     return
                 }
             }
+            else -> {
+                mFacebookCallbackManager.onActivityResult(requestCode, resultCode, data)
+            }
         }
-
-        // Pass the activity result back to the Facebook SDK
-        mFacebookCallbackManager.onActivityResult(requestCode, resultCode, data)
     }
 
     /**
@@ -118,23 +128,4 @@ class LoginFragment : Fragment() {
         val signInIntent = googleSignInClient.signInIntent
         startActivityForResult(signInIntent, REQUEST_SIGN_IN_WITH_GOOGLE)
     }
-
-    /**
-     * facebookアカウントでfirebaseへログインするメソッド
-     * 認証成功後、auth.currentUserが更新される
-     * @param accessToken facebookのアクセストークン
-     */
-    private fun firebaseAuthWithFacebook(accessToken: AccessToken) {
-        val credential = FacebookAuthProvider.getCredential(accessToken.token)
-        FirebaseAuth.getInstance().signInWithCredential(credential)
-            .addOnSuccessListener {
-                val prefs = requireContext().getSharedPreferences(SIGN_IN_METHOD, Context.MODE_PRIVATE)
-                prefs.edit().putString(METHOD, SignInMethod.FACEBOOK.name).apply()
-                findNavController().navigate(R.id.action_loginFragment_to_listFragment)
-            }
-            .addOnFailureListener {exception ->
-                Log.e("Facebook Login", "firebase auth with facebook login failed: ${exception.localizedMessage}")
-            }
-    }
-
 }

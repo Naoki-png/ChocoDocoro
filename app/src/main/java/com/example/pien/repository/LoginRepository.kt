@@ -1,13 +1,18 @@
 package com.example.pien.repository
 
+import android.content.Context
 import android.util.Log
 import androidx.navigation.fragment.findNavController
 import com.example.pien.R
+import com.example.pien.util.METHOD
+import com.example.pien.util.SIGN_IN_METHOD
 import com.example.pien.util.SignInMethod
 import com.example.pien.util.State
+import com.facebook.AccessToken
 import com.facebook.login.LoginManager
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
+import com.google.firebase.auth.FacebookAuthProvider
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.GoogleAuthProvider
 import kotlinx.coroutines.CoroutineScope
@@ -26,14 +31,14 @@ class LoginRepository @Inject constructor(
     private val googleSignInClient: GoogleSignInClient,
     private val loginManager: LoginManager
 ) {
-    private lateinit var signInMethod: SignInMethod
+    //todo determineSignInMethod() doesn't work
+    private var signInMethod: SignInMethod = SignInMethod.FACEBOOK
 
     /**
      * ログインチェックメソッド
      */
     suspend fun loginCheck() = flow<State<SignInMethod>> {
         emit(State.loading())
-        determineSignInMethod()
         when (signInMethod) {
             SignInMethod.GOOGLE -> {
                 Log.d(this@LoginRepository::class.java.name, "name: ${firebaseAuth.currentUser!!.displayName}, uid: ${firebaseAuth.currentUser!!.uid}")
@@ -60,6 +65,19 @@ class LoginRepository @Inject constructor(
         val credential = GoogleAuthProvider.getCredential(account.idToken, null)
         firebaseAuth.signInWithCredential(credential).await()
         dataStoreRepository.saveSignInMethod(SignInMethod.GOOGLE.name)
+        emit(State.success(State.StateConst.SUCCESS))
+    }.catch { exception->
+        emit(State.failed(exception.message.toString()))
+    }.flowOn(Dispatchers.IO)
+
+    /**
+     * facebookアカウントでfirebaseへログインするメソッド
+     */
+    fun firebaseAuthWithFacebook(accessToken: AccessToken) = flow<State<State.StateConst>> {
+        emit(State.loading())
+        val credential = FacebookAuthProvider.getCredential(accessToken.token)
+        firebaseAuth.signInWithCredential(credential).await()
+        dataStoreRepository.saveSignInMethod(SignInMethod.FACEBOOK.name)
         emit(State.success(State.StateConst.SUCCESS))
     }.catch { exception->
         emit(State.failed(exception.message.toString()))
@@ -133,7 +151,6 @@ class LoginRepository @Inject constructor(
      * 現在のSignInMethodを特定する
      */
     private suspend fun determineSignInMethod() {
-        //todo 修正　collectを呼ぶとコルーチンが終わってしまう
         dataStoreRepository
             .readSignInMethod
             .collect {

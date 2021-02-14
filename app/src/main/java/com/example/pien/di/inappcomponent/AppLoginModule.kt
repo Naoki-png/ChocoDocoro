@@ -2,6 +2,7 @@ package com.example.pien.di.inappcomponent
 
 import android.app.Application
 import com.example.pien.R
+import com.facebook.CallbackManager
 import com.facebook.login.LoginManager
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
@@ -37,5 +38,9 @@ object AppLoginModule {
     @Provides
     @Singleton
     fun loginManager() = LoginManager.getInstance()
+
+    @Provides
+    @Singleton
+    fun callbackManager() = CallbackManager.Factory.create()
 
 }

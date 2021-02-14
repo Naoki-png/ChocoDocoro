@@ -54,5 +54,6 @@
     <string name="cheap">cheap</string>
     <string name="luxury">luxury</string>
     <string name="delete_account">delete account</string>
+    <string name="sign_in_with_facebook">Sign In With Facebook</string>
 
 </resources>
