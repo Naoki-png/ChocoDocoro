@@ -1,12 +1,16 @@
 package com.example.pien.repository
 
+import android.content.Context
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.*
+import androidx.datastore.preferences.createDataStore
 import com.example.pien.di.qualifiers.CurrentTabQualifier
 import com.example.pien.di.qualifiers.SignInMethodQualifier
 import com.example.pien.util.METHOD
+import com.example.pien.util.SIGN_IN_METHOD
 import com.example.pien.util.SignInMethod
 import com.example.pien.util.TAB
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.map
@@ -16,9 +20,14 @@ import javax.inject.Singleton
 
 @Singleton
 class DataStoreRepository @Inject constructor(
+    @ApplicationContext private val context: Context,
     @SignInMethodQualifier private val signInMethodDataStore: DataStore<Preferences>,
     @CurrentTabQualifier private val currentTabDataStore: DataStore<Preferences>,
 ) {
+
+    private val dataStore: DataStore<Preferences> = context.createDataStore(
+        name = SIGN_IN_METHOD
+    )
 
     object PreferenceKeys {
         val method = stringPreferencesKey(METHOD)
@@ -37,7 +46,7 @@ class DataStoreRepository @Inject constructor(
         }
     }
 
-    val readSignInMethod: Flow<SignInMethod> = signInMethodDataStore
+    val readSignInMethod: Flow<SignInMethod> = dataStore
         .data
         .catch { exception ->
             if (exception is IOException) {

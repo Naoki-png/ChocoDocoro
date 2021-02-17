@@ -18,17 +18,15 @@ import javax.inject.Singleton
 
 @Module
 @InstallIn(SingletonComponent::class)
-class AppDataStoreModule() {
+object AppDataStoreModule {
 
     @Provides
-    @Singleton
     @SignInMethodQualifier
     fun signInMethodDataStore(@ApplicationContext context: Context): DataStore<Preferences> {
         return context.createDataStore(name = SIGN_IN_METHOD)
     }
 
     @Provides
-    @Singleton
     @CurrentTabQualifier
     fun currentTabDataStore(@ApplicationContext context: Context): DataStore<Preferences> {
         return context.createDataStore(name = CURRENT_TAB)

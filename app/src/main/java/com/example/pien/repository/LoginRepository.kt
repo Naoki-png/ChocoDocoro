@@ -17,6 +17,7 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.GoogleAuthProvider
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.flow
@@ -31,13 +32,14 @@ class LoginRepository @Inject constructor(
     private val googleSignInClient: GoogleSignInClient,
     private val loginManager: LoginManager
 ) {
-    //todo determineSignInMethod() doesn't work
-    private var signInMethod: SignInMethod = SignInMethod.FACEBOOK
+    @Volatile
+    private var signInMethod: SignInMethod = SignInMethod.GOOGLE
 
     /**
      * ログインチェックメソッド
      */
     suspend fun loginCheck() = flow<State<SignInMethod>> {
+        determineSignInMethod()
         emit(State.loading())
         when (signInMethod) {
             SignInMethod.GOOGLE -> {
@@ -150,7 +152,7 @@ class LoginRepository @Inject constructor(
     /**
      * 現在のSignInMethodを特定する
      */
-    private suspend fun determineSignInMethod() {
+    suspend fun determineSignInMethod() {
         dataStoreRepository
             .readSignInMethod
             .collect {
