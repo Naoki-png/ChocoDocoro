@@ -18,10 +18,7 @@ import com.google.firebase.auth.GoogleAuthProvider
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.flow.catch
-import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
@@ -32,16 +29,12 @@ class LoginRepository @Inject constructor(
     private val googleSignInClient: GoogleSignInClient,
     private val loginManager: LoginManager
 ) {
-    @Volatile
-    private var signInMethod: SignInMethod = SignInMethod.GOOGLE
-
     /**
      * ログインチェックメソッド
      */
     suspend fun loginCheck() = flow<State<SignInMethod>> {
-        determineSignInMethod()
         emit(State.loading())
-        when (signInMethod) {
+        when (determineSignInMethod()) {
             SignInMethod.GOOGLE -> {
                 Log.d(this@LoginRepository::class.java.name, "name: ${firebaseAuth.currentUser!!.displayName}, uid: ${firebaseAuth.currentUser!!.uid}")
                 emit(State.success(SignInMethod.GOOGLE))
@@ -90,7 +83,7 @@ class LoginRepository @Inject constructor(
      */
     suspend fun signOut() = flow<State<State.StateConst>> {
         emit(State.loading())
-        when (signInMethod) {
+        when (determineSignInMethod()) {
             SignInMethod.GOOGLE -> {
                 googleSignOut().collect { currentState ->
                     when (currentState) {
@@ -152,11 +145,9 @@ class LoginRepository @Inject constructor(
     /**
      * 現在のSignInMethodを特定する
      */
-    suspend fun determineSignInMethod() {
-        dataStoreRepository
+    suspend fun determineSignInMethod(): SignInMethod {
+        return dataStoreRepository
             .readSignInMethod
-            .collect {
-            signInMethod = it
-        }
+            .first()
     }
 }

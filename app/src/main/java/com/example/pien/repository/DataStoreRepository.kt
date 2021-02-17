@@ -24,11 +24,6 @@ class DataStoreRepository @Inject constructor(
     @SignInMethodQualifier private val signInMethodDataStore: DataStore<Preferences>,
     @CurrentTabQualifier private val currentTabDataStore: DataStore<Preferences>,
 ) {
-
-    private val dataStore: DataStore<Preferences> = context.createDataStore(
-        name = SIGN_IN_METHOD
-    )
-
     object PreferenceKeys {
         val method = stringPreferencesKey(METHOD)
         val tab = stringPreferencesKey(TAB)
@@ -46,7 +41,7 @@ class DataStoreRepository @Inject constructor(
         }
     }
 
-    val readSignInMethod: Flow<SignInMethod> = dataStore
+    val readSignInMethod: Flow<SignInMethod> = signInMethodDataStore
         .data
         .catch { exception ->
             if (exception is IOException) {
