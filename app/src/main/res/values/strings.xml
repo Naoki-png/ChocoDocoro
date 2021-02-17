@@ -9,11 +9,14 @@
 
     <!--    login fragment用-->
     <string name="chocodocoro">ChocoDocoro</string>
+    <string name="sign_in_with_facebook">Sign In With Facebook</string>
 
     <!--    list fragment用-->
     <string name="search">search</string>
     <string name="search_hint">search by brand name</string>
     <string name="logout">logout</string>
+    <string name="cheap">cheap</string>
+    <string name="luxury">luxury</string>
 
     <!--    post fragment用-->
     <string name="post">post</string>
@@ -47,13 +50,5 @@
     <!--    facebook login用-->
     <string name="facebook_app_id">396640895088956</string>
     <string name="fb_login_protocol_scheme">fb396640895088956</string>
-
-    <!--    twitter login用-->
-    <string name="twitter_consumer_key" translatable="false">6C5LQNBzyyl3J1f9C9tF54WX6</string>
-    <string name="twitter_consumer_secret" translatable="false">cI0lC1ILErTeQUJ2I3bvUjJoBnkrB3y6GSvOI246mRuOFrV3L1</string>
-    <string name="cheap">cheap</string>
-    <string name="luxury">luxury</string>
-    <string name="delete_account">delete account</string>
-    <string name="sign_in_with_facebook">Sign In With Facebook</string>
 
 </resources>

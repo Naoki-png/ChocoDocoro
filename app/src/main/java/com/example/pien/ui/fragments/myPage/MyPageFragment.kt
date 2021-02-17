@@ -3,7 +3,6 @@ package com.example.pien.ui.fragments.myPage
 import android.os.Bundle
 import android.view.*
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -12,7 +11,6 @@ import com.example.pien.R
 import com.example.pien.databinding.FragmentMyPageBinding
 import com.example.pien.ui.fragments.list.ListAdapter
 import com.example.pien.util.State
-import com.example.pien.viewmodels.MyPageViewModel
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import dagger.hilt.android.AndroidEntryPoint
@@ -24,7 +22,6 @@ class MyPageFragment : Fragment() {
     private val currentUser: FirebaseUser by lazy { FirebaseAuth.getInstance().currentUser!! }
     private val listAdapter : ListAdapter by lazy { ListAdapter() }
     private val mainViewModel: MainViewModel by viewModels()
-    private val myPageViewModel: MyPageViewModel by viewModels()
     private lateinit var binding: FragmentMyPageBinding
 
     override fun onCreateView(
@@ -73,16 +70,5 @@ class MyPageFragment : Fragment() {
         binding.mypageList.adapter = listAdapter
         binding.mypageList.layoutManager = LinearLayoutManager(requireContext())
         binding.mypageList.showShimmer()
-    }
-
-    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-        inflater.inflate(R.menu.mypage_fragment_menu, menu)
-    }
-
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        if (item.itemId == R.id.delete_account) {
-            DeleteAccountDialog().show(parentFragmentManager, "")
-        }
-        return super.onOptionsItemSelected(item)
     }
 }
