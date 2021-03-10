@@ -5,7 +5,10 @@ import android.os.Bundle
 import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.findNavController
+import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.NavigationUI.setupWithNavController
+import androidx.navigation.ui.setupActionBarWithNavController
+import androidx.navigation.ui.setupWithNavController
 import com.example.pien.R
 
 import dagger.hilt.android.AndroidEntryPoint
@@ -20,6 +23,16 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
 
         val navController = findNavController(R.id.nav_host_fragment)
-        setupWithNavController(bottomNavigationView, navController)
+        val appBarConfiguration = AppBarConfiguration(
+            setOf(
+                R.id.listFragment,
+                R.id.postFragment,
+                R.id.favoriteFragment,
+                R.id.myPageFragment
+            )
+        )
+        bottomNavigationView.setupWithNavController(navController)
+        setupActionBarWithNavController(navController, appBarConfiguration)
+
     }
 }

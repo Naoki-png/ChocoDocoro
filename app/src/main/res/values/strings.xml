@@ -3,15 +3,17 @@
     <string name="action_settings">Settings</string>
 
     <!--    main activity用-->
-    <string name="home">home</string>
-    <string name="new_post">new post</string>
-    <string name="my_page">My Page</string>
+    <string name="home_page">Home</string>
+    <string name="post_page">Post</string>
+    <string name="favorite_page">Favorite</string>
+    <string name="my_page">MyPage</string>
 
     <!--    login fragment用-->
     <string name="chocodocoro">ChocoDocoro</string>
     <string name="sign_in_with_facebook">Sign In With Facebook</string>
 
     <!--    list fragment用-->
+    <string name="list_fragment_title">Home</string>
     <string name="search">search</string>
     <string name="search_hint">search by brand name</string>
     <string name="logout">logout</string>
@@ -19,6 +21,7 @@
     <string name="luxury">luxury</string>
 
     <!--    post fragment用-->
+    <string name="post_fragment_title">NewPost</string>
     <string name="post">post</string>
     <string name="product_name">product name:</string>
     <string name="brand_name">brand name:</string>
@@ -42,10 +45,12 @@
     <string name="save">save</string>
 
     <!--    mypage fragment用-->
+    <string name="mypage_fragment_title">MyPage</string>
 
     <!--    favorite fragment用-->
-    <string name="favorite">Favorite</string>
+    <string name="favorite_fragment_title">Favorite</string>
     <string name="no_favorite">No Favorite</string>
+    <string name="favorite">Favorite</string>
 
     <!--    facebook login用-->
     <string name="facebook_app_id">396640895088956</string>
