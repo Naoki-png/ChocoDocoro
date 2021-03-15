@@ -23,8 +23,8 @@
     <fragment
         android:id="@+id/loginFragment"
         android:name="com.example.pien.ui.fragments.login.LoginFragment"
-        android:label="fragment_login"
-        tools:layout="@layout/fragment_login" >
+        android:label="@string/login_fragment_title"
+        tools:layout="@layout/fragment_login">
         <action
             android:id="@+id/action_loginFragment_to_listFragment"
             app:destination="@id/listFragment"
@@ -57,8 +57,8 @@
     <fragment
         android:id="@+id/editAccountFragment"
         android:name="com.example.pien.ui.fragments.editAccount.EditAccountFragment"
-        android:label="fragment_edit_account"
-        tools:layout="@layout/fragment_edit_account" >
+        android:label="@string/edit_account_fragment_title"
+        tools:layout="@layout/fragment_edit_account">
         <action
             android:id="@+id/action_editAccountFragment_to_myPageFragment"
             app:destination="@id/myPageFragment"
@@ -68,8 +68,8 @@
     <fragment
         android:id="@+id/detailFragment"
         android:name="com.example.pien.ui.fragments.detail.DetailFragment"
-        android:label="fragment_detail"
-        tools:layout="@layout/fragment_detail" >
+        android:label="@string/detail_fragment_title"
+        tools:layout="@layout/fragment_detail">
         <argument
             android:name="post"
             app:argType="com.example.pien.models.Post" />

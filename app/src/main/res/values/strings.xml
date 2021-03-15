@@ -9,6 +9,7 @@
     <string name="my_page">MyPage</string>
 
     <!--    login fragment用-->
+    <string name="login_fragment_title">Login</string>
     <string name="chocodocoro">ChocoDocoro</string>
     <string name="sign_in_with_facebook">Sign In With Facebook</string>
 
@@ -42,6 +43,7 @@
     <string name="chocolate_description">chocolate description....</string>
 
     <!--    edit account fragment用-->
+    <string name="edit_account_fragment_title">EditAccount</string>
     <string name="save">save</string>
 
     <!--    mypage fragment用-->
@@ -51,6 +53,9 @@
     <string name="favorite_fragment_title">Favorite</string>
     <string name="no_favorite">No Favorite</string>
     <string name="favorite">Favorite</string>
+
+    <!--    detail fragment用-->
+    <string name="detail_fragment_title" />
 
     <!--    facebook login用-->
     <string name="facebook_app_id">396640895088956</string>
